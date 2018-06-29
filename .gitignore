@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+dist/
+.idea/
+.babelrc
+.editorconfig
+package-lock.json
+tutor.json
