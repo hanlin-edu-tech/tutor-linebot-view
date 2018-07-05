@@ -1,4 +1,5 @@
 const gulp = require('gulp')
+const replace = require('gulp-replace')
 const gcPub = require('gulp-gcloud-publish')
 const cache = require('gulp-cache')
 const imageMin = require('gulp-imagemin')
@@ -17,7 +18,7 @@ const minifyImage = sourceImage => {
     .pipe(gulp.dest('./dist'))
 }
 
-const uploadGCS = () => {
+const uploadGCS = bucket => {
   return gulp
     .src([
       './dist/index.html',
@@ -26,7 +27,7 @@ const uploadGCS = () => {
       './dist/img/**/*.@(jpg|png|gif|svg)'
     ], {base: `${__dirname}/dist/`})
     .pipe(gcPub({
-      bucket: 'tutor-events-test',
+      bucket: bucket,
       keyFilename: 'tutor.json',
       base: 'event/line-bot/',
       projectId: 'tutor-204108',
@@ -38,4 +39,47 @@ const uploadGCS = () => {
 }
 
 gulp.task('minifyImage', minifyImage.bind(minifyImage, './src/img/**/*.@(jpg|png)'))
-gulp.task('uploadGCS', uploadGCS)
+/* 開發 */
+gulp.task('buildEnvToDev', () => {
+  return gulp
+    .src(['./src/modules/axios-config.js'], {
+      base: './'
+    })
+    .pipe(
+      replace(/axios.defaults.baseURL = ''/g, match => {
+        let dev = `axios.defaults.baseURL = 'http://localhost:8080'`
+        console.log(`baseURL => ${match} to ${dev}`)
+        return dev
+      })
+    )
+    .pipe(gulp.dest('./'))
+})
+
+/* 正式 */
+gulp.task('buildDevToEnv', () => {
+  return gulp
+    .src(['./src/modules/axios-config.js'], {
+      base: './'
+    })
+    .pipe(
+      replace(/axios.defaults.baseURL = 'http:\/\/localhost:8080'/g, match => {
+        let buildEnv = 'axios.defaults.baseURL = \'\''
+        console.log(`baseURL => ${match} to ${buildEnv}`)
+        return buildEnv
+      })
+    )
+    .pipe(gulp.dest('./'))
+})
+
+/* 上傳 GCS */
+gulp.task('uploadTestGCS', uploadGCS.bind(uploadGCS, 'tutor-events-test'))
+gulp.task('uploadProdGCS', uploadGCS.bind(uploadGCS, 'tutor-events'))
+
+/* 部署 */
+gulp.task('deployToTest', ['minifyImage', 'buildDevToEnv', 'uploadTestGCS'], () => {
+  console.log('Package and upload files to test GCS')
+})
+
+gulp.task('deployToProd', ['minifyImage', 'buildDevToEnv', 'uploadProdGCS'], () => {
+  console.log('Package and upload files to prod GCS')
+})

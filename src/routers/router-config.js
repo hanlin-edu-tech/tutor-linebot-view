@@ -10,12 +10,12 @@ export default {
       component: LineBinding
     },
     {
-      path: '/profile/:specificLineUser',
+      path: '/profile/:specificLineUser/:panel?',
       name: 'MultiProfile',
       component: MultiProfile
     },
     {
-      path: '/profile/:specificLineUser/:studentCard',
+      path: '/profile/:specificLineUser/:studentCard/:panel?',
       name: 'Profile',
       component: Profile
     },

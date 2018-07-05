@@ -42,7 +42,7 @@
         .axios(
           {
             method: 'post',
-            url: 'https://www.tbbt.com.tw/linebot/lineBinding',
+            url: `/linebot/lineBinding`,
             data: vueModel.lineBindingStudentCard
           }
         )
@@ -77,10 +77,6 @@
   #line-binding-result {
     .mu-icon {
       width: 35px;
-    }
-
-    .attention {
-      font-size: 1.5em;
     }
 
     .mu-button {

@@ -1,16 +1,18 @@
 <template>
   <article id="profile-detail">
     <mu-container>
-      <mu-list v-if="status === 'success'">
+      <mu-list v-show="status === 'success'">
         <mu-list-item class="email">
           <mu-list-item-action>
             <mu-icon value="person_pin"></mu-icon>
           </mu-list-item-action>
           <mu-list-item-title>
-            <span>帳號：{{profile.email}}</span>
+            <span>帳號：
+              <br />{{profile.email}}
+            </span>
           </mu-list-item-title>
         </mu-list-item>
-        <mu-divider class="divider"></mu-divider>
+        <mu-divider class="divider-height2"></mu-divider>
         <mu-list-item class="general">
           <mu-list-item-action>
             <mu-icon value="school"></mu-icon>
@@ -22,7 +24,7 @@
           <mu-list-item-action>
             <mu-icon value="supervisor_account"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title>身分：{{profile.role}}</mu-list-item-title>
+          <mu-list-item-title>身分：{{role}}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
         <mu-list-item class="general">
@@ -32,6 +34,7 @@
           <mu-list-item-title>年級：{{profile.grade}}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
+        <!--
         <mu-list-item class="general">
           <mu-list-item-title>帳號資產：
           </mu-list-item-title>
@@ -49,46 +52,55 @@
           <mu-list-item-title><span>寶石：{{10000}}</span></mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
+       -->
       </mu-list>
-      <div class="center result result-failure" v-else-if="status === 'failure'">
-        <mu-icon left value="warning" class="icon-global"></mu-icon>
-        {{retrieveFailed}}
+      <div class="app-center" v-show="status !== 'success'">
+        <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
       </div>
-      <mu-row class="center" v-else>
-        <mu-col span="12">
-          <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-        </mu-col>
-      </mu-row>
     </mu-container>
   </article>
 </template>
 
 <script>
+  import store from '../../store/store'
   import { mapState } from 'vuex'
+  import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {
     name: 'ProfileDetail',
     data () {
       return {
-        status: String,
-        profile: Object
+        lineUserId: this.$route.params['specificLineUser'],
+        studentCard: this.$route.params['studentCard'],
+        role: '',
+        status: '',
+        profile: {}
       }
+    },
+
+    components: {
+      DetermineUnsuccessfulStatus
     },
 
     computed: mapState('unifyDesc', ['retrieveFailed']),
 
     created () {
       let vueModel = this
-      let lineUserId = vueModel.$route.params['specificLineUser']
-      let studentCard = vueModel.$route.params['studentCard']
       vueModel
         .axios({
           method: 'get',
-          url: `https://www.tbbt.com.tw/linebot/profile/${lineUserId}?studentCard=${studentCard}`,
+          url: `/linebot/profile/${vueModel.lineUserId}?studentCard=${vueModel.studentCard}`,
         })
         .then(response => {
-          let jsonData = response.data
-          vueModel.profile = jsonData.content
+          let profile = response.data.content
+          vueModel.profile = profile
+          if(profile.role === 'parent') {
+            vueModel.role = '家長'
+            vueModel.$emit('is-parent')
+          } else {
+            vueModel.role = '學生'
+          }
+
           vueModel.status = 'success'
         })
         .catch((error) => {
@@ -102,7 +114,9 @@
         .forEach(itemTitle => {
           itemTitle.style.wordBreak = 'break-all'
         })
-    }
+    },
+
+    store
   }
 </script>
 
@@ -119,7 +133,7 @@
     }
 
     .mu-list {
-      height: 65vh;
+      height: 50vh;
     }
 
     .mu-item-action {
@@ -141,7 +155,7 @@
     }
 
     .email {
-      height: 52px;
+      height: 60px;
     }
 
     .general {

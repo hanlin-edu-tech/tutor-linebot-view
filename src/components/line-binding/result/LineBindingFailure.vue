@@ -1,13 +1,8 @@
 <template>
   <article id="line-binding-failure">
-    <mu-row class="center">
-      <mu-col span="12">
-        <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-      </mu-col>
-    </mu-row>
     <mu-row>
       <mu-col span="11">
-        <div class="center result result-failure">
+        <div class="app-center result result-failure">
           <mu-icon left value="warning"></mu-icon>
           綁定失敗
         </div>
@@ -22,7 +17,7 @@
     </mu-row>
     <mu-row>
       <mu-col span="12">
-        <p class="center">
+        <p class="app-center">
           <mu-button color="lightBlue900" class="btn-primary" @click="reLineBinding()">重新綁定</mu-button>
         </p>
       </mu-col>
@@ -35,10 +30,6 @@
 
   export default {
     name: 'LineBindingFailure',
-    mounted () {
-      document.querySelector('.mu-circular-progress').remove()
-    },
-
     methods: Object.assign(
       {
         reLineBinding () {

@@ -3,61 +3,87 @@
     <mu-row>
       <mu-alert class="tip font-secondary-info">
         <mu-col span="12">
-          <span>家長/老師您好，<br />請點選您欲查看的帳號：</span>
+          <span>請點選您欲查看的帳號：</span>
         </mu-col>
       </mu-alert>
     </mu-row>
-    <article v-if="status === 'success'">
-      <mu-row class="layout-main-content"
-              v-for="(email, studentCard) in studentCardEmailMapping" :key="studentCard"
-              @click="retrieveSpecificProfile(studentCard)">
-        <mu-alert>
-          <mu-col span="11">
-            <span>{{studentCard}}</span>
-            <span>{{email}}</span>
-          </mu-col>
-          <mu-col span="1">
-            <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
-          </mu-col>
-        </mu-alert>
-      </mu-row>
-    </article>
-    <div class="center result result-failure" v-else-if="status === 'failure'">
-      <mu-icon left value="warning" class="icon-global"></mu-icon>
-      {{retrieveFailed}}
-    </div>
-    <mu-row class="center" v-else>
-      <mu-col span="12">
-        <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-      </mu-col>
+    <mu-row class="layout-main-content" v-show="status === 'success'"
+            v-for="(authentication, studentCard) in studentCardAuthenticationMapping" :key="studentCard"
+            @click="retrieveSpecificProfile(studentCard)">
+      <mu-alert>
+        <mu-col span="11">
+          <span>{{authentication.userName}}</span>
+          <span>{{authentication.email}}</span>
+        </mu-col>
+        <mu-col span="1">
+          <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
+        </mu-col>
+      </mu-alert>
     </mu-row>
+    <mu-row class="app-center" v-show="status === 'empty'">
+      <mu-alert>
+        <mu-col span="12">
+          <span>您尚未綁定任何帳號喔！</span>
+        </mu-col>
+      </mu-alert>
+    </mu-row>
+    <!-- 異常狀況 -->
+    <div class="app-center" v-show="(status !== 'success' && status !== 'empty')">
+      <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
+    </div>
+    <p class="app-center" v-if="isParent">
+      <mu-button color="lightBlue900" class="btn-primary" @click="binding">綁定更多帳號</mu-button>
+    </p>
   </section>
-
 </template>
 
 <script>
+  import store from '../../store/store'
+  import { mapState } from 'vuex'
+  import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
+
   export default {
     name: 'MultiProfile',
+    components: {
+      DetermineUnsuccessfulStatus
+    },
+
     data () {
       return {
-        status: String,
-        studentCardEmailMapping: Object,
-        lineUserId: ''
+        lineUserId: this.$route.params['specificLineUser'],
+        panel: this.$route.params['panel'],
+        status: '',
+        isParent: true,
+        studentCardAuthenticationMapping: Object
       }
     },
 
+    computed: mapState('unifyDesc', ['retrieveFailed']),
+
     created () {
       let vueModel = this
-      vueModel.lineUserId = vueModel.$route.params['specificLineUser']
       vueModel
         .axios({
           method: 'get',
-          url: `https://www.tbbt.com.tw/linebot/profile/${vueModel.lineUserId}`,
+          url: `/linebot/profile/${vueModel.lineUserId}`,
         })
         .then(response => {
           let jsonData = response.data
-          vueModel.studentCardEmailMapping = jsonData.content
-          vueModel.status = 'success'
+          let studentCardAuthenticationMapping = jsonData.content
+          vueModel.studentCardAuthenticationMapping = studentCardAuthenticationMapping
+
+          if (Object.keys(studentCardAuthenticationMapping).length) {
+            for (let studentCard in studentCardAuthenticationMapping) {
+              let authentication = studentCardAuthenticationMapping[studentCard]
+              if (authentication.role === 'student') {
+                vueModel.isParent = false
+              }
+            }
+
+            vueModel.status = 'success'
+          } else {
+            vueModel.status = 'empty'
+          }
         })
         .catch(error => {
           console.error(error)
@@ -66,10 +92,17 @@
     },
 
     methods: {
+      binding () {
+        this.$router.go(0)
+        this.$router.replace(`/lineBinding/${this.lineUserId}`)
+      },
+
       retrieveSpecificProfile (studentCard) {
-        this.$router.push(`/profile/${this.lineUserId}/${studentCard}`)
+        this.$router.replace(`/profile/${this.lineUserId}/${studentCard}/${this.panel}`)
       }
-    }
+    },
+
+    store
   }
 </script>
 
@@ -86,7 +119,7 @@
       color: rgba(0, 0, 0, .87);
       background-color: rgb(176, 245, 191);
       font-size: 1.3em;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 10px;
     }
 
@@ -95,7 +128,7 @@
       margin-top: -10px;
       min-height: 60px;
       background-color: #FAFAFA;
-      font-size: 1.1em;
+      font-size: 1.2em;
       font-weight: 500;
     }
 
@@ -105,7 +138,7 @@
       line-height: 30px;
 
       &:first-child {
-        font-size: 1.3em;
+        font-size: 20px;
       }
     }
   }

@@ -1,7 +1,7 @@
 <template>
   <section id="line-binding">
     <mu-stepper :active-step="bindingStep" orientation="vertical">
-      <mu-step>
+      <mu-step v-if="!isBound">
         <mu-step-label>
           請選擇你的身份
         </mu-step-label>
@@ -9,7 +9,7 @@
           <p>
             <LineBindingAuthentication @retrieve-role="retrieveRole"></LineBindingAuthentication>
           </p>
-          <mu-button @click="handleNext" color="lightBlue900">下一步</mu-button>
+          <mu-button @click="handleNext" color="lightBlue900" v-if="isShowSecondBtn">下一步</mu-button>
         </mu-step-content>
       </mu-step>
       <mu-step>
@@ -21,7 +21,7 @@
             <LineBindingStudentCard @retrieve-student-card="retrieveStudentCard"></LineBindingStudentCard>
           </p>
           <mu-button @click="handleNext" color="lightBlue900">下一步</mu-button>
-          <mu-button flat class="color-primary" @click="handlePrevious">上一步</mu-button>
+          <mu-button flat class="color-primary" v-if="!isBound" @click="handlePrevious">上一步</mu-button>
         </mu-step-content>
       </mu-step>
       <mu-step>
@@ -30,11 +30,13 @@
         </mu-step-label>
         <mu-step-content>
           <p>
-            <LineBindingConfirm :studentCard="studentCard"
-                                @is-show-completed-btn="isRetrieveEmail"></LineBindingConfirm>
+            <LineBindingConfirm :studentCard="studentCard" :role="role"
+                                @is-show-completed-btn="isRetrieveEmail"
+                                @is-show-query-profiles-btn="isBindingSameStudentCard"></LineBindingConfirm>
           </p>
-          <mu-button @click="completedLineBinding" color="lightBlue900" v-if="isShowCompletedBtn">完成</mu-button>
+          <mu-button color="lightBlue900" @click="completedLineBinding" v-if="isShowCompletedBtn">完成</mu-button>
           <mu-button flat class="color-primary" @click="handlePrevious">上一步</mu-button>
+          <mu-button color="lightBlue900" @click="queryProfiles" v-if="isShowQueryProfilesBtn">帳號查詢</mu-button>
         </mu-step-content>
       </mu-step>
     </mu-stepper>
@@ -65,11 +67,52 @@
       return {
         role: '',
         studentCard: '',
+        email: '',
+        userName: '',
+        messageResult: '',
+        /* 成功取得 role，才顯示通往輸入學號的下一步 button */
+        isShowSecondBtn: false,
         /* 如果成功取得 email，才顯示完成的 button */
         isShowCompletedBtn: false,
-        email: '',
-        messageResult: ''
+        /* 如果家長綁定了同一個學號，才顯示帳號查詢之 button */
+        isShowQueryProfilesBtn: false,
+        lineUserId: this.$route.params['specificLineUser'],
+        isBound: Boolean
       }
+    },
+
+    created () {
+      let vueModel = this
+      vueModel
+        .axios({
+          method: 'get',
+          url: `/linebot/profile/${vueModel.lineUserId}`,
+        })
+        .then(response => {
+          let jsonData = response.data
+          let studentCardAuthenticationMapping = jsonData.content
+          if (Object.keys(studentCardAuthenticationMapping).length) {
+            vueModel.assignStudentCardAuthenticationMappingAction(studentCardAuthenticationMapping)
+
+            for (let studentCard in studentCardAuthenticationMapping) {
+              let authentication = studentCardAuthenticationMapping[studentCard]
+              /*
+               * 只有家長才能綁定其他帳號，
+               * 如果家長先前已有綁定過學號，則不需要選擇身份
+               */
+              if (authentication.role === 'parent') {
+                vueModel.isBound = true
+                vueModel.retrieveRole('parent')
+                return
+              }
+            }
+          }
+          vueModel.isBound = false
+        })
+        .catch(error => {
+          console.error(error)
+          vueModel.isBound = false
+        })
     },
 
     mounted () {
@@ -79,7 +122,10 @@
     computed: Object.assign(
       {
         isCompleted () {
-          return this.bindingStep > 2
+          let isNotBound = this.bindingStep > 2
+          let isBound = (this.isBound && this.bindingStep > 1)
+
+          return isNotBound || isBound
         }
       },
       mapState('step', ['bindingStep'])
@@ -88,34 +134,52 @@
     methods: Object.assign(
       {
         retrieveRole (role) {
-          this.role = role
+          if (role) {
+            this.role = role
+            this.isShowSecondBtn = true
+          } else {
+            this.isShowSecondBtn = false
+          }
         },
 
         retrieveStudentCard (studentCard) {
           this.studentCard = studentCard
         },
 
-        isRetrieveEmail (email) {
-          this.isShowCompletedBtn = true
-          this.email = email
+        isRetrieveEmail (specificUser) {
+          if (specificUser.email) {
+            this.email = specificUser.email
+            this.userName = specificUser.name
+            this.isShowCompletedBtn = true
+          } else {
+            this.isShowCompletedBtn = false
+          }
+        },
+
+        isBindingSameStudentCard () {
+          this.isShowQueryProfilesBtn = true
         },
 
         completedLineBinding () {
-          let lineUserId = this.$route.params['specificLineUser']
-
           this.assignBindingAction({
             studentCard: this.studentCard,
             authentications: [
               {
-                'lineUserId': lineUserId,
+                'lineUserId': this.lineUserId,
                 'role': this.role,
-                'email': this.email
+                'email': this.email,
+                'userName': this.userName
               }
             ]
           })
 
           this.handleNext()
-        }
+        },
+
+        queryProfiles () {
+          this.$router.go(0)
+          this.$router.replace(`/profile/${this.lineUserId}`)
+        },
       },
 
       mapActions('step', {
@@ -123,7 +187,7 @@
         handlePrevious: 'backwardStepAction'
       }),
 
-      mapActions('binding', ['assignBindingAction'])
+      mapActions('binding', ['assignBindingAction', 'assignStudentCardAuthenticationMappingAction'])
     ),
 
     store
@@ -172,6 +236,7 @@
 
     .mu-step-label.disabled {
       font-size: @titleFont;
+      height: 50px;
 
       .mu-step-label-icon-container {
         width: @containerWidth;

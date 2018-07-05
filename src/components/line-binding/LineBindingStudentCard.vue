@@ -1,7 +1,7 @@
 <template>
-  <div id="line-binding-studentCard">
+  <article id="line-binding-studentCard">
     <mu-text-field full-width v-model="studentCard" type="text" placeholder="學號" action-icon="edit" @change="givenStudentCard"></mu-text-field>
-  </div>
+  </article>
 </template>
 
 <script>

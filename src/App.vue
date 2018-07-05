@@ -2,31 +2,31 @@
   <div id="app">
     <header>
       <mu-appbar style="width: 100%;" color="lightBlue900" text-color="#fbfbfb">
-        <mu-menu slot="left">
-          <mu-button icon flat color="#fbfbfb" @click="open = (!open)">
-            <mu-icon value="menu" size="30"></mu-icon>
-          </mu-button>
-        </mu-menu>
+        <!--<mu-menu slot="left">-->
+        <!--<mu-button icon flat color="#fbfbfb" @click="open = (!open)">-->
+        <!--<mu-icon value="menu" size="30"></mu-icon>-->
+        <!--</mu-button>-->
+        <!--</mu-menu>-->
         翰林雲端學院
       </mu-appbar>
-      <mu-drawer :open.sync="open" :docked="false" width="210" :z-depth="24">
-        <mu-list>
-          <mu-list-item button @click="binding">
-            <mu-list-item-action>
-              <mu-icon value="loupe"></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item-title>
-              綁定帳號
-            </mu-list-item-title>
-          </mu-list-item>
-          <mu-list-item button @click="retrieveMultiProfile">
-            <mu-list-item-action>
-              <mu-icon value="account_circle"></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item-title>帳號查詢</mu-list-item-title>
-          </mu-list-item>
-        </mu-list>
-      </mu-drawer>
+      <!--<mu-drawer :open.sync="open" :docked="false" width="210" :z-depth="24">-->
+      <!--<mu-list>-->
+      <!--<mu-list-item button @click="binding">-->
+      <!--<mu-list-item-action>-->
+      <!--<mu-icon value="loupe"></mu-icon>-->
+      <!--</mu-list-item-action>-->
+      <!--<mu-list-item-title>-->
+      <!--綁定帳號-->
+      <!--</mu-list-item-title>-->
+      <!--</mu-list-item>-->
+      <!--<mu-list-item button @click="queryProfiles">-->
+      <!--<mu-list-item-action>-->
+      <!--<mu-icon value="account_circle"></mu-icon>-->
+      <!--</mu-list-item-action>-->
+      <!--<mu-list-item-title>帳號查詢</mu-list-item-title>-->
+      <!--</mu-list-item>-->
+      <!--</mu-list>-->
+      <!--</mu-drawer>-->
     </header>
     <main>
       <mu-container class="layout-main">
@@ -64,7 +64,7 @@
         this.$router.go(0)
       },
 
-      retrieveMultiProfile () {
+      queryProfiles () {
         this.closeDrawer()
         this.$router.push(`/profile/${this.lineUserId}`)
       }
@@ -73,7 +73,9 @@
 </script>
 
 <style lang="less">
-  @import "./css/app-global.less";
+  @import "./css/layout.less";
+  @import "./css/process-result.less";
+  @import "css/content.less";
 
   body, main, section, article, div, button, span, p {
     font-family: 'Noto Sans TC', sans-serif;
@@ -85,7 +87,6 @@
       font-size: 2em;
       font-weight: 500;
       text-align: center;
-      margin-right: 11vw;
     }
 
     .layout-main {

@@ -5,7 +5,7 @@
         <mu-icon value="person"></mu-icon>
         基本資料
       </div>
-      <ProfileDetail></ProfileDetail>
+      <ProfileDetail @is-parent="determineParent"></ProfileDetail>
     </mu-expansion-panel>
     <mu-expansion-panel :expand="panel === 'coupons'" @change="toggle('coupons')">
       <div slot="header" class="color-primary">
@@ -14,8 +14,10 @@
       </div>
       <Coupons></Coupons>
     </mu-expansion-panel>
-    <p class="center">
-      <mu-button color="lightBlue900" class="btn-primary" @click="$router.go(-1)">切換帳號</mu-button>
+    <p class="app-center" v-if="isParent">
+      <mu-button color="lightBlue900" class="btn-primary"
+                 @click="$router.replace(`/profile/${lineUserId}`)">切換帳號
+      </mu-button>
     </p>
   </section>
 </template>
@@ -28,7 +30,9 @@
     name: 'Profile',
     data () {
       return {
-        panel: ''
+        panel: this.$route.params['panel'],
+        lineUserId: this.$route.params['specificLineUser'],
+        isParent: false
       }
     },
     components: {
@@ -39,6 +43,10 @@
     methods: {
       toggle (currentPanel) {
         this.panel = (currentPanel === this.panel ? '' : currentPanel)
+      },
+
+      determineParent () {
+        this.isParent = true
       }
     }
   }
