@@ -4,6 +4,7 @@ const gcPub = require('gulp-gcloud-publish')
 const cache = require('gulp-cache')
 const imageMin = require('gulp-imagemin')
 const pngquant = require('imagemin-pngquant')
+const sleep = require('system-sleep')
 
 const minifyImage = sourceImage => {
   return gulp
@@ -19,6 +20,7 @@ const minifyImage = sourceImage => {
 }
 
 const uploadGCS = bucket => {
+  sleep(2000)
   return gulp
     .src([
       './dist/index.html',
@@ -80,6 +82,6 @@ gulp.task('deployToTest', ['minifyImage', 'buildDevToEnv', 'uploadTestGCS'], () 
   console.log('Package and upload files to test GCS')
 })
 
-gulp.task('deployToProd', ['minifyImage', 'buildDevToEnv', 'uploadProdGCS'], () => {
+gulp.task('deployToProd', ['minifyImage', 'uploadProdGCS'], () => {
   console.log('Package and upload files to prod GCS')
 })

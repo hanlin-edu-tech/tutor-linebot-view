@@ -46,10 +46,6 @@
 
     computed: mapState('binding', ['studentCardAuthenticationMapping']),
 
-    created () {
-
-    },
-
     methods: {
       isRoleBoundSameStudentCard () {
         let authentication = this.studentCardAuthenticationMapping[this.studentCard]

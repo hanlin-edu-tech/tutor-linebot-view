@@ -82,6 +82,7 @@
     },
 
     created () {
+      this.resetStepAction()
       let vueModel = this
       vueModel
         .axios({
@@ -177,14 +178,14 @@
         },
 
         queryProfiles () {
-          this.$router.go(0)
-          this.$router.replace(`/profile/${this.lineUserId}`)
+          this.$router.push(`/profile/${this.lineUserId}`)
         },
       },
 
       mapActions('step', {
         handleNext: 'forwardStepAction',
-        handlePrevious: 'backwardStepAction'
+        handlePrevious: 'backwardStepAction',
+        resetStepAction: 'resetStepAction'
       }),
 
       mapActions('binding', ['assignBindingAction', 'assignStudentCardAuthenticationMappingAction'])

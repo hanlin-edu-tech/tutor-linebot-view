@@ -25,7 +25,7 @@
         </p>
       </mu-col>
     </mu-row>
-    <p class="app-center">
+    <p class="app-center" style="margin-top: -25px">
       <mu-button color="lightBlue900" class="btn-primary" @click="queryProfiles">查詢帳號</mu-button>
     </p>
     <mu-row>
@@ -34,9 +34,7 @@
           ※ 優惠券使用注意事項：
           <div class="ellipsis app-left">
             <br />【如何使用優惠碼】
-            <br />1. 至翰林雲端學院官網：
-            <a href="http://bit.ly/2sLYuWN" class="color-primary">http://bit.ly/2sLYuWN</a>
-            選購上學期課程。
+            <br />1. 至翰林雲端學院官網 → 課程購買 → 選購上學期課程。
             <br />2. 點選「加入購物車」→「立即結帳」至 Step1 確認課程頁面。
             <span id="attention-detail" style="display: none">
               <br />3. 於粉紅色區塊輸入以上優惠碼即可享有優惠。
@@ -49,12 +47,12 @@
               <br />4. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
               <br />
               <br />【我的優惠適用產品】
-              <br />翰林雲端學院國小上學期 e 名師課程、
-              <br />國中上學期 e 名師課程、
-              <br />會考 e 名師課程、
-              <br />高中上學期 e 名師課程、
-              <br />學測 e 名師課程、
-              <br />指考 e 名師課程、
+              <br />翰林雲端學院國小上學期 e 名師課程
+              <br />國中上學期 e 名師課程
+              <br />會考 e 名師課程
+              <br />高中上學期 e 名師課程
+              <br />學測 e 名師課程
+              <br />指考 e 名師課程
             </span>
             <span class="collapse color-primary" v-if="!isShowAttention"
                   @click="unfold($event)">查閱</span>
@@ -123,7 +121,6 @@
 
     methods: {
       queryProfiles () {
-        this.$router.go(0)
         this.$router.push(`/profile/${this.lineUserId}/#`)
       },
 

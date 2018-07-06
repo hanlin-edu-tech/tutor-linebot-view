@@ -39,7 +39,7 @@
 
 <script>
   import store from '../../store/store'
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {
@@ -91,16 +91,22 @@
         })
     },
 
-    methods: {
-      binding () {
-        this.$router.go(0)
-        this.$router.replace(`/lineBinding/${this.lineUserId}`)
+    methods: Object.assign(
+      {
+        binding () {
+          //this.resetStepAction()
+          this.$router.replace(`/lineBinding/${this.lineUserId}`)
+        },
+
+        retrieveSpecificProfile (studentCard) {
+          this.$router.replace(`/profile/${this.lineUserId}/${studentCard}/${this.panel}`)
+        }
       },
 
-      retrieveSpecificProfile (studentCard) {
-        this.$router.replace(`/profile/${this.lineUserId}/${studentCard}/${this.panel}`)
-      }
-    },
+      mapActions('step', {
+        resetStepAction: 'resetStepAction'
+      }),
+    ),
 
     store
   }

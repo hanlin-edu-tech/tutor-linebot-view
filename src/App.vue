@@ -61,7 +61,6 @@
       binding () {
         this.closeDrawer()
         this.$router.replace(`/lineBinding/${this.lineUserId}`)
-        this.$router.go(0)
       },
 
       queryProfiles () {
