@@ -35,23 +35,23 @@
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
         <!-- 雲端銀行 -->
-        <!--<mu-list-item class="general">-->
-          <!--<mu-list-item-title>帳號資產：-->
-          <!--</mu-list-item-title>-->
-        <!--</mu-list-item>-->
-        <!--<mu-list-item class="general">-->
-          <!--<mu-list-item-action>-->
-            <!--<mu-icon value="grade"></mu-icon>-->
-          <!--</mu-list-item-action>-->
-          <!--<mu-list-item-title><span>e 幣：{{profile.coins}}</span></mu-list-item-title>-->
-        <!--</mu-list-item>-->
-        <!--<mu-list-item class="general">-->
-          <!--<mu-list-item-action>-->
-            <!--<mu-icon value="stars"></mu-icon>-->
-          <!--</mu-list-item-action>-->
-          <!--<mu-list-item-title><span>寶石：{{profile.gems}}</span></mu-list-item-title>-->
-        <!--</mu-list-item>-->
-        <!--<mu-divider class="divider"></mu-divider>-->
+        <mu-list-item class="general">
+          <mu-list-item-title>帳號資產：
+          </mu-list-item-title>
+        </mu-list-item>
+        <mu-list-item class="general">
+          <mu-list-item-action>
+            <mu-icon value="grade"></mu-icon>
+          </mu-list-item-action>
+          <mu-list-item-title><span>e 幣：{{profile.coins}}</span></mu-list-item-title>
+        </mu-list-item>
+        <mu-list-item class="general">
+          <mu-list-item-action>
+            <mu-icon value="stars"></mu-icon>
+          </mu-list-item-action>
+          <mu-list-item-title><span>寶石：{{profile.gems}}</span></mu-list-item-title>
+        </mu-list-item>
+        <mu-divider class="divider"></mu-divider>
       </mu-list>
       <div class="app-center" v-show="status !== 'success'">
         <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
@@ -132,7 +132,7 @@
     }
 
     .mu-list {
-      height: 41vh;
+      height: 52vh;
     }
 
     .mu-item-action {
