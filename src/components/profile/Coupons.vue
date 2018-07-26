@@ -3,13 +3,16 @@
     <mu-card v-show="status === 'success'" v-for="coupon of coupons" :key="coupon['_id']">
       <mu-card-title title="我目前擁有的優惠卷如下：" :sub-title="coupon.code"></mu-card-title>
       <mu-card-text>
-        <div><span class="coupon-field-width">折扣：</span>{{coupon.discount * 100}} 折</div>
+        <div>
+          <span class="coupon-field-width">折扣：</span>
+          {{retrieveDiscount(coupon.discount)}} 折
+        </div>
         <div><span class="coupon-field-width">使用期限：</span>{{retrieveExpireDate(coupon.date.disable)}}</div>
         <div><span class="coupon-field-width">狀態：</span>{{isEnabled(coupon.times, coupon.date.disable)}}</div>
         <div><span class="coupon-field-width">適用產品：</span></div>
         <div class="ellipsis">
           翰林雲端學院國小上學期 e 名師課程
-          <span id="master-detail" style="display: none">
+          <span id="master-detail" style="display: none;">
             <br />國中上學期 e 名師課程
             <br />會考 e 名師課程
             <br />高中上學期 e 名師課程
@@ -24,7 +27,7 @@
         <div><span class="coupon-field-width">使用規則：</span></div>
         <div class="ellipsis">
           1. 此優惠碼不適用翰林雲端學院下學期 e 名師課程 (全學年課程除外)。
-          <span id="rule-detail" style="display: none">
+          <span id="rule-detail" style="display: none;">
             <br />2. 此優惠碼使用期限至 2018 年 7月 31 日，逾期視同放棄資格，恕不補發。
             <br />3. 此優惠碼不得與其他優惠碼一併使用。
             <br />4. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
@@ -77,14 +80,20 @@
           vueModel.coupons = response.data
           vueModel.status = 'success'
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error)
           vueModel.status = 'failure'
         })
     },
 
     methods: {
-      retrieveExpireDate: dateDisable => dayjs(dateDisable).locale('zh-tw').format('YYYY/MM/DD'),
+      retrieveDiscount: discount => {
+        let discountRegularExp = /^\d\.\d{2}/
+        return discountRegularExp.test(discount.toString()) ? discount * 100 : discount * 10
+      },
+
+      retrieveExpireDate: dateDisable =>
+        dateDisable ? dayjs(dateDisable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
       isDeadLine: dateDisable => dayjs(dateDisable).diff(dayjs(), 'days') < 0,
       isEnabled (times, dateDisable) {
         return times > 0 && !this.isDeadLine(dateDisable) ? '可使用' : '已失效'
@@ -148,5 +157,4 @@
       }
     }
   }
-
 </style>

@@ -25,7 +25,7 @@
         </p>
       </mu-col>
     </mu-row>
-    <p class="app-center" style="margin-top: -25px">
+    <p class="app-center" style="margin-top: -25px;">
       <mu-button color="lightBlue900" class="btn-primary" @click="queryProfiles">查詢帳號</mu-button>
     </p>
     <mu-row>
@@ -36,7 +36,7 @@
             <br />【如何使用優惠碼】
             <br />1. 至翰林雲端學院官網 → 課程購買 → 選購上學期課程。
             <br />2. 點選「加入購物車」→「立即結帳」至 Step1 確認課程頁面。
-            <span id="attention-detail" style="display: none">
+            <span id="attention-detail" style="display: none;">
               <br />3. 於粉紅色區塊輸入以上優惠碼即可享有優惠。
               <br />4. 點選下一步並將相關資訊填寫完整後，即完成訂單。
               <br />
@@ -105,13 +105,15 @@
           let coupons = response.data
           let coupon = coupons[0]
           if (coupon.code) {
+            let discountRegularExp = /^\d\.\d{2}/
             vueModel.code = coupon.code
-            vueModel.discount = coupon.discount * 100
-            vueModel.expireDate = dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD')
+            vueModel.discount = discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10
+            vueModel.expireDate =
+              coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
           }
           vueModel.status = 'success'
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error)
           vueModel.status = 'failure'
         })
@@ -133,9 +135,7 @@
               lineUserId: lineUserId
             }
           })
-          .catch(function (error) {
-            console.error(error)
-          })
+          .catch(console.error)
       },
 
       unfold (event) {

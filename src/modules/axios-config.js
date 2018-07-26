@@ -1,14 +1,10 @@
 import axios from 'axios'
 
 axios.defaults.baseURL = ''
-axios.interceptors.response.use(function (response) {
-  return response
-}, function (error) {
-  return Promise.reject(error)
-})
+axios.interceptors.response.use(response => response, Promise.reject)
 
 export default {
-  install: function (Vue, Option) {
+  install: (Vue, Option) => {
     Vue.prototype['axios'] = axios
   }
 }

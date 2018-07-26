@@ -74,14 +74,14 @@ gulp.task('buildDevToEnv', () => {
 })
 
 /* 上傳 GCS */
-gulp.task('uploadTestGCS', uploadGCS.bind(uploadGCS, 'tutor-events-test'))
-gulp.task('uploadProdGCS', uploadGCS.bind(uploadGCS, 'tutor-events'))
+gulp.task('uploadGcsTest', uploadGCS.bind(uploadGCS, 'tutor-events-test'))
+gulp.task('uploadGcsProd', uploadGCS.bind(uploadGCS, 'tutor-events'))
 
 /* 部署 */
-gulp.task('deployToTest', ['minifyImage', 'buildDevToEnv', 'uploadTestGCS'], () => {
+gulp.task('deployToTest', ['minifyImage', 'buildDevToEnv', 'uploadGcsTest'], () => {
   console.log('Package and upload files to test GCS')
 })
 
-gulp.task('deployToProd', ['minifyImage', 'uploadProdGCS'], () => {
+gulp.task('deployToProd', ['minifyImage', 'uploadGcsProd'], () => {
   console.log('Package and upload files to prod GCS')
 })
