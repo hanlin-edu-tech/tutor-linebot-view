@@ -18,7 +18,8 @@
         </mu-step-label>
         <mu-step-content>
           <p>
-            <LineBindingStudentCard @retrieve-student-card="retrieveStudentCard"></LineBindingStudentCard>
+            <LineBindingInput @retrieve-student-card="retrieveStudentCard"
+                              @retrieve-mobile="retrieveMobile"></LineBindingInput>
           </p>
           <mu-button @click="handleNext" color="lightBlue900">下一步</mu-button>
           <mu-button flat class="color-primary" v-if="!isBound" @click="handlePrevious">上一步</mu-button>
@@ -30,7 +31,7 @@
         </mu-step-label>
         <mu-step-content>
           <p>
-            <LineBindingConfirm :studentCard="studentCard" :role="role"
+            <LineBindingConfirm :role="role" :studentCard="studentCard" :mobile="mobile" :lineUserId="lineUserId"
                                 @is-show-completed-btn="isRetrieveEmail"
                                 @is-show-query-profiles-btn="isBindingSameStudentCard"></LineBindingConfirm>
           </p>
@@ -48,7 +49,7 @@
 
 <script>
   import LineBindingAuthentication from './LineBindingAuthentication'
-  import LineBindingStudentCard from './LineBindingStudentCard'
+  import LineBindingInput from './LineBindingInput'
   import LineBindingConfirm from './LineBindingConfirm'
   import LineBindingResult from './LineBindingResult'
   import store from '../../store/store'
@@ -58,7 +59,7 @@
     name: 'LineBinding',
     components: {
       LineBindingAuthentication,
-      LineBindingStudentCard,
+      LineBindingInput,
       LineBindingConfirm,
       LineBindingResult
     },
@@ -67,6 +68,7 @@
       return {
         role: '',
         studentCard: '',
+        mobile: '',
         email: '',
         userName: '',
         messageResult: '',
@@ -147,6 +149,10 @@
           this.studentCard = studentCard
         },
 
+        retrieveMobile (mobile) {
+          this.mobile = mobile
+        },
+
         isRetrieveEmail (specificUser) {
           if (specificUser.email) {
             this.email = specificUser.email
@@ -173,7 +179,6 @@
               }
             ]
           })
-
           this.handleNext()
         },
 
