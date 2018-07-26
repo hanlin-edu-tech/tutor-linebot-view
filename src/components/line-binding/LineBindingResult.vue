@@ -2,9 +2,6 @@
   <mu-container id="line-binding-result" v-if="status === 'success'">
     <LineBindingSuccess></LineBindingSuccess>
   </mu-container>
-  <mu-container id="line-binding-result" v-else-if="status === 'reachedLimited'">
-    <LineBindingReachLimited></LineBindingReachLimited>
-  </mu-container>
   <mu-container id="line-binding-result" v-else-if="status === 'failure'">
     <LineBindingFailure></LineBindingFailure>
   </mu-container>
@@ -61,7 +58,7 @@
 
           vueModel.status = status
         })
-        .catch(function (error) {
+        .catch(error => {
           console.error(error)
           vueModel.status = 'failure'
         })
