@@ -9,7 +9,7 @@
       <div v-else>
         <mu-row v-if="isBoundStudentTwice === true">
           <mu-col span="12">
-            <span class="verify-result font-important-info">相同帳號不能綁定兩位學生喔！</span>
+            <span class="verify-result font-important-info">一個雲端學院帳號僅能提供一位學生綁定，請回上一步重新輸入</span>
           </mu-col>
         </mu-row>
         <div v-else>
@@ -83,10 +83,6 @@
 
       retrieveEmail () {
         let vueModel = this
-        if (vueModel.email) {
-          return
-        }
-
         vueModel
           .axios({
             method: 'get',

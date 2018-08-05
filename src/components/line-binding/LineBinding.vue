@@ -9,7 +9,7 @@
           <p>
             <LineBindingAuthentication @retrieve-role="retrieveRole"></LineBindingAuthentication>
           </p>
-          <mu-button @click="handleNext" color="lightBlue900" v-if="isShowSecondBtn">下一步</mu-button>
+          <mu-button @click="handleNext" color="lightBlue900" v-show="isShowNextToInputBtn">下一步</mu-button>
         </mu-step-content>
       </mu-step>
       <mu-step>
@@ -21,8 +21,8 @@
             <LineBindingInput @retrieve-student-card="retrieveStudentCard"
                               @retrieve-mobile="retrieveMobile"></LineBindingInput>
           </p>
-          <mu-button @click="handleNext" color="lightBlue900">下一步</mu-button>
-          <mu-button flat class="color-primary" v-if="!isBound" @click="handlePrevious">上一步</mu-button>
+          <mu-button @click="handleNext" color="lightBlue900" v-show="isShowNextToConfirmBtn">下一步</mu-button>
+          <mu-button flat class="color-primary" v-if="!isBound" @click="inputToPrevious">上一步</mu-button>
         </mu-step-content>
       </mu-step>
       <mu-step>
@@ -35,9 +35,9 @@
                                 @is-show-completed-btn="isRetrieveEmail"
                                 @is-show-query-profiles-btn="isBindingSameStudentCard"></LineBindingConfirm>
           </p>
-          <mu-button color="lightBlue900" @click="completedLineBinding" v-if="isShowCompletedBtn">完成</mu-button>
-          <mu-button flat class="color-primary" @click="handlePrevious">上一步</mu-button>
-          <mu-button color="lightBlue900" @click="queryProfiles" v-if="isShowQueryProfilesBtn">帳號查詢</mu-button>
+          <mu-button color="lightBlue900" @click="completedLineBinding" v-show="isShowCompletedBtn">完成</mu-button>
+          <mu-button flat class="color-primary" @click="confirmToPrevious">上一步</mu-button>
+          <mu-button color="lightBlue900" @click="queryProfiles" v-show="isShowQueryProfilesBtn">帳號查詢</mu-button>
         </mu-step-content>
       </mu-step>
     </mu-stepper>
@@ -73,7 +73,8 @@
         userName: '',
         messageResult: '',
         /* 成功取得 role，才顯示通往輸入學號的下一步 button */
-        isShowSecondBtn: false,
+        isShowNextToInputBtn: false,
+        isShowNextToConfirmBtn: false,
         /* 如果成功取得 email，才顯示完成的 button */
         isShowCompletedBtn: false,
         /* 如果家長綁定了同一個學號，才顯示帳號查詢之 button */
@@ -127,7 +128,6 @@
         isCompleted () {
           let isNotBound = this.bindingStep > 2
           let isBound = (this.isBound && this.bindingStep > 1)
-
           return isNotBound || isBound
         }
       },
@@ -139,18 +139,26 @@
         retrieveRole (role) {
           if (role) {
             this.role = role
-            this.isShowSecondBtn = true
-          } else {
-            this.isShowSecondBtn = false
+            this.isShowNextToInputBtn = true
           }
         },
 
         retrieveStudentCard (studentCard) {
-          this.studentCard = studentCard
+          if (studentCard) {
+            this.studentCard = studentCard
+            this.isShowNextToConfirmBtn = true
+          } else {
+            this.isShowNextToConfirmBtn = false
+          }
         },
 
         retrieveMobile (mobile) {
-          this.mobile = mobile
+          if (mobile) {
+            this.mobile = mobile
+            this.isShowNextToConfirmBtn = true
+          } else {
+            this.isShowNextToConfirmBtn = false
+          }
         },
 
         isRetrieveEmail (specificUser) {
@@ -185,6 +193,20 @@
         queryProfiles () {
           this.$router.push(`/profile/${this.lineUserId}`)
         },
+
+        inputToPrevious () {
+          this.role = ''
+          this.isShowNextToInputBtn = false
+          this.handlePrevious()
+        },
+
+        confirmToPrevious () {
+          this.studentCard = ''
+          this.mobile = ''
+          this.isShowNextToConfirmBtn = false
+          this.isShowQueryProfilesBtn = false
+          this.handlePrevious()
+        }
       },
 
       mapActions('step', {

@@ -59,7 +59,8 @@
     data () {
       return {
         status: '',
-        coupons: {}
+        empty: '目前沒有優惠券，敬請期待！',
+        coupons: []
       }
     },
 
@@ -77,7 +78,15 @@
           url: `/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
         })
         .then(response => {
-          vueModel.coupons = response.data
+          let i, coupons
+          coupons = response.data
+          for (i = 0; i < Object.keys(coupons).length; i++) {
+            let coupon = coupons[i]
+            // 可以使用優惠卷，但效期已截止
+            if (coupon.times >= 0 && !vueModel.isDeadLine(coupon.date.disable)) {
+              vueModel.coupons.push(coupon)
+            }
+          }
           vueModel.status = 'success'
         })
         .catch(error => {
@@ -94,7 +103,7 @@
 
       retrieveExpireDate: dateDisable =>
         dateDisable ? dayjs(dateDisable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-      isDeadLine: dateDisable => dayjs(dateDisable).diff(dayjs(), 'days') < 0,
+      isDeadLine: dateDisable => dayjs(dateDisable).diff(dayjs(), 'days') <= 0,
       isEnabled (times, dateDisable) {
         return times > 0 && !this.isDeadLine(dateDisable) ? '可使用' : '已失效'
       },

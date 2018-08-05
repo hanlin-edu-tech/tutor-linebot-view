@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "gulp buildEnvToDev && cross-env NODE_ENV=development webpack-dev-server --open --hot",
-    "buildToTest": "gulp buildDevToEnv && cross-env NODE_ENV=production webpack --progress --hide-modules && gulp deployToTest",
+    "buildToTest": "gulp buildDevToEnv && cross-env NODE_ENV=test webpack --progress --hide-modules && gulp deployToTest",
     "buildToProd": "gulp buildDevToEnv && cross-env NODE_ENV=production webpack --progress --hide-modules && gulp deployToProd"
   },
   "dependencies": {

@@ -21,7 +21,7 @@
           <br />使用期限：<span>{{expireDate}}</span>
         </p>
         <p class="app-center" v-show="status !== 'success'">
-          <DetermineUnsuccessfulStatus :status="status">查無相關優惠卷</DetermineUnsuccessfulStatus>
+          <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
         </p>
       </mu-col>
     </mu-row>
@@ -104,14 +104,18 @@
         .then(response => {
           let coupons = response.data
           let coupon = coupons[0]
-          if (coupon.code) {
-            let discountRegularExp = /^\d\.\d{2}/
-            vueModel.code = coupon.code
-            vueModel.discount = discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10
-            vueModel.expireDate =
-              coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+          vueModel.status = 'empty'
+          if (coupon && coupon.code) {
+            if (!vueModel.isDeadLine(coupon.date.disable)) {
+              let discountRegularExp = /^\d\.\d{2}/
+              vueModel.code = coupon.code
+              vueModel.discount = discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10
+              vueModel.expireDate =
+                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+
+              vueModel.status = 'success'
+            }
           }
-          vueModel.status = 'success'
         })
         .catch(error => {
           console.error(error)
@@ -153,7 +157,9 @@
         document.getElementById('attention-detail').style.display = 'none'
         unfoldTarget.removeAttribute('style')
         this.isShowAttention = false
-      }
+      },
+
+      isDeadLine: dateDisable => dayjs(dateDisable).diff(dayjs(), 'days') <= 0
     }
   }
 </script>
@@ -171,7 +177,7 @@
 
       span.coupon-code {
         display: inline-block;
-        width: 90vw;
+        width: 100%;
         background-color: #f9f6c0;
         padding: 2px 7px;
       }
