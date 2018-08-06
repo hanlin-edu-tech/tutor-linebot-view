@@ -114,7 +114,7 @@
 
 <style lang="less">
   #line-binding-confirm .container {
-    font-size: 1.4em;
+    font-size: 20px;
   }
 
   #line-binding-confirm {
@@ -124,7 +124,7 @@
 
     .info {
       color: #7f393b;
-      font-size: 1.1em;
+      font-size: 20px;
       word-break: break-all;
     }
   }

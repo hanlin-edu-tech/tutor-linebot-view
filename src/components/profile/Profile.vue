@@ -59,7 +59,7 @@
     }
 
     .mu-expansion-panel-header {
-      font-size: 23px;
+      font-size: 24px;
       font-weight: 500;
       min-height: 55px;
 

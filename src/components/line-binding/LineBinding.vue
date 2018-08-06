@@ -14,7 +14,7 @@
       </mu-step>
       <mu-step>
         <mu-step-label>
-          請輸入您欲綁定的學號：
+          請輸入欲綁定的學號：
         </mu-step-label>
         <mu-step-content>
           <p>
@@ -223,10 +223,10 @@
 </script>
 
 <style lang="less">
-  @titleFont: 1.4em;
+  @titleFont: 22px;
   @containerWidth: 29px;
   @stepLabelCircleSquare: 25px;
-  @stepLabelCircleFont: 0.8em;
+  @stepLabelCircleFont: 22px;
 
   #line-binding .mu-stepper {
     .mu-step-label.active {

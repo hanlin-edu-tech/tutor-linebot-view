@@ -3,7 +3,7 @@
     <mu-select label="選擇學號或手機" v-model="choice" full-width>
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
-    <span class="tip font-secondary-info">小提醒：若您未曾於翰林雲端學院購買課程，請登入認證後以學號登入</span>
+    <span class="choice-account font-secondary-info">小提醒：若您未曾於翰林雲端學院購買課程，請登入認證後以學號登入</span>
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
                      @keyup="givenStudentCard" full-width></mu-text-field>
@@ -57,21 +57,29 @@
 
 <style lang="less">
   #line-binding-input {
+    .mu-input-label {
+      font-size: 24px;
+    }
+
     .mu-select-input {
-      font-size: 18px;
+      font-size: 19px;
       color: #01579b;
     }
 
-    .tip {
+    .choice-account {
       position: relative;
       top: -20px;
-      font-size: 13px;
+      font-size: 15px;
     }
 
     .mu-input {
-      font-size: 1.5em;
+      font-size: 20px;
       input[type="text"]::-webkit-input-placeholder {
-        font-size: 17px
+        font-size: 18px
+      }
+
+      .mu-input-help {
+        font-size: 15px;
       }
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-center result result-failure" v-if="status === 'failure'">
+  <div class="app-center result result-failure" v-if="status !== 'success'">
     <mu-icon left value="warning" class="icon-global"></mu-icon>
     <slot></slot>
   </div>

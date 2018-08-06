@@ -72,7 +72,7 @@
 
       .mu-radio-label {
         color: #545152;
-        font-size: 1.5em;
+        font-size: 23px;
         font-weight: 500;
       }
 

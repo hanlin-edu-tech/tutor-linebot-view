@@ -1,7 +1,7 @@
 <template>
   <section id="multi-profile">
     <mu-row>
-      <mu-alert class="tip font-secondary-info">
+      <mu-alert class="choice-account font-secondary-info">
         <mu-col span="12">
           <span>請點選您欲查看的帳號：</span>
         </mu-col>
@@ -94,7 +94,6 @@
     methods: Object.assign(
       {
         binding () {
-          //this.resetStepAction()
           this.$router.replace(`/lineBinding/${this.lineUserId}`)
         },
 
@@ -115,7 +114,7 @@
 <style lang="less">
   #multi-profile {
     .icon-forward-detail {
-      font-size: 45px;
+      font-size: 47px;
       font-weight: 600;
     }
 
@@ -124,17 +123,17 @@
       min-height: 100px;
       color: rgba(0, 0, 0, .87);
       background-color: rgb(176, 245, 191);
-      font-size: 1.3em;
+      font-size: 20px;
       font-weight: 600;
       margin-bottom: 10px;
     }
 
-    .tip {
+    .choice-account {
       padding: 0 3px;
       margin-top: -10px;
       min-height: 60px;
       background-color: #FAFAFA;
-      font-size: 1.2em;
+      font-size: 20px;
       font-weight: 500;
     }
 

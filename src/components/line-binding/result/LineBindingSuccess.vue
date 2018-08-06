@@ -159,7 +159,12 @@
         this.isShowAttention = false
       },
 
-      isDeadLine: dateDisable => dayjs(dateDisable).diff(dayjs(), 'days') <= 0
+      isDeadLine: dateDisable => {
+        if (dateDisable) {
+          return dayjs(dateDisable).diff(dayjs(), 'days') <= 0
+        }
+        return false
+      }
     }
   }
 </script>
@@ -168,11 +173,11 @@
   #line-binding-success {
     .coupon {
       color: #7f393b;
-      font-size: 1.4em;
+      font-size: 21px;
       font-weight: 500;
 
       span {
-        font-size: 1.2em;
+        font-size: 22px;
       }
 
       span.coupon-code {
