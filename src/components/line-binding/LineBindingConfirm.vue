@@ -28,7 +28,7 @@
               </mu-col>
             </mu-row>
           </div>
-          <!-- 異常狀況 -->
+          <!-- 查無 email -->
           <div v-show="email && this.email === 'empty'">
             <mu-row>
               <mu-col span="12">
