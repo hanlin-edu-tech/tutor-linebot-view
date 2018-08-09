@@ -13,7 +13,7 @@
           </mu-col>
         </mu-row>
         <div v-else>
-          <div v-show="email">
+          <div v-show="email && this.email !== 'empty'">
             <mu-row>
               <mu-col span="12">
                 以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
@@ -28,14 +28,18 @@
               </mu-col>
             </mu-row>
           </div>
-          <div v-show="!email">
+          <!-- 異常狀況 -->
+          <div v-show="email && this.email === 'empty'">
             <mu-row>
               <mu-col span="12">
-              <span class="verify-result font-important-info">
-              您的學號可能輸入錯誤，或是手機尚未認證，請至翰林雲端學院登入確認後再次嘗試，若仍無法登入，請洽雲端客服。
-            </span>
+                <span class="verify-result font-important-info">
+                  您的學號可能輸入錯誤，或是手機尚未認證，請至翰林雲端學院登入確認後再次嘗試，若仍無法登入，請洽雲端客服。
+                </span>
               </mu-col>
             </mu-row>
+          </div>
+          <div class="app-center" v-show="!email">
+            <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
           </div>
         </div>
       </div>
@@ -96,16 +100,20 @@
               let specificUser = jsonData.content
               vueModel.email = specificUser.email
               vueModel.showStudentCard = specificUser.studentCard
+              // 學生是否綁定兩次
               vueModel.isBoundStudentTwice = (specificUser.boundStudent === true && vueModel.role === 'student')
               if (vueModel.isBoundStudentTwice === true) {
                 vueModel.$emit('retrieve-email', '')
               } else {
                 vueModel.$emit('retrieve-email', specificUser)
               }
+            } else {
+              vueModel.email = 'empty'
             }
           })
           .catch(error => {
             console.error(error)
+            vueModel.email = 'empty'
           })
       }
     }
