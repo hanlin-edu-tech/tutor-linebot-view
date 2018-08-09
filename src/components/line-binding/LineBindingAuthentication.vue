@@ -8,7 +8,7 @@
           <mu-divider class="divider"></mu-divider>
         </mu-col>
       </mu-row>
-      <mu-row v-if="Object.keys(studentCardAuthenticationMapping).length && isStudentBoundTwice()">
+      <mu-row v-if="Object.keys(lineBindingStudentCards).length && isStudentBoundTwice()">
         <mu-col span="12">
           <span class="verify-result font-important-info">{{verifyResult}}</span>
         </mu-col>
@@ -33,7 +33,7 @@
       }
     },
 
-    computed: mapState('binding', ['studentCardAuthenticationMapping']),
+    computed: mapState('binding', ['lineBindingStudentCards']),
 
     methods: {
       givenRole () {
@@ -42,7 +42,7 @@
       },
 
       isStudentBoundTwice () {
-        let studentCardAuthenticationMapping = this.studentCardAuthenticationMapping
+        let studentCardAuthenticationMapping = this.lineBindingStudentCards
         for (let studentCard in studentCardAuthenticationMapping) {
           let authentication = studentCardAuthenticationMapping[studentCard]
           if (authentication.role === 'student' && authentication.role === this.role) {

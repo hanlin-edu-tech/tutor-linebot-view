@@ -8,12 +8,12 @@
       </mu-alert>
     </mu-row>
     <mu-row class="layout-main-content" v-show="status === 'success'"
-            v-for="(authentication, studentCard) in studentCardAuthenticationMapping" :key="studentCard"
-            @click="retrieveSpecificProfile(studentCard)">
+            v-for="lineBindingStudentCard in lineBindingStudentCards" :key="lineBindingStudentCard.studentCard"
+            @click="retrieveSpecificProfile(lineBindingStudentCard)">
       <mu-alert>
         <mu-col span="11">
-          <span>{{authentication.userName}}</span>
-          <span>{{authentication.email}}</span>
+          <span>{{lineBindingStudentCard.name}}</span>
+          <span>{{lineBindingStudentCard.email}}</span>
         </mu-col>
         <mu-col span="1">
           <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
@@ -51,10 +51,10 @@
     data () {
       return {
         lineUserId: this.$route.params['specificLineUser'],
-        panel: this.$route.params['panel'],
+        panel: this.$route.params['panel'] ? this.$route.params['panel'] : 'panels',
         status: '',
         isParent: true,
-        studentCardAuthenticationMapping: Object
+        lineBindingStudentCards: Object
       }
     },
 
@@ -69,17 +69,17 @@
         })
         .then(response => {
           let jsonData = response.data
-          let studentCardAuthenticationMapping = jsonData.content
-          vueModel.studentCardAuthenticationMapping = studentCardAuthenticationMapping
-
-          if (Object.keys(studentCardAuthenticationMapping).length) {
-            for (let studentCard in studentCardAuthenticationMapping) {
-              let authentication = studentCardAuthenticationMapping[studentCard]
-              if (authentication.role === 'student') {
-                vueModel.isParent = false
-              }
-            }
-
+          let lineBindingStudentCards = jsonData.content
+          console.log(lineBindingStudentCards)
+          if (lineBindingStudentCards.length > 0) {
+            lineBindingStudentCards.forEach(lineBindingStudentCard => {
+              lineBindingStudentCard.authentications.forEach(authentication => {
+                if (authentication.role === 'student') {
+                  vueModel.isParent = false
+                }
+              })
+            })
+            vueModel.lineBindingStudentCards = lineBindingStudentCards
             vueModel.status = 'success'
           } else {
             vueModel.status = 'empty'
@@ -97,8 +97,18 @@
           this.$router.replace(`/lineBinding/${this.lineUserId}`)
         },
 
-        retrieveSpecificProfile (studentCard) {
-          this.$router.replace(`/profile/${this.lineUserId}/${studentCard}/${this.panel}`)
+        retrieveSpecificProfile (lineBindingStudentCard) {
+          this.$router.replace({
+            path: `/profile/${this.lineUserId}/${lineBindingStudentCard.studentCard}/${this.panel}`,
+            params: {
+              specificLineUser: this.lineUserId,
+              studentCard: lineBindingStudentCard.studentCard,
+              panel: this.panel
+            },
+            query: {
+              lineBindingStudentCard: lineBindingStudentCard
+            }
+          })
         }
       },
 

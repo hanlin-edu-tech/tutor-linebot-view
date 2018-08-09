@@ -1,13 +1,13 @@
 <template>
   <section id="profile">
-    <mu-expansion-panel :expand="panel === 'profileDetail'" @change="toggle('profileDetail')">
+    <mu-expansion-panel :expand="showPanel === 'profileDetail'" @change="toggle('profileDetail')">
       <div slot="header" class="color-primary">
         <mu-icon value="person"></mu-icon>
         基本資料
       </div>
-      <ProfileDetail @is-parent="determineParent"></ProfileDetail>
+      <ProfileDetail :line-binding-student-card="lineBindingStudentCard" @is-parent="determineParent"></ProfileDetail>
     </mu-expansion-panel>
-    <mu-expansion-panel :expand="panel === 'coupons'" @change="toggle('coupons')">
+    <mu-expansion-panel :expand="showPanel === 'coupons'" @change="toggle('coupons')">
       <div slot="header" class="color-primary">
         <mu-icon value="loyalty"></mu-icon>
         我的優惠
@@ -28,13 +28,21 @@
 
   export default {
     name: 'Profile',
+    props: {
+      specificLineUser: String,
+      studentCard: String,
+      panel: String
+    },
+
     data () {
       return {
-        panel: this.$route.params['panel'],
-        lineUserId: this.$route.params['specificLineUser'],
+        showPanel: this.panel,
+        lineUserId: this.specificLineUser,
+        lineBindingStudentCard: this.$route.query['lineBindingStudentCard'],
         isParent: false
       }
     },
+
     components: {
       ProfileDetail,
       Coupons
@@ -42,7 +50,7 @@
 
     methods: {
       toggle (currentPanel) {
-        this.panel = (currentPanel === this.panel ? '' : currentPanel)
+        this.showPanel = (currentPanel === this.showPanel ? '' : currentPanel)
       },
 
       determineParent () {

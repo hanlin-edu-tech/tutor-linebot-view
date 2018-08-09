@@ -23,7 +23,8 @@ export default {
     {
       path: '/profile/:specificLineUser/:studentCard/:panel?',
       name: 'Profile',
-      component: Profile
+      component: Profile,
+      props: route => ({...route.params})
     },
     {
       path: '/:specificLineUser?',

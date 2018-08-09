@@ -1,14 +1,13 @@
 <template>
   <article id="profile-detail">
     <mu-container>
-      <mu-list v-show="status === 'success'">
+      <mu-list>
         <mu-list-item class="email">
           <mu-list-item-action>
             <mu-icon value="person_pin"></mu-icon>
           </mu-list-item-action>
           <mu-list-item-title>
-            <span>帳號：
-              <br />{{profile.email}}
+            <span>帳號：{{profile.email}}
             </span>
           </mu-list-item-title>
         </mu-list-item>
@@ -53,9 +52,6 @@
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
       </mu-list>
-      <div class="app-center" v-show="status !== 'success'">
-        <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
-      </div>
     </mu-container>
   </article>
 </template>
@@ -67,13 +63,16 @@
 
   export default {
     name: 'ProfileDetail',
+    props: {
+      lineBindingStudentCard: Object
+    },
+
     data () {
       return {
+        profile: this.lineBindingStudentCard,
         lineUserId: this.$route.params['specificLineUser'],
         studentCard: this.$route.params['studentCard'],
-        role: '',
-        status: '',
-        profile: {}
+        role: ''
       }
     },
 
@@ -81,31 +80,11 @@
       DetermineUnsuccessfulStatus
     },
 
-    computed: mapState('unifyDesc', ['retrieveFailed']),
-
     created () {
-      let vueModel = this
-      vueModel
-        .axios({
-          method: 'get',
-          url: `/linebot/profile/${vueModel.lineUserId}?studentCard=${vueModel.studentCard}`,
-        })
-        .then(response => {
-          let profile = response.data.content
-          vueModel.profile = profile
-          if (profile.role === 'parent') {
-            vueModel.role = '家長'
-            vueModel.$emit('is-parent')
-          } else {
-            vueModel.role = '學生'
-          }
-
-          vueModel.status = 'success'
-        })
-        .catch((error) => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+      this.profile.authentications.forEach(authentication => {
+        if (authentication.lineUserId === this.lineUserId)
+          this.role = authentication.role
+      })
     },
 
     mounted () {
@@ -113,9 +92,7 @@
         .forEach(itemTitle => {
           itemTitle.style.wordBreak = 'break-all'
         })
-    },
-
-    store
+    }
   }
 </script>
 
@@ -127,12 +104,13 @@
 
     .mu-icon {
       margin-left: -13px;
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 500;
+      color: #5f6788;
     }
 
     .mu-list {
-      height: 52vh;
+      height: 60vh;
     }
 
     .mu-item-action {
@@ -140,8 +118,8 @@
     }
 
     .mu-item-title {
-      font-size: 1.3em;
-      font-weight: 500;
+      font-size: 18px;
+      font-weight: 600;
       overflow: visible;
       white-space: normal;
       height: unset;

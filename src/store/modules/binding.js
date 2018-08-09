@@ -2,7 +2,7 @@ export default {
   namespaced: true,
   state: {
     lineBindingStudentCard: Object,
-    studentCardAuthenticationMapping: Object
+    lineBindingStudentCards: Object
   },
 
   actions: {

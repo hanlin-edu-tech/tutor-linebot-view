@@ -48,6 +48,13 @@
 
   export default {
     name: 'LineBindingConfirm',
+    props: {
+      role: String,
+      studentCard: String,
+      mobile: String,
+      lineUserId: String
+    },
+
     data () {
       return {
         email: '',
@@ -56,25 +63,18 @@
       }
     },
 
-    props: {
-      role: String,
-      studentCard: String,
-      mobile: String,
-      lineUserId: String
-    },
-
-    computed: mapState('binding', ['studentCardAuthenticationMapping']),
+    computed: mapState('binding', ['lineBindingStudentCards']),
 
     methods: {
       isLineUserBoundTwice () {
-        if (Object.keys(this.studentCardAuthenticationMapping).length) {
-          let authentication = this.studentCardAuthenticationMapping[this.showStudentCard]
+        if (Object.keys(this.lineBindingStudentCards).length) {
+          let authentication = this.lineBindingStudentCards[this.showStudentCard]
           /*
            * 同樣的 line user，不能綁定兩次
            */
           if (authentication && authentication.lineUserId === this.lineUserId) {
-            this.$emit('is-show-completed-btn', '')
-            this.$emit('is-show-query-profiles-btn')
+            this.$emit('retrieve-email', '')
+            this.$emit('binding-same-student-card')
             return true
           }
         }
@@ -98,9 +98,9 @@
               vueModel.showStudentCard = specificUser.studentCard
               vueModel.isBoundStudentTwice = (specificUser.boundStudent === true && vueModel.role === 'student')
               if (vueModel.isBoundStudentTwice === true) {
-                vueModel.$emit('is-show-completed-btn', '')
+                vueModel.$emit('retrieve-email', '')
               } else {
-                vueModel.$emit('is-show-completed-btn', specificUser)
+                vueModel.$emit('retrieve-email', specificUser)
               }
             }
           })

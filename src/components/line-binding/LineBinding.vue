@@ -31,9 +31,9 @@
         </mu-step-label>
         <mu-step-content>
           <p>
-            <LineBindingConfirm :role="role" :studentCard="studentCard" :mobile="mobile" :lineUserId="lineUserId"
-                                @is-show-completed-btn="isRetrieveEmail"
-                                @is-show-query-profiles-btn="isBindingSameStudentCard"></LineBindingConfirm>
+            <LineBindingConfirm :role="role" :student-card="studentCard" :mobile="mobile" :line-user-id="lineUserId"
+                                @retrieve-email="retrieveEmail"
+                                @binding-same-student-card="bindingSameStudentCard"></LineBindingConfirm>
           </p>
           <mu-button color="lightBlue900" @click="completedLineBinding" v-show="isShowCompletedBtn">完成</mu-button>
           <mu-button flat class="color-primary" @click="confirmToPrevious">上一步</mu-button>
@@ -70,7 +70,7 @@
         studentCard: '',
         mobile: '',
         email: '',
-        userName: '',
+        name: '',
         messageResult: '',
         /* 成功取得 role，才顯示通往輸入學號的下一步 button */
         isShowNextToInputBtn: false,
@@ -94,24 +94,18 @@
         })
         .then(response => {
           let jsonData = response.data
-          let studentCardAuthenticationMapping = jsonData.content
-          if (Object.keys(studentCardAuthenticationMapping).length) {
-            vueModel.assignStudentCardAuthenticationMappingAction(studentCardAuthenticationMapping)
-
-            for (let studentCard in studentCardAuthenticationMapping) {
-              let authentication = studentCardAuthenticationMapping[studentCard]
-              /*
-               * 只有家長才能綁定其他帳號，
-               * 如果家長先前已有綁定過學號，則不需要選擇身份
-               */
-              if (authentication.role === 'parent') {
-                vueModel.isBound = true
-                vueModel.retrieveRole('parent')
-                return
-              }
-            }
-          }
+          let lineBindingStudentCards = jsonData.content
           vueModel.isBound = false
+          if (lineBindingStudentCards.length > 0) {
+            lineBindingStudentCards.forEach(lineBindingStudentCard => {
+              lineBindingStudentCard.authentications.forEach(authentication => {
+                if (authentication.role === 'parent') {
+                  vueModel.isBound = true
+                  vueModel.retrieveRole('parent')
+                }
+              })
+            })
+          }
         })
         .catch(error => {
           console.error(error)
@@ -161,29 +155,32 @@
           }
         },
 
-        isRetrieveEmail (specificUser) {
-          if (specificUser.email) {
+        retrieveEmail (specificUser) {
+          if (specificUser && specificUser.email) {
             this.email = specificUser.email
-            this.userName = specificUser.name
+            this.studentCard = specificUser.studentCard
+            this.mobile = specificUser.mobile
+            this.name = specificUser.name
             this.isShowCompletedBtn = true
           } else {
             this.isShowCompletedBtn = false
           }
         },
 
-        isBindingSameStudentCard () {
+        bindingSameStudentCard () {
           this.isShowQueryProfilesBtn = true
         },
 
         completedLineBinding () {
           this.assignBindingAction({
             studentCard: this.studentCard,
+            email: this.email,
+            name: this.name,
+            mobile: this.mobile,
             authentications: [
               {
                 'lineUserId': this.lineUserId,
-                'role': this.role,
-                'email': this.email,
-                'userName': this.userName
+                'role': this.role
               }
             ]
           })
