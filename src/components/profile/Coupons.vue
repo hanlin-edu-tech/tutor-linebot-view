@@ -26,11 +26,10 @@
         </div>
         <div><span class="coupon-field-width">使用規則：</span></div>
         <div class="ellipsis">
-          1. 此優惠碼不適用翰林雲端學院下學期 e 名師課程 (全學年課程除外)。
+          1. 此優惠碼僅適用翰林雲端學院 e 名師課程。
           <span id="rule-detail" style="display: none;">
-            <br />2. 此優惠碼使用期限至 2018 年 7月 31 日，逾期視同放棄資格，恕不補發。
-            <br />3. 此優惠碼不得與其他優惠碼一併使用。
-            <br />4. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
+            <br />2. 此優惠碼不得與其他優惠碼一併使用。
+            <br />3. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
             <br />
           </span>
           <span class="collapse color-primary" v-if="!coupon['isShowRule']"
