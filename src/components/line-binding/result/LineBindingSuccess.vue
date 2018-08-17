@@ -46,12 +46,7 @@
               <br />3. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
               <br />
               <br />【我的優惠適用產品】
-              <br />翰林雲端學院國小上學期 e 名師課程
-              <br />國中上學期 e 名師課程
-              <br />會考 e 名師課程
-              <br />高中上學期 e 名師課程
-              <br />學測 e 名師課程
-              <br />指考 e 名師課程
+              <br />翰林雲端學院全產品 e 名師課程
             </span>
             <span class="collapse color-primary" v-if="!isShowAttention"
                   @click="unfold($event)">查閱</span>

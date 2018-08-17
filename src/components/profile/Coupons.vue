@@ -11,17 +11,11 @@
         <div><span class="coupon-field-width">狀態：</span>{{isEnabled(coupon.times, coupon.date)}}</div>
         <div><span class="coupon-field-width">適用產品：</span></div>
         <div class="ellipsis">
-          翰林雲端學院國小上學期 e 名師課程
-          <span id="master-detail" style="display: none;">
-            <br />國中上學期 e 名師課程
-            <br />會考 e 名師課程
-            <br />高中上學期 e 名師課程
-            <br />學測 e 名師課程
-            <br />指考 e 名師課程
-          </span>
-          <span class="collapse color-primary" v-if="!coupon['isShowSuitable']"
+          翰林雲端學院全產品 e 名師課程
+          <span id="master-detail" style="display: none;"></span>
+          <span class="collapse color-primary" style="display: none" v-if="!coupon['isShowSuitable']"
                 @click="unfold(coupon, 'isShowSuitable', '#master-detail', $event)">展開</span>
-          <span class="collapse color-primary" v-else
+          <span class="collapse color-primary" style="display: none" v-else
                 @click="fold(coupon, 'isShowSuitable', '#master-detail', $event)">收合</span>
         </div>
         <div><span class="coupon-field-width">使用規則：</span></div>
