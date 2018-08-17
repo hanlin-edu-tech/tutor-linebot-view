@@ -8,9 +8,7 @@ const sleep = require('system-sleep')
 
 const minifyImage = sourceImage => {
   return gulp
-    .src(sourceImage, {
-      base: './src'
-    })
+    .src(sourceImage, {base: './src'})
     .pipe(cache(imageMin({
       use: [pngquant({
         speed: 7
@@ -20,7 +18,7 @@ const minifyImage = sourceImage => {
 }
 
 const uploadGCS = bucket => {
-  sleep(2000)
+  sleep(1200)
   return gulp
     .src([
       './dist/index.html',
@@ -42,7 +40,7 @@ const uploadGCS = bucket => {
 
 gulp.task('minifyImage', minifyImage.bind(minifyImage, './src/img/**/*.@(jpg|png)'))
 /* 開發 */
-gulp.task('buildEnvToDev', () => {
+gulp.task('switchDev', () => {
   return gulp
     .src(['./src/modules/axios-config.js'], {
       base: './'
@@ -58,7 +56,7 @@ gulp.task('buildEnvToDev', () => {
 })
 
 /* 正式 */
-gulp.task('buildDevToEnv', () => {
+gulp.task('switchEnv', () => {
   return gulp
     .src(['./src/modules/axios-config.js'], {
       base: './'
@@ -78,7 +76,7 @@ gulp.task('uploadGcsTest', uploadGCS.bind(uploadGCS, 'tutor-events-test'))
 gulp.task('uploadGcsProd', uploadGCS.bind(uploadGCS, 'tutor-events'))
 
 /* 部署 */
-gulp.task('deployToTest', ['minifyImage', 'buildDevToEnv', 'uploadGcsTest'], () => {
+gulp.task('deployToTest', ['minifyImage', 'uploadGcsTest'], () => {
   console.log('Package and upload files to test GCS')
 })
 
