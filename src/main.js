@@ -16,5 +16,5 @@ let router = new Router(routerConfig)
 new Vue({
   el: '#app',
   router: router,
-  render: h => h(App)
+  render: createElment => createElment(App)
 })
