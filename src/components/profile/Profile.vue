@@ -30,16 +30,27 @@
     name: 'Profile',
     props: {
       specificLineUser: String,
-      studentCard: String,
-      panel: String
+      panel: String,
+      lineBindingStudentCard: Object
     },
 
     data () {
       return {
+        studentCard: this.lineBindingStudentCard.studentCard,
         showPanel: this.panel,
         lineUserId: this.specificLineUser,
-        lineBindingStudentCard: this.$route.query['lineBindingStudentCard'],
         isParent: false
+      }
+    },
+
+    created () {
+      if (!this.lineBindingStudentCard) {
+        this.$router.replace({
+          name: 'MultiProfile',
+          params: {
+            refresh: true
+          }
+        })
       }
     },
 

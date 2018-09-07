@@ -5,37 +5,34 @@
       <mu-card-text>
         <div>
           <span class="coupon-field-width">折扣：</span>
-          {{retrieveDiscount(coupon.discount)}} 折
+          {{ retrieveDiscount(coupon.discount) }} 折
         </div>
-        <div><span class="coupon-field-width">使用期限：</span>{{retrieveExpireDate(coupon.date)}}</div>
-        <div><span class="coupon-field-width">狀態：</span>{{isEnabled(coupon.times, coupon.date)}}</div>
+        <div><span class="coupon-field-width">使用期限：</span>{{ retrieveExpireDate(coupon.date) }}</div>
+        <div><span class="coupon-field-width">狀態：</span>{{ isEnabled(coupon.times, coupon.date) }}</div>
         <div><span class="coupon-field-width">適用產品：</span></div>
         <div class="ellipsis">
-          翰林雲端學院全產品 e 名師課程
-          <span id="master-detail" style="display: none;"></span>
-          <span class="collapse color-primary" style="display: none" v-if="!coupon['isShowSuitable']"
-                @click="unfold(coupon, 'isShowSuitable', '#master-detail', $event)">展開</span>
+          {{ coupon.description['applicable'] }}
+          <span id="applicable-detail" style="display: none;"></span>
+          <span class="collapse color-primary" style="display: none" v-if="!coupon['isShowApplicable']"
+                @click="unfold(coupon, 'isShowApplicable', '#applicable-detail', $event)">展開</span>
           <span class="collapse color-primary" style="display: none" v-else
-                @click="fold(coupon, 'isShowSuitable', '#master-detail', $event)">收合</span>
+                @click="fold(coupon, 'isShowApplicable', '#applicable-detail', $event)">收合</span>
         </div>
         <div><span class="coupon-field-width">使用規則：</span></div>
         <div class="ellipsis">
-          1. 此優惠碼僅適用翰林雲端學院 e 名師課程。
-          <span id="rule-detail" style="display: none;">
-            <br />2. 此優惠碼不得與其他優惠碼一併使用。
-            <br />3. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
-            <br />
+          {{ retrieveRules(coupon.description['rules']) }}
+          <span id="rules-detail" style="display: none;">
           </span>
-          <span class="collapse color-primary" v-if="!coupon['isShowRule']"
-                @click="unfold(coupon, 'isShowRule', '#rule-detail', $event)">展開</span>
+          <span class="collapse color-primary" v-if="!coupon['isShowRules']"
+                @click="unfold(coupon, 'isShowRules', '#rules-detail', $event)">展開</span>
           <span class="collapse color-primary" v-else
-                @click="fold(coupon, 'isShowRule', '#rule-detail', $event)">收合</span>
-          <br />
+                @click="fold(coupon, 'isShowRules', '#rules-detail', $event)">收合</span>
+          <br/>
         </div>
       </mu-card-text>
     </mu-card>
     <div class="app-center" v-show="status !== 'success'">
-      <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
+      <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
     </div>
   </section>
 </template>
@@ -54,7 +51,8 @@
         status: '',
         empty: '目前沒有優惠券，敬請期待！',
         coupons: [],
-        isDeadLine: false
+        isDeadLine: false,
+        rulesDetail: '',
       }
     },
 
@@ -109,31 +107,51 @@
           let dateDisable = couponDate.disable
           if (dateDisable) {
             this.isDeadLine = dayjs(dateDisable).diff(dayjs(), 'days') <= 0
-            if (times > 0 && !this.isDeadLine) {
-              return '可使用'
+            if (times <= 0 || this.isDeadLine) {
+              return '已失效'
             }
           }
+          return '可使用'
         }
         return '已失效'
       },
 
+      retrieveRules (rulesContent) {
+        let rules = rulesContent.split('<br>')
+        let firstRule = rules[0]
+        let rulesDetail = ''
+        for (let i = 1; i < rules.length; i++) {
+          rulesDetail += `<br/>${rules[i]}`
+        }
+        rulesDetail += '<br/>'
+        this.rulesDetail = rulesDetail
+        return firstRule
+      },
+
       /* 展開內容 */
-      unfold (coupon, currentContent, detailId, event) {
+      unfold (coupon, isShowCurrentContent, detailId, event) {
         let unfoldTarget = event.currentTarget.parentNode
         unfoldTarget.querySelector(detailId).style.display = ''
         unfoldTarget.style.overflow = 'visible'
         unfoldTarget.style.whiteSpace = 'normal'
         unfoldTarget.style.display = 'block'
         unfoldTarget.style.width = '88vw'
-        this.$set(coupon, currentContent, true)
+
+        if (isShowCurrentContent === 'isShowRules') {
+          if (!unfoldTarget.querySelector(detailId).innerHTML) {
+            unfoldTarget.querySelector(detailId).innerHTML = this.rulesDetail
+          }
+        }
+
+        this.$set(coupon, isShowCurrentContent, true)
       },
 
       /* 收合內容 */
-      fold (coupon, currentContent, detailId, event) {
+      fold (coupon, isShowCurrentContent, detailId, event) {
         let unfoldTarget = event.currentTarget.parentNode
         unfoldTarget.querySelector(detailId).style.display = 'none'
         unfoldTarget.removeAttribute('style')
-        this.$set(coupon, currentContent, false)
+        this.$set(coupon, isShowCurrentContent, false)
       }
     },
 

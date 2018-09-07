@@ -12,8 +12,8 @@
             @click="retrieveSpecificProfile(lineBindingStudentCard)">
       <mu-alert>
         <mu-col span="11">
-          <span>{{lineBindingStudentCard.name}}</span>
-          <span>{{lineBindingStudentCard.email}}</span>
+          <span>{{ lineBindingStudentCard.name }}</span>
+          <span>{{ lineBindingStudentCard.email }}</span>
         </mu-col>
         <mu-col span="1">
           <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
@@ -29,7 +29,7 @@
     </mu-row>
     <!-- 異常狀況 -->
     <div class="app-center" v-show="(status !== 'success' && status !== 'empty')">
-      <DetermineUnsuccessfulStatus :status="status">{{retrieveFailed}}</DetermineUnsuccessfulStatus>
+      <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
     </div>
     <p class="app-center" v-if="isParent">
       <mu-button color="lightBlue900" class="btn-primary" @click="binding">綁定更多帳號</mu-button>
@@ -39,13 +39,17 @@
 
 <script>
   import store from '../../store/store'
-  import { mapState, mapActions } from 'vuex'
+  import { mapState } from 'vuex'
   import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {
     name: 'MultiProfile',
     components: {
       DetermineUnsuccessfulStatus
+    },
+
+    props: {
+      refresh: Boolean
     },
 
     data () {
@@ -61,6 +65,10 @@
     computed: mapState('unifyDesc', ['retrieveFailed']),
 
     created () {
+      if (this.refresh === true) {
+        window.location.reload()
+      }
+
       let vueModel = this
       vueModel
         .axios({
@@ -70,15 +78,20 @@
         .then(response => {
           let jsonData = response.data
           let lineBindingStudentCards = jsonData.content
-          console.log(lineBindingStudentCards)
           if (lineBindingStudentCards.length > 0) {
-            lineBindingStudentCards.forEach(lineBindingStudentCard => {
+            for (let i = 0; i < lineBindingStudentCards.length; i++) {
+              let lineBindingStudentCard = lineBindingStudentCards[i]
               lineBindingStudentCard.authentications.forEach(authentication => {
-                if (authentication.role === 'student') {
+                if (authentication.lineUserId === vueModel.lineUserId && authentication.role === 'student') {
                   vueModel.isParent = false
                 }
               })
-            })
+
+              if (lineBindingStudentCards.length === 1) {
+                this.routeProfile(lineBindingStudentCard)
+              }
+            }
+
             vueModel.lineBindingStudentCards = lineBindingStudentCards
             vueModel.status = 'success'
           } else {
@@ -98,23 +111,21 @@
         },
 
         retrieveSpecificProfile (lineBindingStudentCard) {
+          this.routeProfile(lineBindingStudentCard)
+        },
+
+        routeProfile (lineBindingStudentCard) {
           this.$router.replace({
-            path: `/profile/${this.lineUserId}/${lineBindingStudentCard.studentCard}/${this.panel}`,
+            name: 'Profile',
             params: {
               specificLineUser: this.lineUserId,
               studentCard: lineBindingStudentCard.studentCard,
-              panel: this.panel
-            },
-            query: {
+              panel: this.panel,
               lineBindingStudentCard: lineBindingStudentCard
             }
           })
         }
-      },
-
-      mapActions('step', {
-        resetStepAction: 'resetStepAction'
-      }),
+      }
     ),
 
     store

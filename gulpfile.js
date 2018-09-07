@@ -29,7 +29,7 @@ const uploadGCS = bucket => {
     .pipe(gcPub({
       bucket: bucket,
       keyFilename: 'tutor.json',
-      base: 'event/line-bot/',
+      base: 'app/line-bot/',
       projectId: 'tutor-204108',
       public: true,
       metadata: {
@@ -72,8 +72,8 @@ gulp.task('switchEnv', () => {
 })
 
 /* 上傳 GCS */
-gulp.task('uploadGcsTest', uploadGCS.bind(uploadGCS, 'tutor-events-test'))
-gulp.task('uploadGcsProd', uploadGCS.bind(uploadGCS, 'tutor-events'))
+gulp.task('uploadGcsTest', uploadGCS.bind(uploadGCS, 'tutor-apps-test'))
+gulp.task('uploadGcsProd', uploadGCS.bind(uploadGCS, 'tutor-apps'))
 
 /* 部署 */
 gulp.task('deployToTest', ['minifyImage', 'uploadGcsTest'], () => {

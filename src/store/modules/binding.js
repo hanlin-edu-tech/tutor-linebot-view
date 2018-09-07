@@ -2,7 +2,7 @@ export default {
   namespaced: true,
   state: {
     lineBindingStudentCard: Object,
-    lineBindingStudentCards: Object
+    authentications: Object
   },
 
   actions: {
@@ -10,8 +10,8 @@ export default {
       commit('assignBinding', lineBindingStudentCard)
     },
 
-    assignStudentCardAuthenticationMappingAction ({commit}, studentCardAuthenticationMapping) {
-      commit('assignStudentCardAuthenticationMapping', studentCardAuthenticationMapping)
+    assignAuthenticationsAction ({commit}, authentications) {
+      commit('assignAuthentications', authentications)
     }
   },
 
@@ -20,8 +20,8 @@ export default {
       state.lineBindingStudentCard = lineBindingStudentCard
     },
 
-    assignStudentCardAuthenticationMapping (state, studentCardAuthenticationMapping) {
-      state.studentCardAuthenticationMapping = studentCardAuthenticationMapping
+    assignAuthentications (state, authentications) {
+      state.authentications = authentications
     }
   }
 }

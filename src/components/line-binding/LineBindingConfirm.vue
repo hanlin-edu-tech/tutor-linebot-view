@@ -21,20 +21,20 @@
             </mu-row>
             <mu-row>
               <mu-col span="12">
-                學號：<span class="font-important-info">{{showStudentCard}}</span>
-                <br />
-                帳號：{{retrieveEmail()}}
-                <span class="verify-result info">{{email}}</span>
+                學號：<span class="font-important-info">{{ showStudentCard }}</span>
+                <br/>
+                帳號：{{ retrieveEmail() }}
+                <span class="verify-result info">{{ email }}</span>
               </mu-col>
             </mu-row>
           </div>
           <div v-show="email && !showStudentCard && this.email !== 'empty'">
             <mu-row>
-            <mu-col span="12">
+              <mu-col span="12">
                 <span class="verify-result font-important-info">
                   您尚未取得學號，請至翰林雲端學院，若仍無法登入，請洽雲端客服。
                 </span>
-            </mu-col>
+              </mu-col>
             </mu-row>
           </div>
           <!-- 查無 email -->
@@ -76,22 +76,24 @@
       }
     },
 
-    computed: mapState('binding', ['lineBindingStudentCards']),
+    computed: mapState('binding', ['authentications']),
 
     methods: {
       isLineUserBoundTwice () {
-        if (Object.keys(this.lineBindingStudentCards).length) {
-          let authentication = this.lineBindingStudentCards[this.showStudentCard]
-          /*
-           * 同樣的 line user，不能綁定兩次
-           */
-          if (authentication && authentication.lineUserId === this.lineUserId) {
-            this.$emit('retrieve-email', '')
-            this.$emit('binding-same-student-card')
-            return true
+        if (Object.keys(this.authentications).length) {
+          for (let i = 0; i < Object.keys(this.authentications).length; i++) {
+            let authentication = this.authentications[i]
+            /*
+             * 同樣的 line user，不能綁定兩次
+             */
+            if (authentication['lineUserId'] === this.lineUserId) {
+              this.$emit('retrieve-email', '')
+              this.$emit('binding-same-student-card')
+              return true
+            }
           }
+          return false
         }
-        return false
       },
 
       retrieveEmail () {

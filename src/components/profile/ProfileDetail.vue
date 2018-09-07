@@ -7,7 +7,7 @@
             <mu-icon value="person_pin"></mu-icon>
           </mu-list-item-action>
           <mu-list-item-title>
-            <span>帳號：{{profile.email}}
+            <span>帳號：{{ profile.email }}
             </span>
           </mu-list-item-title>
         </mu-list-item>
@@ -16,21 +16,21 @@
           <mu-list-item-action>
             <mu-icon value="school"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title>學號：{{profile.studentCard}}</mu-list-item-title>
+          <mu-list-item-title>學號：{{ profile.studentCard }}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
         <mu-list-item class="general">
           <mu-list-item-action>
             <mu-icon value="supervisor_account"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title>身分：{{role}}</mu-list-item-title>
+          <mu-list-item-title>身分：{{ role }}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
         <mu-list-item class="general">
           <mu-list-item-action>
             <mu-icon value="bubble_chart"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title>年級：{{profile.grade}}</mu-list-item-title>
+          <mu-list-item-title>年級：{{ profile.grade }}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
         <!-- 雲端銀行 -->
@@ -42,13 +42,13 @@
           <mu-list-item-action>
             <mu-icon value="grade"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title><span>e 幣：{{profile.coins}}</span></mu-list-item-title>
+          <mu-list-item-title><span>e 幣：{{ profile.coins }}</span></mu-list-item-title>
         </mu-list-item>
         <mu-list-item class="general">
           <mu-list-item-action>
             <mu-icon value="stars"></mu-icon>
           </mu-list-item-action>
-          <mu-list-item-title><span>寶石：{{profile.gems}}</span></mu-list-item-title>
+          <mu-list-item-title><span>寶石：{{ profile.gems }}</span></mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>
       </mu-list>
@@ -57,8 +57,6 @@
 </template>
 
 <script>
-  import store from '../../store/store'
-  import { mapState } from 'vuex'
   import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {

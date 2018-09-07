@@ -27,11 +27,9 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'vue-style-loader',
-          'css-loader'
-        ],
-      }, {
+        use: ['vue-style-loader', 'css-loader'],
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: {
@@ -101,11 +99,10 @@ module.exports = {
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test') {
   module.exports.devtool = '#source-map'
-  // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: '"production"'
+        NODE_ENV: process.env.NODE_ENV === 'production' ? JSON.stringify('production') : JSON.stringify('test')
       }
     }),
     new webpack.optimize.UglifyJsPlugin({

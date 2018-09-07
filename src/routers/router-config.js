@@ -18,7 +18,8 @@ export default {
     {
       path: '/profile/:specificLineUser/:panel?',
       name: 'MultiProfile',
-      component: MultiProfile
+      component: MultiProfile,
+      props: route => ({...route.params})
     },
     {
       path: '/profile/:specificLineUser/:studentCard/:panel?',

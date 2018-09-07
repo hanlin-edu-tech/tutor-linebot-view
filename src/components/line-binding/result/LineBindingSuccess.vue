@@ -16,9 +16,9 @@
     <mu-row>
       <mu-col span="12">
         <p class="app-center coupon" v-show="status === 'success'">
-          您已獲得 1 張 {{discount}} 折優惠券：
-          <br /><span class="coupon-code">{{code}}</span>
-          <br />使用期限：<span>{{expireDate}}</span>
+          您已獲得 1 張 {{ discount }} 折優惠券：
+          <br /><span class="coupon-code">{{ code }}</span>
+          <br />使用期限：<span>{{ expireDate }}</span>
         </p>
         <p class="app-center" v-show="status !== 'success'">
           <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
@@ -41,12 +41,13 @@
               <br />4. 點選下一步並將相關資訊填寫完整後，即完成訂單。
               <br />
               <br />【其他注意事項】
+              <span id="rules"></span>
               <br />1. 此優惠碼僅適用翰林雲端學院 e 名師課程。
               <br />2. 此優惠碼不得與其他優惠碼一併使用。
               <br />3. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
               <br />
               <br />【我的優惠適用產品】
-              <br />翰林雲端學院全產品 e 名師課程
+              <br />{{ applicable }}
             </span>
             <span class="collapse color-primary" v-if="!isShowAttention"
                   @click="unfold($event)">查閱</span>
@@ -64,7 +65,6 @@
   import dayjs from 'dayjs'
   import 'dayjs/locale/zh-tw'
   import DetermineUnsuccessfulStatus from '../../layout/DetermineUnsuccessfulStatus'
-  import SuitableProduct from './SuitableProduct'
 
   export default {
     name: 'LineBindingSuccess',
@@ -75,12 +75,12 @@
         code: '',
         expireDate: '',
         status: '',
-        isShowAttention: false
+        isShowAttention: false,
+        applicable: ''
       }
     },
 
     components: {
-      SuitableProduct,
       DetermineUnsuccessfulStatus
     },
 
@@ -102,11 +102,21 @@
           if (coupon && coupon.code) {
             if (!vueModel.isDeadLine(coupon.date.disable)) {
               let discountRegularExp = /^\d\.\d{2}/
+              let rules
               vueModel.code = coupon.code
               vueModel.discount = discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10
               vueModel.expireDate =
                 coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+              vueModel.applicable = coupon.description['applicable']
 
+              rules = coupon.description['rules'].split('<br>')
+              let rulesDetail = ''
+              for (let i = 1; i < rules.length; i++) {
+                rulesDetail += `<br/>${rules[i]}`
+              }
+              rulesDetail += '<br/>'
+
+              document.getElementById('rules').innerHTML = rulesDetail
               vueModel.status = 'success'
             }
           }
@@ -128,7 +138,7 @@
         this
           .axios({
             method: 'post',
-            url: `https://us-central1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
+            url: `https://asia-northeast1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
             data: {
               lineUserId: lineUserId
             }

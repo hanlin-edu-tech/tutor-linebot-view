@@ -8,18 +8,11 @@
           <mu-divider class="divider"></mu-divider>
         </mu-col>
       </mu-row>
-      <mu-row v-if="Object.keys(lineBindingStudentCards).length && isStudentBoundTwice()">
-        <mu-col span="12">
-          <span class="verify-result font-important-info">{{verifyResult}}</span>
-        </mu-col>
-      </mu-row>
     </mu-container>
   </article>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-
   export default {
     name: 'LineBindingAuthentication',
     data () {
@@ -33,27 +26,11 @@
       }
     },
 
-    computed: mapState('binding', ['lineBindingStudentCards']),
-
     methods: {
       givenRole () {
         document.querySelector('#line-binding-authentication .container').removeAttribute('style')
         this.$emit('retrieve-role', this.role)
-      },
-
-      isStudentBoundTwice () {
-        let studentCardAuthenticationMapping = this.lineBindingStudentCards
-        for (let studentCard in studentCardAuthenticationMapping) {
-          let authentication = studentCardAuthenticationMapping[studentCard]
-          if (authentication.role === 'student' && authentication.role === this.role) {
-            this.verifyResult = '您已成功綁定帳號，請至帳號查詢頁面查看詳情，目前綁定過學生帳號後，欲繼續綁定家長帳號仍可行喔！'
-            document.querySelector('#line-binding-authentication .container').style.height = '250px'
-            this.$emit('retrieve-role', '')
-            return true
-          }
-        }
-        return false
-      },
+      }
     }
   }
 </script>

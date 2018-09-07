@@ -1,7 +1,7 @@
 <template>
   <section id="line-binding">
     <mu-stepper :active-step="bindingStep" orientation="vertical">
-      <mu-step v-if="!isBound">
+      <mu-step v-if="!isParentBound">
         <mu-step-label>
           請選擇你的身份
         </mu-step-label>
@@ -22,7 +22,7 @@
                               @retrieve-mobile="retrieveMobile"></LineBindingInput>
           </p>
           <mu-button @click="handleNext" color="lightBlue900" v-show="isShowNextToConfirmBtn">下一步</mu-button>
-          <mu-button flat class="color-primary" v-if="!isBound" @click="inputToPrevious">上一步</mu-button>
+          <mu-button flat class="color-primary" v-if="!isParentBound" @click="inputToPrevious">上一步</mu-button>
         </mu-step-content>
       </mu-step>
       <mu-step>
@@ -80,7 +80,7 @@
         /* 如果家長綁定了同一個學號，才顯示帳號查詢之 button */
         isShowQueryProfilesBtn: false,
         lineUserId: this.$route.params['specificLineUser'],
-        isBound: Boolean
+        isParentBound: Boolean
       }
     },
 
@@ -95,12 +95,13 @@
         .then(response => {
           let jsonData = response.data
           let lineBindingStudentCards = jsonData.content
-          vueModel.isBound = false
+          vueModel.isParentBound = false
           if (lineBindingStudentCards.length > 0) {
             lineBindingStudentCards.forEach(lineBindingStudentCard => {
               lineBindingStudentCard.authentications.forEach(authentication => {
+                this.assignAuthenticationsAction(lineBindingStudentCard.authentications)
                 if (authentication.role === 'parent') {
-                  vueModel.isBound = true
+                  vueModel.isParentBound = true
                   vueModel.retrieveRole('parent')
                 }
               })
@@ -109,7 +110,7 @@
         })
         .catch(error => {
           console.error(error)
-          vueModel.isBound = false
+          vueModel.isParentBound = false
         })
     },
 
@@ -121,8 +122,8 @@
       {
         isCompleted () {
           let isNotBound = this.bindingStep > 2
-          let isBound = (this.isBound && this.bindingStep > 1)
-          return isNotBound || isBound
+          let isParentBound = (this.isParentBound && this.bindingStep > 1)
+          return isNotBound || isParentBound
         }
       },
       mapState('step', ['bindingStep'])
@@ -212,7 +213,7 @@
         resetStepAction: 'resetStepAction'
       }),
 
-      mapActions('binding', ['assignBindingAction', 'assignStudentCardAuthenticationMappingAction'])
+      mapActions('binding', ['assignBindingAction', 'assignAuthenticationsAction'])
     ),
 
     store
