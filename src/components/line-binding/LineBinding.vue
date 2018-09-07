@@ -97,15 +97,17 @@
           let lineBindingStudentCards = jsonData.content
           vueModel.isParentBound = false
           if (lineBindingStudentCards.length > 0) {
+            let studentCards = []
             lineBindingStudentCards.forEach(lineBindingStudentCard => {
+              studentCards.push(lineBindingStudentCard.studentCard)
               lineBindingStudentCard.authentications.forEach(authentication => {
-                this.assignAuthenticationsAction(lineBindingStudentCard.authentications)
                 if (authentication.role === 'parent') {
                   vueModel.isParentBound = true
                   vueModel.retrieveRole('parent')
                 }
               })
             })
+            this.assignStudentCardsAction(studentCards)
           }
         })
         .catch(error => {
@@ -213,7 +215,7 @@
         resetStepAction: 'resetStepAction'
       }),
 
-      mapActions('binding', ['assignBindingAction', 'assignAuthenticationsAction'])
+      mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction'])
     ),
 
     store

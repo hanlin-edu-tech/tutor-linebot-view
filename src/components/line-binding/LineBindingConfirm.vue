@@ -76,17 +76,16 @@
       }
     },
 
-    computed: mapState('binding', ['authentications']),
+    computed: mapState('binding', ['studentCards']),
 
     methods: {
       isLineUserBoundTwice () {
-        if (Object.keys(this.authentications).length) {
-          for (let i = 0; i < Object.keys(this.authentications).length; i++) {
-            let authentication = this.authentications[i]
+        if (this.studentCards.length > 0) {
+          for (let i = 0; i < this.studentCards.length; i++) {
             /*
-             * 同樣的 line user，不能綁定兩次
+             * 同一位 line user 不能綁定同學號兩次
              */
-            if (authentication['lineUserId'] === this.lineUserId) {
+            if (this.studentCards[i] === this.studentCard) {
               this.$emit('retrieve-email', '')
               this.$emit('binding-same-student-card')
               return true
