@@ -5,10 +5,10 @@
       <mu-card-text>
         <div>
           <span class="coupon-field-width">折扣：</span>
-          {{ retrieveDiscount(coupon.discount) }} 折
+          {{ coupon.discount }} 折
         </div>
-        <div><span class="coupon-field-width">使用期限：</span>{{ retrieveExpireDate(coupon.date) }}</div>
-        <div><span class="coupon-field-width">狀態：</span>{{ isEnabled(coupon.times, coupon.date) }}</div>
+        <div><span class="coupon-field-width">使用期限：</span>{{ coupon.expireDate }}</div>
+        <div><span class="coupon-field-width">狀態：</span>{{ coupon.isAvailable }}</div>
         <div><span class="coupon-field-width">適用產品：</span></div>
         <div class="ellipsis">
           {{ coupon.description['applicable'] }}
@@ -51,7 +51,6 @@
         status: '',
         empty: '目前沒有優惠券，敬請期待！',
         coupons: [],
-        isDeadLine: false,
         rulesDetail: '',
       }
     },
@@ -70,15 +69,20 @@
           url: `/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
         })
         .then(response => {
-          let i, coupons
-          coupons = response.data
+          let i, showCoupons = [], coupons = response.data
+
           for (i = 0; i < Object.keys(coupons).length; i++) {
             let coupon = coupons[i]
-            // 效期尚未截止之優惠卷
-            if (coupon.times >= 0 && !vueModel.isDeadLine) {
-              vueModel.coupons.push(coupon)
+            // 取回效期尚未截止之優惠卷
+            if (!this.determineDeadline(coupon.times, coupon.date)) {
+              coupon.discount = this.retrieveDiscount(coupon.discount)
+              coupon.expireDate = this.retrieveExpireDate(coupon.date)
+              coupon.isAvailable = coupon.times > 0 ? '可使用' : '已失效'
+              showCoupons.push(coupon)
             }
           }
+
+          vueModel.coupons = showCoupons
           vueModel.status = 'success'
         })
         .catch(error => {
@@ -102,18 +106,15 @@
         return '無截止效期'
       },
 
-      isEnabled (times, couponDate) {
+      determineDeadline (times, couponDate) {
+        let isDeadLine = false
         if (couponDate) {
           let dateDisable = couponDate.disable
           if (dateDisable) {
-            this.isDeadLine = dayjs(dateDisable).diff(dayjs(), 'days') <= 0
-            if (times <= 0 || this.isDeadLine) {
-              return '已失效'
-            }
+            isDeadLine = (dayjs(dateDisable).diff(dayjs(), 'days') <= 0)
           }
-          return '可使用'
         }
-        return '已失效'
+        return isDeadLine
       },
 
       retrieveRules (rulesContent) {
