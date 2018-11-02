@@ -80,8 +80,12 @@
 
     created () {
       this.profile.authentications.forEach(authentication => {
-        if (authentication.lineUserId === this.lineUserId)
-          this.role = authentication.role
+        if (authentication.lineUserId === this.lineUserId) {
+          this.role = authentication.role === 'parent' ? '家長' : '學生'
+          if (authentication.role === 'parent') {
+            this.$emit('is-parent', '')
+          }
+        }
       })
     },
 

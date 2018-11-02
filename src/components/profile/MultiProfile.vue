@@ -88,7 +88,8 @@
               })
 
               if (lineBindingStudentCards.length === 1) {
-                this.routeProfile(lineBindingStudentCard)
+                let isMultiLineBindingStudentCard = false
+                this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
               }
             }
 
@@ -111,17 +112,20 @@
         },
 
         retrieveSpecificProfile (lineBindingStudentCard) {
-          this.routeProfile(lineBindingStudentCard)
+          /* 取回特定 profile，表示一定是綁定多筆帳號 */
+          let isMultiLineBindingStudentCard = true
+          this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
         },
 
-        routeProfile (lineBindingStudentCard) {
+        routeProfile (lineBindingStudentCard, isMultiLineBindingStudentCard) {
           this.$router.replace({
             name: 'Profile',
             params: {
               specificLineUser: this.lineUserId,
               studentCard: lineBindingStudentCard.studentCard,
               panel: this.panel,
-              lineBindingStudentCard: lineBindingStudentCard
+              lineBindingStudentCard: lineBindingStudentCard,
+              isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
             }
           })
         }

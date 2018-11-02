@@ -14,9 +14,14 @@
       </div>
       <Coupons></Coupons>
     </mu-expansion-panel>
-    <p class="app-center" v-if="isParent">
+    <p class="app-center" v-show="multiLineBindingStudentCard && isParent">
       <mu-button color="lightBlue900" class="btn-primary"
                  @click="$router.replace(`/profile/${lineUserId}`)">切換帳號
+      </mu-button>
+    </p>
+    <p class="app-center" v-show="!multiLineBindingStudentCard && isParent">
+      <mu-button color="lightBlue900" class="btn-primary"
+                 @click="$router.replace(`/lineBinding/${lineUserId}`)">綁定更多帳號
       </mu-button>
     </p>
   </section>
@@ -29,14 +34,15 @@
   export default {
     name: 'Profile',
     props: {
+      studentCard: String,
       specificLineUser: String,
       panel: String,
-      lineBindingStudentCard: Object
+      lineBindingStudentCard: Object,
+      isMultiLineBindingStudentCard: Boolean
     },
 
     data () {
       return {
-        studentCard: this.lineBindingStudentCard.studentCard,
         showPanel: this.panel,
         lineUserId: this.specificLineUser,
         isParent: false
