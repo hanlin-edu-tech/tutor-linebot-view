@@ -29,7 +29,7 @@ const uploadGCS = bucket => {
     .pipe(gcPub({
       bucket: bucket,
       keyFilename: 'tutor.json',
-      base: 'app/line-bot/',
+      base: 'app/linebot/',
       projectId: 'tutor-204108',
       public: true,
       metadata: {

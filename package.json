@@ -1,6 +1,6 @@
 {
-  "name": "line-bot-platform",
-  "description": "linebot tutor platform of Ehanlin",
+  "name": "linebot-tutor-frontend",
+  "description": "linebot frontend of Ehanlin",
   "version": "0.0.01",
   "author": "infinityAlive <sonic@ehanlin.com.tw>",
   "license": "MIT",
