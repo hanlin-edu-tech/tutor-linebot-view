@@ -1,39 +1,38 @@
 <template>
-  <section id="multi-profile">
-    <mu-row>
-      <mu-alert class="choice-account font-secondary-info">
-        <mu-col span="12">
-          <span>請點選您欲查看的帳號：</span>
-        </mu-col>
-      </mu-alert>
-    </mu-row>
-    <mu-row class="layout-main-content" v-show="status === 'success'"
-            v-for="lineBindingStudentCard in lineBindingStudentCards" :key="lineBindingStudentCard.studentCard"
-            @click="retrieveSpecificProfile(lineBindingStudentCard)">
-      <mu-alert>
-        <mu-col span="11">
-          <span>{{ lineBindingStudentCard.name }}</span>
-          <span>{{ lineBindingStudentCard.email }}</span>
-        </mu-col>
-        <mu-col span="1">
-          <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
-        </mu-col>
-      </mu-alert>
-    </mu-row>
-    <mu-row class="app-center" v-show="status === 'empty'">
-      <mu-alert>
-        <mu-col span="12">
-          <span>您尚未綁定任何帳號喔！</span>
-        </mu-col>
-      </mu-alert>
-    </mu-row>
-    <!-- 異常狀況 -->
-    <div class="app-center" v-show="(status !== 'success' && status !== 'empty')">
-      <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
-    </div>
-    <p class="app-center" v-if="isParent">
-      <mu-button color="lightBlue900" class="btn-primary" @click="binding">綁定更多帳號</mu-button>
-    </p>
+  <section>
+    <TipSubtitle>
+      <mu-icon class="icon-padding-right" value="contacts"></mu-icon>
+      請點選您欲查看的帳號
+    </TipSubtitle>
+    <article id="multi-profile">
+      <mu-row class="layout-main-content" v-show="status === 'success'"
+              v-for="lineBindingStudentCard in lineBindingStudentCards" :key="lineBindingStudentCard.studentCard"
+              @click="retrieveSpecificInfo(lineBindingStudentCard)">
+        <mu-alert>
+          <mu-col span="11">
+            <span>{{ lineBindingStudentCard.name }}</span>
+            <span>{{ lineBindingStudentCard.email }}</span>
+          </mu-col>
+          <mu-col span="1">
+            <mu-icon value="keyboard_arrow_right" class="icon-forward-detail"></mu-icon>
+          </mu-col>
+        </mu-alert>
+      </mu-row>
+      <mu-row class="app-center" v-show="status === 'empty'">
+        <mu-alert>
+          <mu-col span="12">
+            <span>您尚未綁定任何帳號喔！</span>
+          </mu-col>
+        </mu-alert>
+      </mu-row>
+      <!-- 異常狀況 -->
+      <div class="app-center" v-show="(status !== 'success' && status !== 'empty')">
+        <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
+      </div>
+      <p class="app-center" v-if="isParent">
+        <mu-button color="lightBlue900" class="btn-primary" @click="binding">綁定更多帳號</mu-button>
+      </p>
+    </article>
   </section>
 </template>
 
@@ -41,11 +40,13 @@
   import store from '../../store/store'
   import { mapState } from 'vuex'
   import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
+  import TipSubtitle from '../layout/TipSubtitle'
 
   export default {
     name: 'MultiProfile',
     components: {
-      DetermineUnsuccessfulStatus
+      DetermineUnsuccessfulStatus,
+      TipSubtitle
     },
 
     props: {
@@ -56,6 +57,7 @@
       return {
         lineUserId: this.$route.params['specificLineUser'],
         panel: this.$route.params['panel'] ? this.$route.params['panel'] : 'panels',
+        menuFunction: this.$route.query['menuFunction'] ? this.$route.query['menuFunction'] : '',
         status: '',
         isParent: true,
         lineBindingStudentCards: Object
@@ -73,7 +75,7 @@
       vueModel
         .axios({
           method: 'get',
-          url: `/linebot/profile/${vueModel.lineUserId}`,
+          url: `/linebot/profile/${ vueModel.lineUserId }`,
         })
         .then(response => {
           let jsonData = response.data
@@ -89,7 +91,8 @@
 
               if (lineBindingStudentCards.length === 1) {
                 let isMultiLineBindingStudentCard = false
-                this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
+                vueModel.determineRouteFunction(
+                  vueModel.menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
               }
             }
 
@@ -108,13 +111,34 @@
     methods: Object.assign(
       {
         binding () {
-          this.$router.replace(`/lineBinding/${this.lineUserId}`)
+          this.$router.replace(`/lineBinding/${ this.lineUserId }`)
         },
 
-        retrieveSpecificProfile (lineBindingStudentCard) {
+        determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {
+          switch (menuFunction) {
+            case 'parentsOnline': {
+              this.$router.replace({
+                name: 'ParentsOnline',
+                params: {
+                  specificLineUser: this.lineUserId,
+                  studentCard: lineBindingStudentCard.studentCard,
+                  lineBindingStudentCard: lineBindingStudentCard,
+                  isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
+                }
+              })
+              break
+            }
+            default : {
+              this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
+            }
+          }
+        },
+
+        retrieveSpecificInfo (lineBindingStudentCard) {
           /* 取回特定 profile，表示一定是綁定多筆帳號 */
           let isMultiLineBindingStudentCard = true
-          this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
+          let menuFunction = this.menuFunction
+          this.determineRouteFunction(menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
         },
 
         routeProfile (lineBindingStudentCard, isMultiLineBindingStudentCard) {
@@ -151,15 +175,6 @@
       font-size: 20px;
       font-weight: 600;
       margin-bottom: 10px;
-    }
-
-    .choice-account {
-      padding: 0 3px;
-      margin-top: -10px;
-      min-height: 60px;
-      background-color: #FAFAFA;
-      font-size: 20px;
-      font-weight: 500;
     }
 
     span {

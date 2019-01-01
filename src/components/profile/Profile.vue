@@ -1,25 +1,25 @@
 <template>
   <section id="profile">
     <mu-expansion-panel :expand="showPanel === 'profileDetail'" @change="toggle('profileDetail')">
-      <div slot="header" class="color-primary">
-        <mu-icon value="person"></mu-icon>
+      <div slot="header" class="font-subtitle">
+        <mu-icon class="icon-padding-right" value="person"></mu-icon>
         基本資料
       </div>
       <ProfileDetail :line-binding-student-card="lineBindingStudentCard" @is-parent="determineParent"></ProfileDetail>
     </mu-expansion-panel>
     <mu-expansion-panel :expand="showPanel === 'coupons'" @change="toggle('coupons')">
-      <div slot="header" class="color-primary">
-        <mu-icon value="loyalty"></mu-icon>
+      <div slot="header" class="font-subtitle">
+        <mu-icon class="icon-padding-right" value="loyalty"></mu-icon>
         我的優惠
       </div>
       <Coupons></Coupons>
     </mu-expansion-panel>
-    <p class="app-center" v-show="multiLineBindingStudentCard && isParent">
+    <p class="app-center" v-show="isMultiLineBindingStudentCard && isParent">
       <mu-button color="lightBlue900" class="btn-primary"
                  @click="$router.replace(`/profile/${lineUserId}`)">切換帳號
       </mu-button>
     </p>
-    <p class="app-center" v-show="!multiLineBindingStudentCard && isParent">
+    <p class="app-center" v-show="!isMultiLineBindingStudentCard && isParent">
       <mu-button color="lightBlue900" class="btn-primary"
                  @click="$router.replace(`/lineBinding/${lineUserId}`)">綁定更多帳號
       </mu-button>
@@ -87,10 +87,7 @@
       font-size: 24px;
       font-weight: 500;
       min-height: 55px;
-
-      .mu-icon {
-        padding-right: 18px;
-      }
+      background-color: #EAF2F8;
 
       .mu-expansion-toggle-btn svg {
         height: 35px;

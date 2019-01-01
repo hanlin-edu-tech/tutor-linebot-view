@@ -5,6 +5,7 @@ import axiosConfig from './modules/axios-config'
 import routerConfig from './routers/router-config'
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
+import 'typeface-roboto'  // 字體
 import App from './App.vue'
 
 Vue.use(Router)

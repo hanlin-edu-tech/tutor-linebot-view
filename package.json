@@ -13,7 +13,8 @@
   "dependencies": {
     "axios": "^0.18.0",
     "dayjs": "^1.6.10",
-    "muse-ui": "^3.0.0-beta.6",
+    "muse-ui": "^3.0.1",
+    "typeface-roboto": "0.0.54",
     "vue": "^2.5.11",
     "vuex": "^3.0.1"
   },

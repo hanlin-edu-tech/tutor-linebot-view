@@ -2,6 +2,7 @@ import Refresh from './Refresh'
 import LineBinding from '../components/line-binding/LineBinding'
 import MultiProfile from '../components/profile/MultiProfile'
 import Profile from '../components/profile/Profile'
+import NotifySetting from '../components/parents-online/NotifySetting'
 
 export default {
   routes: [
@@ -30,6 +31,12 @@ export default {
     {
       path: '/:specificLineUser?',
       redirect: {name: 'MultiProfile'}
+    },
+    {
+      path: '/parentsOnline/:specificLineUser',
+      name: 'ParentsOnline',
+      component: NotifySetting,
+      props: route => ({...route.params})
     }
   ]
 }
