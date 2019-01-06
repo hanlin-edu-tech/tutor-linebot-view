@@ -116,9 +116,9 @@
 
         determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {
           switch (menuFunction) {
-            case 'parentsOnline': {
+            case 'parentsOnLine': {
               this.$router.replace({
-                name: 'ParentsOnline',
+                name: 'ParentsOnLine',
                 params: {
                   specificLineUser: this.lineUserId,
                   studentCard: lineBindingStudentCard.studentCard,
