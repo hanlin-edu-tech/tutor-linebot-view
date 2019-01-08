@@ -26,9 +26,8 @@
         </mu-alert>
       </mu-row>
       <!-- 異常狀況 -->
-      <div class="app-center" v-show="(status !== 'success' && status !== 'empty')">
-        <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
-      </div>
+      <DetermineUnsuccessfulStatus v-show="status === 'failure'" :status="status">{{ retrieveFailed }}
+      </DetermineUnsuccessfulStatus>
       <p class="app-center" v-if="isParent">
         <mu-button color="lightBlue900" class="btn-primary" @click="binding">綁定更多帳號</mu-button>
       </p>
@@ -75,7 +74,7 @@
       vueModel
         .axios({
           method: 'get',
-          url: `/linebot/profile/${ vueModel.lineUserId }`,
+          url: `/linebot/profile/${vueModel.lineUserId}`,
         })
         .then(response => {
           let jsonData = response.data
@@ -111,7 +110,7 @@
     methods: Object.assign(
       {
         binding () {
-          this.$router.replace(`/lineBinding/${ this.lineUserId }`)
+          this.$router.replace(`/lineBinding/${this.lineUserId}`)
         },
 
         determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {

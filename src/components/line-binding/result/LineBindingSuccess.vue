@@ -20,9 +20,10 @@
           <br /><span class="coupon-code">{{ code }}</span>
           <br />使用期限：<span>{{ expireDate }}</span>
         </p>
-        <p class="app-center" v-show="status !== 'success'">
-          <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
-        </p>
+        <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
+        <!--<p class="app-center" v-show="status !== 'success'">-->
+          <!---->
+        <!--</p>-->
       </mu-col>
     </mu-row>
     <p class="app-center" style="margin-top: -25px;">

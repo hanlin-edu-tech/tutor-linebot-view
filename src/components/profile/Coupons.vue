@@ -27,13 +27,11 @@
                 @click="unfold(coupon, 'isShowRules', '#rules-detail', $event)">展開</span>
           <span class="collapse color-primary" v-else
                 @click="fold(coupon, 'isShowRules', '#rules-detail', $event)">收合</span>
-          <br/>
+          <br />
         </div>
       </mu-card-text>
     </mu-card>
-    <div class="app-center" v-show="status !== 'success'">
-      <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
-    </div>
+    <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
   </section>
 </template>
 
