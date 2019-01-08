@@ -23,7 +23,7 @@
             </mu-list-item-action>
             <mu-list-item-title>帳號查詢</mu-list-item-title>
           </mu-list-item>
-          <mu-list-item button @click="queryProfiles('parentsOnline')">
+          <mu-list-item button @click="queryProfiles('parentsOnLine')">
             <mu-list-item-action>
               <mu-icon value="alarm"></mu-icon>
             </mu-list-item-action>
@@ -37,7 +37,6 @@
         <router-view v-if="isAlive"></router-view>
       </mu-container>
     </main>
-
   </div>
 </template>
 
@@ -64,15 +63,15 @@
 
       binding () {
         this.closeDrawer()
-        this.$router.replace(`/lineBinding/${ this.lineUserId }`)
+        this.$router.replace(`/lineBinding/${this.lineUserId}`)
       },
 
       queryProfiles (menuFunction) {
         this.closeDrawer()
         if (menuFunction) {
-          this.$router.push(`/profile/${ this.lineUserId }?menuFunction=${ menuFunction }`)
+          this.$router.push(`/profile/${this.lineUserId}?menuFunction=${menuFunction}`)
         } else {
-          this.$router.push(`/profile/${ this.lineUserId }`)
+          this.$router.push(`/profile/${this.lineUserId}`)
         }
       }
     }

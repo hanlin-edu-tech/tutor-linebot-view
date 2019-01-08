@@ -23,10 +23,11 @@
           <mu-col span="6">
             <mu-radio v-model="parentsOnLine.notifyFrequency" value="hourly" label="每小時"></mu-radio>
           </mu-col>
-          <mu-col span="6">
-            <mu-checkbox v-show="parentsOnLine.notifyFrequency === 'hourly'"
-                         v-model="parentsOnLine.noDisturb" value="true" label="勿擾模式">
+          <mu-col span="6" v-show="parentsOnLine.notifyFrequency === 'hourly'">
+            <mu-checkbox v-model="parentsOnLine.noDisturb" value="true" label="勿擾模式">
             </mu-checkbox>
+            <br />
+            <span class="font-smallest no-disturb-time-hint">勿擾時間 23:00 ~ 06:00</span>
           </mu-col>
         </mu-row>
         <mu-row id="radio-daily" class="notify-padding">
@@ -81,7 +82,7 @@
           dailyHour: '22時'
         },
 
-        dailyHours: ['06', '07', '08', '09', '10', '11', '12', '13', '14',
+        dailyHours: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14',
           '15', '16', '17', '18', '19', '20', '21', '22', '23']
       }
     },
@@ -226,6 +227,13 @@
           padding: 2px;
         }
       }
+    }
+
+    .no-disturb-time-hint {
+      display: inline-block;
+      position: relative;
+      width: 160px;
+      left: -20px;
     }
   }
 
