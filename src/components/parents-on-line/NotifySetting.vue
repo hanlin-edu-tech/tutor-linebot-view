@@ -1,68 +1,77 @@
 <template>
-  <section>
-    <TipSubtitle>
-      <mu-icon class="icon-padding-right" value="notifications_active"></mu-icon>
-      目前設定
-    </TipSubtitle>
-    <article id="parents-online">
-      <mu-container class="color-primary">
-        <mu-row>
-          <mu-alert>
-            帳號: {{ lineBindingStudentCard.email }}
-          </mu-alert>
-        </mu-row>
-        <mu-row class="notify-padding font-common font-weight-common">
-          通知頻率：
-        </mu-row>
-        <mu-row class="notify-padding">
-          <mu-col span="6">
-            <mu-radio v-model="parentsOnLine.notifyFrequency" value="none" label="不通知"></mu-radio>
-          </mu-col>
-        </mu-row>
-        <mu-row class="notify-padding">
-          <mu-col span="6">
-            <mu-radio v-model="parentsOnLine.notifyFrequency" value="hourly" label="每小時"></mu-radio>
-          </mu-col>
-          <mu-col span="6" v-show="parentsOnLine.notifyFrequency === 'hourly'">
-            <mu-checkbox v-model="parentsOnLine.noDisturb" value="true" label="勿擾模式">
-            </mu-checkbox>
-            <br />
-            <span class="font-smallest no-disturb-time-hint">勿擾時間 23:00 ~ 06:00</span>
-          </mu-col>
-        </mu-row>
-        <mu-row id="radio-daily" class="notify-padding">
-          <mu-col span="6">
-            <mu-radio v-model="parentsOnLine.notifyFrequency" value="daily" label="每日"></mu-radio>
-          </mu-col>
-          <mu-col span="6">
-            <mu-select v-show="parentsOnLine.notifyFrequency === 'daily'" v-model="parentsOnLine.dailyHour">
-              <mu-option v-for="hour, index in dailyHours" :key="hour"
-                         :label="retrieveDailyHourSelectLabel(hour)" :value="hour">
-              </mu-option>
-            </mu-select>
-          </mu-col>
-        </mu-row>
-        <mu-row>
-          <div class="update-notify-setting">
-            <mu-button color="lightBlue900" @click="notifySetting">更新設定</mu-button>
-          </div>
-        </mu-row>
-        <mu-dialog width="360" :open.sync="openSettingResult">
-          {{ updateResult }}
-          <mu-button slot="actions" flat color="primary" @click="closeDialog">確認</mu-button>
-        </mu-dialog>
-      </mu-container>
-    </article>
-  </section>
+  <div>
+    <section v-show="status === 'success'">
+      <TipSubtitle>
+        <mu-icon class="icon-padding-right" value="notifications_active"></mu-icon>
+        目前設定
+      </TipSubtitle>
+      <article id="parents-online">
+        <mu-container class="color-primary">
+          <mu-row>
+            <mu-alert>
+              帳號: {{ lineBindingStudentCard.email }}
+            </mu-alert>
+          </mu-row>
+          <mu-row class="notify-padding font-common font-weight-common">
+            通知頻率：
+          </mu-row>
+          <mu-row class="notify-padding">
+            <mu-col span="6">
+              <mu-radio v-model="parentsOnLine.notifyFrequency" value="none" label="不通知"></mu-radio>
+            </mu-col>
+          </mu-row>
+          <mu-row class="notify-padding">
+            <mu-col span="6">
+              <mu-radio v-model="parentsOnLine.notifyFrequency" value="hourly" label="每小時"></mu-radio>
+            </mu-col>
+            <mu-col span="6" v-show="parentsOnLine.notifyFrequency === 'hourly'">
+              <mu-checkbox v-model="parentsOnLine.noDisturb" value="true" label="勿擾模式">
+              </mu-checkbox>
+              <br />
+              <span class="font-smallest no-disturb-time-hint">勿擾時間 23:00 ~ 06:00</span>
+            </mu-col>
+          </mu-row>
+          <mu-row id="radio-daily" class="notify-padding">
+            <mu-col span="6">
+              <mu-radio v-model="parentsOnLine.notifyFrequency" value="daily" label="每日"></mu-radio>
+            </mu-col>
+            <mu-col span="6">
+              <mu-select v-show="parentsOnLine.notifyFrequency === 'daily'" v-model="parentsOnLine.dailyHour">
+                <mu-option v-for="hour, index in dailyHours" :key="hour"
+                           :label="retrieveDailyHourSelectLabel(hour)" :value="hour">
+                </mu-option>
+              </mu-select>
+            </mu-col>
+          </mu-row>
+          <mu-row>
+            <div class="update-notify-setting">
+              <mu-button color="lightBlue900" @click="notifySetting">更新設定</mu-button>
+            </div>
+          </mu-row>
+          <mu-dialog width="360" :open.sync="openSettingResult">
+            {{ updateResult }}
+            <mu-button slot="actions" flat color="primary" @click="closeDialog">確認</mu-button>
+          </mu-dialog>
+        </mu-container>
+      </article>
+    </section>
+    <DetermineUnsuccessfulStatus v-show="status === 'failure'" :status="status">{{ retrieveFailed }}
+    </DetermineUnsuccessfulStatus>
+    <DetermineUnsuccessfulStatus v-show="status === 'forbidden'" :status="status">學生無法設定通知喔！
+    </DetermineUnsuccessfulStatus>
+  </div>
+
 </template>
 
 <script>
   import TipSubtitle from '../layout/TipSubtitle'
+  import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {
     name: 'NotifySetting',
     components: {
-      TipSubtitle
+      TipSubtitle,
+      DetermineUnsuccessfulStatus
     },
     props: {
       studentCard: String,
@@ -74,6 +83,7 @@
 
     data () {
       return {
+        status: '',
         openSettingResult: false,
         updateResult: '設定成功',
         parentsOnLine: {
@@ -96,12 +106,20 @@
         })
         .then(response => {
           let jsonData = response.data
-          let setting = jsonData.content
-          if (Object.keys(setting).length > 0) {
-            vueModel.parentsOnLine = setting
+          let parentsOnLineInfo = jsonData.content
+          if (Object.keys(parentsOnLineInfo).length > 0) {
+            vueModel.parentsOnLine = parentsOnLineInfo
+          }
+          if (parentsOnLineInfo.role === 'student') {
+            vueModel.status = 'forbidden'
+          } else {
+            vueModel.status = 'success'
           }
         })
-        .catch(console.error)
+        .catch(error => {
+          console.error(error)
+          vueModel.status = 'failure'
+        })
     },
 
     methods: {
