@@ -67,9 +67,8 @@
           url: `/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
         })
         .then(response => {
-          let i, showCoupons = [], coupons = response.data
-
-          for (i = 0; i < Object.keys(coupons).length; i++) {
+          let showCoupons = [], coupons = response.data
+          for (let i = 0; i < Object.keys(coupons).length; i++) {
             let coupon = coupons[i]
             // 取回效期尚未截止之優惠卷
             if (!this.determineDeadline(coupon.times, coupon.date)) {

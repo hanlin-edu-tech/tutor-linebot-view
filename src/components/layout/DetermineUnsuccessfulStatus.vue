@@ -3,7 +3,7 @@
     <mu-icon left value="warning" class="icon-global"></mu-icon>
     <slot></slot>
   </div>
-  <div class="app-center" v-else>
+  <div class="app-center" v-else-if="status === ''">
     <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
   </div>
 </template>
