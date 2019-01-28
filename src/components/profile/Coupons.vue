@@ -71,10 +71,10 @@
           for (let i = 0; i < Object.keys(coupons).length; i++) {
             let coupon = coupons[i]
             // 取回效期尚未截止之優惠卷
-            if (!this.determineDeadline(coupon.times, coupon.date)) {
+            if (!this.determineDeadline(coupon.date)) {
               coupon.discount = this.retrieveDiscount(coupon.discount)
               coupon.expireDate = this.retrieveExpireDate(coupon.date)
-              coupon.isAvailable = coupon.times > 0 ? '可使用' : '已失效'
+              coupon.isAvailable = coupon.times > 0 ? '可使用' : '無法再使用'
               showCoupons.push(coupon)
             }
           }
@@ -103,12 +103,12 @@
         return '無截止效期'
       },
 
-      determineDeadline (times, couponDate) {
+      determineDeadline (couponDate) {
         let isDeadLine = false
         if (couponDate) {
           let dateDisable = couponDate.disable
           if (dateDisable) {
-            isDeadLine = (dayjs(dateDisable).diff(dayjs(), 'days') <= 0)
+            isDeadLine = (dayjs(dateDisable).diff(dayjs(), 'days') < 0)
           }
         }
         return isDeadLine
