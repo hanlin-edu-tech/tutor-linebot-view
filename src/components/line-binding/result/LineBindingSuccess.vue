@@ -11,53 +11,41 @@
     <mu-row>
       <mu-col span="12">
         <div class="result-detail">您已成功綁定翰林雲端學院帳號，未來我們將透過 Line 生活圈發布更多優惠及即時訊息，請一定要密切關注喔！</div>
+        <br />
       </mu-col>
     </mu-row>
-    <mu-row>
-      <mu-col span="12">
-        <p class="app-center coupon" v-show="status === 'success'">
-          您已獲得 1 張 {{ discount }} 折優惠券：
-          <br /><span class="coupon-code">{{ code }}</span>
-          <br />使用期限：<span>{{ expireDate }}</span>
-        </p>
-        <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
-        <!--<p class="app-center" v-show="status !== 'success'">-->
-          <!---->
-        <!--</p>-->
-      </mu-col>
-    </mu-row>
-    <p class="app-center" style="margin-top: -25px;">
-      <mu-button color="lightBlue900" class="btn-primary" @click="queryProfiles">查詢帳號</mu-button>
-    </p>
-    <mu-row>
-      <mu-col span="12">
-        <div class="app-center attention">
-          ※ 優惠券使用注意事項：
-          <div class="ellipsis app-left">
-            <br />【如何使用優惠碼】
+    <mu-row v-show="status === 'success'">
+      <mu-col span="12" class="coupon">
+        <span>您已獲得 {{ couponCount }} 張綁定優惠券：</span>
+        <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
+          <br /><span>{{ coupon.name }}</span>
+          <br /><span class="coupon-code">{{ coupon.code }}</span>
+          <br />使用期限：<span>{{ coupon.expireDate }}</span>
+          <p></p>
+          <div class="app-left attention" v-html="coupon.description">
+            {{ coupon.description }}
+          </div>
+          <span class="collapse color-primary" v-if="!coupon.isShowDescription"
+                @click="unfold($event, coupon)">查閱</span>
+          <span class="collapse color-primary" v-else
+                @click="fold($event, coupon)">收合</span>
+        </div>
+        <br />
+        <div class="app-left how-to-use-coupon">
+          ※ 【如何使用優惠碼】：
+          <div class="ellipsis">
             <br />1. 至翰林雲端學院官網 → 課程購買 → 選購上學期課程。
             <br />2. 點選「加入購物車」→「立即結帳」至 Step1 確認課程頁面。
-            <span id="attention-detail" style="display: none;">
-              <br />3. 於粉紅色區塊輸入以上優惠碼即可享有優惠。
-              <br />4. 點選下一步並將相關資訊填寫完整後，即完成訂單。
-              <br />
-              <br />【其他注意事項】
-              <span id="rules"></span>
-              <br />1. 此優惠碼僅適用翰林雲端學院 e 名師課程。
-              <br />2. 此優惠碼不得與其他優惠碼一併使用。
-              <br />3. 若有任何問題請撥打 0800-0088-11 或透過官方 Line 帳號與客服聯繫。
-              <br />
-              <br />【我的優惠適用產品】
-              <br />{{ applicable }}
-            </span>
-            <span class="collapse color-primary" v-if="!isShowAttention"
-                  @click="unfold($event)">查閱</span>
-            <span class="collapse color-primary" v-else
-                  @click="fold($event)">收合</span>
+            <br />3. 於粉紅色區塊輸入以上優惠碼即可享有優惠。
+            <br />4. 點選下一步並將相關資訊填寫完整後，即完成訂單。
           </div>
         </div>
       </mu-col>
     </mu-row>
+    <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
+    <div class="app-center">
+      <mu-button color="lightBlue900" class="btn-primary" @click="queryProfiles">查詢帳號</mu-button>
+    </div>
   </article>
 </template>
 
@@ -72,12 +60,9 @@
     data () {
       return {
         lineUserId: this.$route.params['specificLineUser'],
-        discount: 0,
-        code: '',
-        expireDate: '',
         status: '',
-        isShowAttention: false,
-        applicable: ''
+        coupons: [],
+        couponCount: 0
       }
     },
 
@@ -94,31 +79,32 @@
       vueModel
         .axios({
           method: 'get',
-          url: `/Coupon?studentCard=${studentCard}&name=Line@綁定優惠`
+          url: `/Coupon?studentCard=${studentCard}&from=line@`
         })
         .then(response => {
           let coupons = response.data
-          let coupon = coupons[0]
           vueModel.status = 'empty'
-          if (coupon && coupon.code) {
-            if (!vueModel.isDeadLine(coupon.date.disable)) {
-              let discountRegularExp = /^\d\.\d{2}/
-              let rules
-              vueModel.code = coupon.code
-              vueModel.discount = discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10
-              vueModel.expireDate =
-                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
-              vueModel.applicable = coupon.description['applicable']
+          vueModel.couponCount = Object.keys(coupons).length
+          for (let i = 0; i < vueModel.couponCount; i++) {
+            let coupon = coupons[i]
+            if (coupon && coupon.code) {
+              if (!vueModel.isDeadLine(coupon.date.disable)) {
+                let discountRegularExp = /^\d\.\d{2}/
+                let showCoupon = {
+                  name: coupon.name,
+                  code: coupon.code,
+                  discount:
+                    discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
+                  expireDate:
+                    coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
+                  isShowDescription: false
+                }
+                showCoupon['description'] =
+                  vueModel.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
 
-              rules = coupon.description['rules'].split('<br>')
-              let rulesDetail = ''
-              for (let i = 1; i < rules.length; i++) {
-                rulesDetail += `<br/>${rules[i]}`
+                vueModel.coupons.push(showCoupon)
+                vueModel.status = 'success'
               }
-              rulesDetail += '<br/>'
-
-              document.getElementById('rules').innerHTML = rulesDetail
-              vueModel.status = 'success'
             }
           }
         })
@@ -127,7 +113,7 @@
           vueModel.status = 'failure'
         })
 
-      vueModel.mappingUserRichmenu(vueModel.lineUserId)
+      //vueModel.mappingUserRichmenu(vueModel.lineUserId)
     },
 
     methods: {
@@ -147,21 +133,54 @@
           .catch(console.error)
       },
 
-      unfold (event) {
-        let unfoldTarget = event.currentTarget.parentNode
-        document.getElementById('attention-detail').style.display = ''
+      composeDescriptionContent (rules, applicable) {
+        let content = '【適用產品】<br/>'
+        content += '<div name="description" class="ellipsis app-left">'
+
+        if (applicable) {
+          content += applicable
+        } else {
+          content += '全'
+        }
+
+        if (rules) {
+          let rulesDetail = ''
+          let rulesList = rules.split('<br>')
+
+          content += '<br /><br />'
+          content += '※ 優惠券使用注意事項：<br />'
+          if (rulesList.length > 0) {
+            rulesDetail += `${rulesList[0]}<br/>`
+            rulesDetail += '<span name="detail" style="display: none; font-size: 16px;">'
+            for (let i = 1; i < rulesList.length; i++) {
+              rulesDetail += `${rulesList[i]}<br/>`
+            }
+            content += rulesDetail
+          }
+        }
+
+        content += '</span>'
+        content += '</div>'
+        return content
+      },
+
+      unfold (event, coupon) {
+        let parentNode = event.currentTarget.parentNode
+        let unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
+        parentNode.querySelectorAll('span[name=detail]')[0].style.display = ''
         unfoldTarget.style.overflow = 'visible'
         unfoldTarget.style.whiteSpace = 'normal'
         unfoldTarget.style.display = 'block'
         unfoldTarget.style.width = '90vw'
-        this.isShowAttention = true
+        coupon.isShowDescription = true
       },
 
-      fold (event) {
-        let unfoldTarget = event.currentTarget.parentNode
-        document.getElementById('attention-detail').style.display = 'none'
+      fold (event, coupon) {
+        let parentNode = event.currentTarget.parentNode
+        let unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
+        parentNode.querySelectorAll('span[name=detail]')[0].style.display = 'none'
         unfoldTarget.removeAttribute('style')
-        this.isShowAttention = false
+        coupon.isShowDescription = false
       },
 
       isDeadLine: dateDisable => {
@@ -178,11 +197,11 @@
   #line-binding-success {
     .coupon {
       color: #7f393b;
-      font-size: 21px;
+      font-size: 19px;
       font-weight: 500;
 
       span {
-        font-size: 22px;
+        font-size: 19px;
       }
 
       span.coupon-code {
@@ -194,11 +213,13 @@
     }
 
     .attention {
-      font-size: 20px;
+      font-size: 18px;
+    }
 
-      .mu-item {
-        height: 70px;
-      }
+    .how-to-use-coupon {
+      color: black;
+      font-weight: 500;
+      font-size: 18px;
     }
   }
 </style>
