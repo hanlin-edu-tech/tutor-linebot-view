@@ -186,7 +186,7 @@
         font-size: 19px;
       }
 
-      #master-detail, #rule-detail {
+      #master-detail, #rules-detail {
         font-size: 16px;
       }
     }

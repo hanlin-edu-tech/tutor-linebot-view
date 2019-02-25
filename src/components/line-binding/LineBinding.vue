@@ -175,18 +175,33 @@
         },
 
         completedLineBinding () {
-          this.assignBindingAction({
+          let lineBindingStudentCard = {
             studentCard: this.studentCard,
             email: this.email,
             name: this.name,
             mobile: this.mobile,
-            authentications: [
+          }
+
+          if (this.role === 'parent') {
+            lineBindingStudentCard.authentications = [
               {
-                'lineUserId': this.lineUserId,
-                'role': this.role
+                lineUserId: this.lineUserId,
+                role: this.role,
+                parentsOnLine: {
+                  notifyFrequency: 'hourly'
+                }
               }
             ]
-          })
+          } else {
+            lineBindingStudentCard.authentications = [
+              {
+                lineUserId: this.lineUserId,
+                role: this.role
+              }
+            ]
+          }
+
+          this.assignBindingAction(lineBindingStudentCard)
           this.handleNext()
         },
 

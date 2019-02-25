@@ -99,6 +99,10 @@
 
     created () {
       let vueModel = this
+      if (!vueModel.lineBindingStudentCard) {
+        this.$router.replace(`/profile/${vueModel.specificLineUser}?menuFunction=parentsOnLine`)
+      }
+
       vueModel
         .axios({
           method: 'get',
