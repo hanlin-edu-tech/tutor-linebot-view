@@ -85,8 +85,8 @@
     },
 
     created () {
-      this.resetStepAction()
       let vueModel = this
+      vueModel.resetStepAction()
       vueModel
         .axios({
           method: 'get',
