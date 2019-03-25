@@ -1,15 +1,15 @@
 <template>
-  <div id="app">
+  <div id="line-bot">
     <header>
       <mu-appbar style="width: 100%;" color="lightBlue900" text-color="#fbfbfb">
         <mu-menu slot="left">
-          <mu-button icon style="margin-top: 6px;" color="#fbfbfb" @click="open = (!open)">
+          <mu-button icon style="margin-top: 6px;" color="#fbfbfb" @click="isOpen = (!isOpen)">
             <mu-icon value="menu" size="35"></mu-icon>
           </mu-button>
         </mu-menu>
         翰林雲端學院
       </mu-appbar>
-      <mu-drawer :open.sync="open" :docked="false" :right="false" width="210" :z-depth="24">
+      <mu-drawer :open.sync="isOpen" :docked="false" :right="false" width="210" :z-depth="24">
         <mu-list>
           <mu-list-item button @click="binding">
             <mu-list-item-action>
@@ -44,34 +44,39 @@
   export default {
     name: 'app',
     data () {
+      const vueModel = this
       return {
         isAlive: true,
-        open: false,
-        lineUserId: this.$route.params['specificLineUser']
+        isOpen: false,
+        lineUserId: vueModel.$route.params['specificLineUser']
       }
     },
 
     methods: {
       reload () {
-        this.isAlive = false
-        this.$nextTick(() => (this.isAlive = true))
+        const vueModel = this
+        vueModel.isAlive = false
+        vueModel.$nextTick(() => (this.isAlive = true))
       },
 
       closeDrawer () {
-        this.open = false
+        const vueModel = this
+        vueModel.isOpen = false
       },
 
       binding () {
-        this.closeDrawer()
-        this.$router.replace(`/lineBinding/${this.lineUserId}`)
+        const vueModel = this
+        vueModel.closeDrawer()
+        vueModel.$router.replace(`/lineBinding/${vueModel.lineUserId}`)
       },
 
       queryProfiles (menuFunction) {
-        this.closeDrawer()
+        const vueModel = this
+        vueModel.closeDrawer()
         if (menuFunction) {
-          this.$router.push(`/profile/${this.lineUserId}?menuFunction=${menuFunction}`)
+          vueModel.$router.push(`/profile/${vueModel.lineUserId}?menuFunction=${menuFunction}`)
         } else {
-          this.$router.push(`/profile/${this.lineUserId}`)
+          vueModel.$router.push(`/profile/${vueModel.lineUserId}`)
         }
       }
     }
@@ -87,7 +92,7 @@
     font-family: 'Noto Sans TC', sans-serif;
   }
 
-  #app {
+  #line-bot {
     font-family: Roboto, monospace;
 
     .mu-appbar-title {

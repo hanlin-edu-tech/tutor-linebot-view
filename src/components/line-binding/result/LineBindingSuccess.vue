@@ -104,6 +104,7 @@
 
                 vueModel.coupons.push(showCoupon)
                 vueModel.status = 'success'
+                vueModel.mappingUserRichmenu(vueModel.lineUserId)
               }
             }
           }
@@ -112,8 +113,6 @@
           console.error(error)
           vueModel.status = 'failure'
         })
-
-      //vueModel.mappingUserRichmenu(vueModel.lineUserId)
     },
 
     methods: {

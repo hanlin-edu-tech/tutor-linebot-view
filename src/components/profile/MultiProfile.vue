@@ -116,15 +116,7 @@
         determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {
           switch (menuFunction) {
             case 'parentsOnLine': {
-              this.$router.replace({
-                name: 'ParentsOnLine',
-                params: {
-                  specificLineUser: this.lineUserId,
-                  studentCard: lineBindingStudentCard.studentCard,
-                  lineBindingStudentCard: lineBindingStudentCard,
-                  isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
-                }
-              })
+
               break
             }
             default : {
@@ -134,23 +126,42 @@
         },
 
         retrieveSpecificInfo (lineBindingStudentCard) {
+          const vueModel = this
           /* 取回特定 profile，表示一定是綁定多筆帳號 */
           let isMultiLineBindingStudentCard = true
-          let menuFunction = this.menuFunction
+          let menuFunction = vueModel.menuFunction
           this.determineRouteFunction(menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
         },
 
-        routeProfile (lineBindingStudentCard, isMultiLineBindingStudentCard) {
-          this.$router.replace({
-            name: 'Profile',
-            params: {
-              specificLineUser: this.lineUserId,
-              studentCard: lineBindingStudentCard.studentCard,
-              panel: this.panel,
-              lineBindingStudentCard: lineBindingStudentCard,
-              isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
+        routeNotifySetting (lineBindingStudentCard, isMultiLineBindingStudentCard) {
+          const vueModel = this
+          vueModel.$router.replace(
+            {
+              name: 'NotifySetting',
+              params: {
+                specificLineUser: vueModel.lineUserId,
+                studentCard: lineBindingStudentCard.studentCard,
+                lineBindingStudentCard: lineBindingStudentCard,
+                isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
+              }
             }
-          })
+          )
+        },
+
+        routeProfile (lineBindingStudentCard, isMultiLineBindingStudentCard) {
+          const vueModel = this
+          vueModel.$router.replace(
+            {
+              name: 'Profile',
+              params: {
+                specificLineUser: vueModel.lineUserId,
+                studentCard: lineBindingStudentCard.studentCard,
+                panel: vueModel.panel,
+                lineBindingStudentCard: lineBindingStudentCard,
+                isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
+              }
+            }
+          )
         }
       }
     ),

@@ -20,23 +20,23 @@ export default {
       path: '/profile/:specificLineUser/:panel?',
       name: 'MultiProfile',
       component: MultiProfile,
-      props: route => ({...route.params})
+      props: route => ({ ...route.params })
     },
     {
       path: '/profile/:specificLineUser/:studentCard/:panel?',
       name: 'Profile',
       component: Profile,
-      props: route => ({...route.params})
+      props: route => ({ ...route.params })
     },
     {
       path: '/:specificLineUser?',
-      redirect: {name: 'MultiProfile'}
+      redirect: { name: 'MultiProfile' }
     },
     {
       path: '/parentsOnLine/:specificLineUser',
-      name: 'ParentsOnLine',
+      name: 'NotifySetting',
       component: NotifySetting,
-      props: route => ({...route.params})
+      props: route => ({ ...route.params })
     }
   ]
 }
