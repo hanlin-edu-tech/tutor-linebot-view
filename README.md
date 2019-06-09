@@ -1,16 +1,14 @@
-# ehanlin linebot 前台
+# line-bot-tutor-frontend
 
-> A Vue.js project
+Linebot 前端
 
-## Build Setup
+## Deployment
+### Test
+```
+  npm run test
+```
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
+### Production
+```
+  npm run production
 ```
