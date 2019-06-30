@@ -36,12 +36,13 @@
 </template>
 
 <script>
-  import store from '../../store/store'
+  import store from '@/store/store'
   import { mapState } from 'vuex'
-  import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
-  import TipSubtitle from '../layout/TipSubtitle'
+  import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
+  import TipSubtitle from '@/components/layout/TipSubtitle'
 
   export default {
+    store,
     name: 'MultiProfile',
     components: {
       DetermineUnsuccessfulStatus,
@@ -53,74 +54,76 @@
     },
 
     data () {
+      const vueModel = this
       return {
-        lineUserId: this.$route.params['specificLineUser'],
-        panel: this.$route.params['panel'] ? this.$route.params['panel'] : 'panels',
-        menuFunction: this.$route.query['menuFunction'] ? this.$route.query['menuFunction'] : '',
+        lineUserId: vueModel.$route.params['specificLineUser'],
+        panel: vueModel.$route.params['panel'] ? vueModel.$route.params['panel'] : 'panels',
+        menuFunction: vueModel.$route.query['menuFunction'] ? vueModel.$route.query['menuFunction'] : '',
         status: '',
-        isParent: true,
+        isParent: vueModel,
         lineBindingStudentCards: Object
       }
     },
 
     computed: mapState('unifyDesc', ['retrieveFailed']),
 
-    created () {
-      if (this.refresh === true) {
+    async created () {
+      const vueModel = this
+      if (vueModel.refresh === true) {
         window.location.reload()
       }
 
-      let vueModel = this
-      vueModel
-        .axios({
-          method: 'get',
-          url: `/linebot/profile/${vueModel.lineUserId}`,
-        })
-        .then(response => {
-          let jsonData = response.data
-          let lineBindingStudentCards = jsonData.content
-          if (lineBindingStudentCards.length > 0) {
-            for (let i = 0; i < lineBindingStudentCards.length; i++) {
-              let lineBindingStudentCard = lineBindingStudentCards[i]
-              lineBindingStudentCard.authentications.forEach(authentication => {
-                if (authentication.lineUserId === vueModel.lineUserId && authentication.role === 'student') {
-                  vueModel.isParent = false
-                }
-              })
+      const response = await vueModel.$axios({
+        method: 'get',
+        url: `/linebot/profile/${vueModel.lineUserId}`,
+      })
 
-              if (lineBindingStudentCards.length === 1) {
-                let isMultiLineBindingStudentCard = false
-                vueModel.determineRouteFunction(
-                  vueModel.menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
+      try {
+        const jsonData = response.data
+        const lineBindingStudentCards = jsonData.content
+        if (lineBindingStudentCards.length > 0) {
+          for (let i = 0; i < lineBindingStudentCards.length; i++) {
+            const lineBindingStudentCard = lineBindingStudentCards[i]
+            lineBindingStudentCard.authentications.forEach(authentication => {
+              if (authentication.lineUserId === vueModel.lineUserId && authentication.role === 'student') {
+                vueModel.isParent = false
               }
-            }
+            })
 
-            vueModel.lineBindingStudentCards = lineBindingStudentCards
-            vueModel.status = 'success'
-          } else {
-            vueModel.status = 'empty'
+            if (lineBindingStudentCards.length === 1) {
+              const isMultiLineBindingStudentCard = false
+              vueModel.determineRouteFunction(
+                vueModel.menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
+            }
           }
-        })
-        .catch(error => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+
+          vueModel.lineBindingStudentCards = lineBindingStudentCards
+          vueModel.status = 'success'
+        } else {
+          vueModel.status = 'empty'
+        }
+      } catch (error) {
+        console.error(error)
+        vueModel.status = 'failure'
+      }
     },
 
     methods: Object.assign(
       {
         binding () {
-          this.$router.replace(`/lineBinding/${this.lineUserId}`)
+          const vueModel = this
+          vueModel.$router.replace(`/lineBinding/${vueModel.lineUserId}`)
         },
 
         determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {
+          const vueModel = this
           switch (menuFunction) {
             case 'parentsOnLine': {
-
+              vueModel.routeNotifySetting(lineBindingStudentCard, isMultiLineBindingStudentCard)
               break
             }
             default : {
-              this.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
+              vueModel.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
             }
           }
         },
@@ -128,9 +131,9 @@
         retrieveSpecificInfo (lineBindingStudentCard) {
           const vueModel = this
           /* 取回特定 profile，表示一定是綁定多筆帳號 */
-          let isMultiLineBindingStudentCard = true
-          let menuFunction = vueModel.menuFunction
-          this.determineRouteFunction(menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
+          const isMultiLineBindingStudentCard = true
+          const menuFunction = vueModel.menuFunction
+          vueModel.determineRouteFunction(menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
         },
 
         routeNotifySetting (lineBindingStudentCard, isMultiLineBindingStudentCard) {
@@ -164,9 +167,7 @@
           )
         }
       }
-    ),
-
-    store
+    )
   }
 </script>
 

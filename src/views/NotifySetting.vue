@@ -64,8 +64,8 @@
 </template>
 
 <script>
-  import TipSubtitle from '../layout/TipSubtitle'
-  import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
+  import TipSubtitle from '@/components/layout/TipSubtitle'
+  import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
 
   export default {
     name: 'NotifySetting',
@@ -74,10 +74,10 @@
       DetermineUnsuccessfulStatus
     },
     props: {
-      studentCard: String,
-      specificLineUser: String,
-      panel: String,
-      lineBindingStudentCard: Object,
+      studentCard: '',
+      specificLineUser: '',
+      panel: '',
+      lineBindingStudentCard: {},
       isMultiLineBindingStudentCard: Boolean
     },
 
@@ -97,33 +97,32 @@
       }
     },
 
-    created () {
-      let vueModel = this
+    async created () {
+      const vueModel = this
       if (!vueModel.lineBindingStudentCard) {
-        this.$router.replace(`/profile/${vueModel.specificLineUser}?menuFunction=parentsOnLine`)
+        vueModel.$router.replace(`/profile/${vueModel.specificLineUser}?menuFunction=parentsOnLine`)
       }
 
-      vueModel
-        .axios({
+      try {
+        const response = await vueModel.$axios({
           method: 'get',
           url: `/linebot/parentsOnLine/notifySetting?studentCard=${vueModel.studentCard}&lineUserId=${vueModel.specificLineUser}`
         })
-        .then(response => {
-          let jsonData = response.data
-          let parentsOnLineInfo = jsonData.content
-          if (Object.keys(parentsOnLineInfo).length > 0) {
-            vueModel.parentsOnLine = parentsOnLineInfo
-          }
-          if (parentsOnLineInfo.role === 'student') {
-            vueModel.status = 'forbidden'
-          } else {
-            vueModel.status = 'success'
-          }
-        })
-        .catch(error => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+        const jsonData = response.data
+        const parentsOnLineInfo = jsonData.content
+        if (Object.keys(parentsOnLineInfo).length > 0) {
+          vueModel.parentsOnLine = parentsOnLineInfo
+        }
+
+        if (parentsOnLineInfo.role === 'student') {
+          vueModel.status = 'forbidden'
+        } else {
+          vueModel.status = 'success'
+        }
+      } catch (error) {
+        console.error(error)
+        vueModel.status = 'failure'
+      }
     },
 
     methods: {
@@ -131,14 +130,14 @@
         return `${hour} 時`
       },
 
-      notifySetting () {
-        let vueModel = this
-        let parentsOnLine = vueModel.parentsOnLine
-        let settingInfo = {
+      async notifySetting () {
+        const vueModel = this
+        const parentsOnLine = vueModel.parentsOnLine
+        const settingInfo = {
           lineUserId: vueModel.specificLineUser,
           studentCard: vueModel.studentCard
         }
-        let setting = {}
+        const setting = {}
         switch (vueModel.parentsOnLine.notifyFrequency) {
           case 'hourly' : {
             setting.notifyFrequency = parentsOnLine.notifyFrequency
@@ -159,24 +158,23 @@
 
         settingInfo.setting = setting
 
-        vueModel
-          .axios({
+        try {
+          await vueModel.$axios({
             method: 'post',
             url: `/linebot/parentsOnLine/notifySetting`,
             data: settingInfo
           })
-          .then(response => {
-            vueModel.openSettingResult = true
-          })
-          .catch(error => {
-            console.error(error)
-            vueModel.updateResult = '設定失敗'
-            vueModel.openSettingResult = true
-          })
+          vueModel.openSettingResult = true
+        } catch (error) {
+          console.error(error)
+          vueModel.updateResult = '設定失敗'
+          vueModel.openSettingResult = true
+        }
       },
 
       closeDialog () {
-        this.openSettingResult = false
+        const vueModel = this
+        vueModel.openSettingResult = false
       }
     }
   }

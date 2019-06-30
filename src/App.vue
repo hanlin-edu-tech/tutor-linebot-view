@@ -56,7 +56,7 @@
       reload () {
         const vueModel = this
         vueModel.isAlive = false
-        vueModel.$nextTick(() => (this.isAlive = true))
+        vueModel.$nextTick(() => (vueModel.isAlive = true))
       },
 
       closeDrawer () {
@@ -84,9 +84,9 @@
 </script>
 
 <style lang="less">
-  @import "./css/layout.less";
-  @import "./css/process-result.less";
-  @import "css/content.less";
+  @import './static/css/layout.less';
+  @import './static/css/process-result.less';
+  @import './static/css/content.less';
 
   body, main, section, article, div, button, span, p {
     font-family: 'Noto Sans TC', sans-serif;
@@ -126,3 +126,4 @@
     }
   }
 </style>
+

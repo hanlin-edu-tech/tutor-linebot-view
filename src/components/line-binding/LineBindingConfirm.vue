@@ -22,7 +22,7 @@
             <mu-row>
               <mu-col span="12">
                 學號：<span class="font-important-info">{{ showStudentCard }}</span>
-                <br/>
+                <br />
                 帳號：{{ retrieveEmail() }}
                 <span class="verify-result info">{{ email }}</span>
               </mu-col>
@@ -69,10 +69,11 @@
     },
 
     data () {
+      const vueModel = this
       return {
         email: '',
         isBoundStudentTwice: false,
-        showStudentCard: this.studentCard
+        showStudentCard: vueModel.studentCard
       }
     },
 
@@ -80,14 +81,15 @@
 
     methods: {
       isLineUserBoundTwice () {
-        if (this.studentCards.length > 0) {
-          for (let i = 0; i < this.studentCards.length; i++) {
+        const vueModel = this
+        if (vueModel.studentCards.length > 0) {
+          for (let i = 0; i < vueModel.studentCards.length; i++) {
             /*
              * 同一位 line user 不能綁定同學號兩次
              */
-            if (this.studentCards[i] === this.studentCard) {
-              this.$emit('retrieve-email', '')
-              this.$emit('binding-same-student-card')
+            if (vueModel.studentCards[i] === vueModel.studentCard) {
+              vueModel.$emit('given-email')
+              vueModel.$emit('binding-same-student-card')
               return true
             }
           }
@@ -96,38 +98,38 @@
       },
 
       retrieveEmail () {
-        let vueModel = this
-        vueModel
-          .axios({
+        const vueModel = this
+        vueModel.$axios(
+          {
             method: 'get',
             url: `/linebot/lineBinding/user?studentCard=${vueModel.studentCard}&mobile=${vueModel.mobile}`,
-          })
-          .then(response => {
-            let jsonData = response.data
+          }
+        ).then(
+          response => {
+            const jsonData = response.data
 
             // 查詢成功，jsonData.content 即 email
             if (jsonData.message.indexOf('success') > 0) {
-              let specificUser = jsonData.content
+              const specificUser = jsonData.content
               vueModel.email = specificUser.email
               vueModel.showStudentCard = specificUser.studentCard
               // 學生是否綁定兩次
-              vueModel.isBoundStudentTwice = (specificUser.boundStudent === true && vueModel.role === 'student')
+              vueModel.isBoundStudentTwice = (specificUser.isBoundStudent === true && vueModel.role === 'student')
               if (vueModel.isBoundStudentTwice === true) {
-                vueModel.$emit('retrieve-email', '')
+                vueModel.$emit('given-email', '')
               } else if (!specificUser.studentCard) {
                 vueModel.email = 'empty'
-
               } else {
-                vueModel.$emit('retrieve-email', specificUser)
+                vueModel.$emit('given-email', specificUser)
               }
             } else {
               vueModel.email = 'empty'
             }
-          })
-          .catch(error => {
-            console.error(error)
-            vueModel.email = 'empty'
-          })
+          }
+        ).catch(error => {
+          console.error(error)
+          vueModel.email = 'empty'
+        })
       }
     }
   }

@@ -56,6 +56,7 @@
   import { mapState, mapActions } from 'vuex'
 
   export default {
+    store,
     name: 'LineBinding',
     components: {
       LineBindingAuthentication,
@@ -81,7 +82,7 @@
         /* 如果家長綁定了同一個學號，才顯示帳號查詢之 button */
         isShowQueryProfilesBtn: false,
         lineUserId: vueModel.$route.params['specificLineUser'],
-        isParentBound: false
+        isParentBound: Boolean
       }
     },
 
@@ -97,7 +98,6 @@
         const jsonData = response.data
         const lineBindingStudentCards = jsonData.content
         vueModel.isParentBound = false
-
         if (lineBindingStudentCards.length > 0) {
           const studentCards = []
           lineBindingStudentCards.forEach(lineBindingStudentCard => {
@@ -125,8 +125,8 @@
       {
         isCompleted () {
           const vueModel = this
-          const isNotBound = vueModel.bindingStep > 2
-          const isParentBound = (vueModel.isParentBound && vueModel.bindingStep > 1)
+          let isNotBound = vueModel.bindingStep > 2
+          let isParentBound = (vueModel.isParentBound && vueModel.bindingStep > 1)
           return isNotBound || isParentBound
         }
       },
@@ -242,8 +242,7 @@
       }),
 
       mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction'])
-    ),
-    store
+    )
   }
 </script>
 

@@ -3,18 +3,18 @@
     <mu-select label="選擇學號或手機" v-model="choice" full-width>
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
-    <span class="choice-account font-secondary-info">小提醒：若您未曾於翰林雲端學院購買課程，請登入認證後以學號登入</span>
+    <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
-                     @keyup="givenStudentCard" full-width></mu-text-field>
+                     @keyup="emitGivenStudentCard" full-width></mu-text-field>
       <a href="https://www.ehanlin.com.tw/Users/login.html">
         <div id="student-card-query" class="student-card-query" style="display: none;"></div>
       </a>
       <span class="color-primary how-to-get-student-card" @click="unfoldStudentCardQuery($event)">如何獲得學號？</span>
     </div>
     <div v-show="choice === 'mobile'">
-      <mu-text-field v-model="mobile" type="text" placeholder="請輸入訂購人手機號碼" action-icon="phone"
-                     @keyup="givenMobile" :error-text="errorText" full-width></mu-text-field>
+      <mu-text-field v-model="mobile" type="text" placeholder="請輸入學生證註冊手機號碼" action-icon="phone"
+                     @keyup="emitGivenMobile" :error-text="errorText" full-width></mu-text-field>
     </div>
   </article>
 </template>
@@ -35,15 +35,17 @@
       }
     },
     methods: {
-      givenStudentCard () {
-        this.$emit('retrieve-student-card', this.studentCard)
+      emitGivenStudentCard () {
+        const vueModel = this
+        vueModel.$emit('given-student-card', vueModel.studentCard)
       },
 
-      givenMobile () {
-        if (isNaN(this.mobile)) {
-          this.errorText = '請輸入手機 10 碼數字'
+      emitGivenMobile () {
+        const vueModel = this
+        if (isNaN(vueModel.mobile)) {
+          vueModel.errorText = '請輸入手機 10 碼數字'
         } else {
-          this.$emit('retrieve-mobile', this.mobile)
+          vueModel.$emit('given-mobile', vueModel.mobile)
         }
       },
 
@@ -74,6 +76,7 @@
 
     .mu-input {
       font-size: 20px;
+
       input[type="text"]::-webkit-input-placeholder {
         font-size: 18px
       }
@@ -86,7 +89,7 @@
     .student-card-query {
       height: 700px;
       width: 240px;
-      background-image: url("../../img/student-card-query.png");
+      background-image: url('~@/static/img/student-card-query.png');
       background-size: cover;
     }
 
@@ -110,5 +113,4 @@
       font-size: 18px;
     }
   }
-
 </style>

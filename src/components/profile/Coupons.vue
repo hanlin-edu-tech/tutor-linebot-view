@@ -43,6 +43,7 @@
   import DetermineUnsuccessfulStatus from '../layout/DetermineUnsuccessfulStatus'
 
   export default {
+    store,
     name: 'Coupons',
     data () {
       return {
@@ -59,44 +60,43 @@
 
     computed: mapState('unifyDesc', ['retrieveFailed']),
 
-    created () {
-      let vueModel = this
-      vueModel
-        .axios({
+    async created () {
+      const vueModel = this
+      try {
+        const response = await vueModel.$axios({
           method: 'get',
           url: `/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
         })
-        .then(response => {
-          let showCoupons = [], coupons = response.data
-          for (let i = 0; i < Object.keys(coupons).length; i++) {
-            let coupon = coupons[i]
-            // 取回效期尚未截止之優惠卷
-            if (!this.determineDeadline(coupon.date) && coupon.enabled === true) {
-              coupon.discount = this.retrieveDiscount(coupon.discount)
-              coupon.expireDate = this.retrieveExpireDate(coupon.date)
-              coupon.isAvailable = coupon.times > 0 ? '可使用' : '無法再使用'
-              showCoupons.push(coupon)
-            }
+        const showCoupons = []
+        const coupons = response.data
+        for (let i = 0; i < Object.keys(coupons).length; i++) {
+          const coupon = coupons[i]
+          // 取回效期尚未截止之優惠卷
+          if (!vueModel.determineDeadline(coupon.date) && coupon.enabled === true) {
+            coupon.discount = vueModel.retrieveDiscount(coupon.discount)
+            coupon.expireDate = vueModel.retrieveExpireDate(coupon.date)
+            coupon.isAvailable = coupon.times > 0 ? '可使用' : '無法再使用'
+            showCoupons.push(coupon)
           }
+        }
 
-          vueModel.coupons = showCoupons
-          vueModel.status = 'success'
-        })
-        .catch(error => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+        vueModel.coupons = showCoupons
+        vueModel.status = 'success'
+      } catch (error) {
+        console.error(error)
+        vueModel.status = 'failure'
+      }
     },
 
     methods: {
       retrieveDiscount: discount => {
-        let discountRegularExp = /^\d\.\d{2}/
+        const discountRegularExp = /^\d\.\d{2}/
         return discountRegularExp.test(discount.toString()) ? discount * 100 : discount * 10
       },
 
       retrieveExpireDate: couponDate => {
         if (couponDate) {
-          let dateDisable = couponDate.disable
+          const dateDisable = couponDate.disable
           if (dateDisable)
             return dayjs(dateDisable).locale('zh-tw').format('YYYY/MM/DD')
         }
@@ -106,7 +106,7 @@
       determineDeadline (couponDate) {
         let isDeadLine = false
         if (couponDate) {
-          let dateDisable = couponDate.disable
+          const dateDisable = couponDate.disable
           if (dateDisable) {
             isDeadLine = (dayjs(dateDisable).diff(dayjs(), 'seconds') < 0)
           }
@@ -115,20 +115,22 @@
       },
 
       retrieveRules (rulesContent) {
-        let rules = rulesContent.split('<br>')
-        let firstRule = rules[0]
+        const vueModel = this
+        const rules = rulesContent.split('<br>')
+        const firstRule = rules[0]
         let rulesDetail = ''
         for (let i = 1; i < rules.length; i++) {
           rulesDetail += `<br/>${rules[i]}`
         }
         rulesDetail += '<br/>'
-        this.rulesDetail = rulesDetail
+        vueModel.rulesDetail = rulesDetail
         return firstRule
       },
 
       /* 展開內容 */
       unfold (coupon, isShowCurrentContent, detailId, event) {
-        let unfoldTarget = event.currentTarget.parentNode
+        const vueModel = this
+        const unfoldTarget = event.currentTarget.parentNode
         unfoldTarget.querySelector(detailId).style.display = ''
         unfoldTarget.style.overflow = 'visible'
         unfoldTarget.style.whiteSpace = 'normal'
@@ -137,23 +139,22 @@
 
         if (isShowCurrentContent === 'isShowRules') {
           if (!unfoldTarget.querySelector(detailId).innerHTML) {
-            unfoldTarget.querySelector(detailId).innerHTML = this.rulesDetail
+            unfoldTarget.querySelector(detailId).innerHTML = vueModel.rulesDetail
           }
         }
 
-        this.$set(coupon, isShowCurrentContent, true)
+        vueModel.$set(coupon, isShowCurrentContent, true)
       },
 
       /* 收合內容 */
       fold (coupon, isShowCurrentContent, detailId, event) {
-        let unfoldTarget = event.currentTarget.parentNode
+        const vueModel = this
+        const unfoldTarget = event.currentTarget.parentNode
         unfoldTarget.querySelector(detailId).style.display = 'none'
         unfoldTarget.removeAttribute('style')
-        this.$set(coupon, isShowCurrentContent, false)
+        vueModel.$set(coupon, isShowCurrentContent, false)
       }
-    },
-
-    store
+    }
   }
 </script>
 

@@ -4,7 +4,7 @@
       <mu-row v-for="identity in identities" :key="identity.id">
         <mu-col span="11">
           <mu-radio name="role" :value="identity.value" v-model="role"
-                    :label="identity.text" @change="givenRole"></mu-radio>
+                    :label="identity.text" @change="emitGivenRole"></mu-radio>
           <mu-divider class="divider"></mu-divider>
         </mu-col>
       </mu-row>
@@ -27,9 +27,10 @@
     },
 
     methods: {
-      givenRole () {
+      emitGivenRole () {
+        const vueModel = this
         document.querySelector('#line-binding-authentication .container').removeAttribute('style')
-        this.$emit('retrieve-role', this.role)
+        vueModel.$emit('given-role', vueModel.role)
       }
     }
   }

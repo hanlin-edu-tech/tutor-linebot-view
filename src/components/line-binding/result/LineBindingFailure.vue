@@ -33,8 +33,9 @@
     methods: Object.assign(
       {
         reLineBinding () {
+          const vueModel = this
           document.querySelector('#line-binding .mu-stepper').style.display = ''
-          this.resetStepAction()
+          vueModel.resetStepAction()
         }
       },
       mapActions('step', ['resetStepAction'])

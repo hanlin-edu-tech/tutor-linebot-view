@@ -8,9 +8,9 @@
 </template>
 
 <script>
-  import LineBindingReachLimited from './result/LineBindingReachLimited'
-  import LineBindingFailure from './result/LineBindingFailure'
-  import LineBindingSuccess from './result/LineBindingSuccess'
+  import LineBindingReachLimited from '@/components/line-binding/result/LineBindingReachLimited'
+  import LineBindingFailure from '@/components/line-binding/result/LineBindingFailure'
+  import LineBindingSuccess from '@/components/line-binding/result/LineBindingSuccess'
   import { mapState } from 'vuex'
 
   export default {
@@ -33,35 +33,33 @@
     /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
     computed: mapState('binding', ['lineBindingStudentCard']),
 
-    created () {
-      let vueModel = this
-      vueModel
-        .axios(
+   async created () {
+      const vueModel = this
+
+      try {
+        const response = await vueModel.$axios(
           {
             method: 'post',
             url: `/linebot/lineBinding`,
             data: vueModel.lineBindingStudentCard
           }
         )
-        .then(function (response) {
-          let jsonData = response.data
-          let message = jsonData.message
-          let status
+        const jsonData = response.data
+        const message = jsonData.message
+        let status
+        if (message.indexOf('success') > 0) {
+          status = 'success'
+        } else if (message.indexOf('limited') > 0) {
+          status = 'reachedLimited'
+        } else {
+          status = 'failure'
+        }
 
-          if (message.indexOf('success') > 0) {
-            status = 'success'
-          } else if (message.indexOf('limited') > 0) {
-            status = 'reachedLimited'
-          } else {
-            status = 'failure'
-          }
-
-          vueModel.status = status
-        })
-        .catch(error => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+        vueModel.status = status
+      } catch (error) {
+        console.error(error)
+        vueModel.status = 'failure'
+      }
     },
 
     mounted () {

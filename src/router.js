@@ -1,31 +1,29 @@
-import Refresh from './Refresh'
-import LineBinding from '../components/line-binding/LineBinding'
-import MultiProfile from '../components/profile/MultiProfile'
-import Profile from '../components/profile/Profile'
-import NotifySetting from '../components/parents-on-line/NotifySetting'
+import Vue from 'vue'
+import Router from 'vue-router'
 
-export default {
+Vue.use(Router)
+export default new Router({
   routes: [
     {
       path: '/refresh',
       name: 'Refresh',
-      component: Refresh
+      component: () => import('@/views/Refresh.vue')
     },
     {
       path: '/lineBinding/:specificLineUser',
       name: 'LineBinding',
-      component: LineBinding
+      component: () => import('@/views/LineBinding.vue')
     },
     {
       path: '/profile/:specificLineUser/:panel?',
       name: 'MultiProfile',
-      component: MultiProfile,
+      component: () => import('@/views/MultiProfile.vue'),
       props: route => ({ ...route.params })
     },
     {
       path: '/profile/:specificLineUser/:studentCard/:panel?',
       name: 'Profile',
-      component: Profile,
+      component: () => import('@/views/Profile.vue'),
       props: route => ({ ...route.params })
     },
     {
@@ -35,8 +33,8 @@ export default {
     {
       path: '/parentsOnLine/:specificLineUser',
       name: 'NotifySetting',
-      component: NotifySetting,
+      component: () => import('@/views/NotifySetting.vue'),
       props: route => ({ ...route.params })
     }
   ]
-}
+})

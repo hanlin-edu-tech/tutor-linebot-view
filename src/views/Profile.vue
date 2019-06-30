@@ -28,30 +28,32 @@
 </template>
 
 <script>
-  import ProfileDetail from './ProfileDetail'
-  import Coupons from './Coupons'
+  import ProfileDetail from '@/components/profile/ProfileDetail'
+  import Coupons from '@/components/profile/Coupons'
 
   export default {
     name: 'Profile',
     props: {
-      studentCard: String,
-      specificLineUser: String,
-      panel: String,
-      lineBindingStudentCard: Object,
-      isMultiLineBindingStudentCard: Boolean
+      studentCard: '',
+      specificLineUser: '',
+      panel: '',
+      lineBindingStudentCard: {},
+      isMultiLineBindingStudentCard: false
     },
 
     data () {
+      const vueModel = this
       return {
-        showPanel: this.panel,
-        lineUserId: this.specificLineUser,
+        showPanel: vueModel.panel,
+        lineUserId: vueModel.specificLineUser,
         isParent: false
       }
     },
 
     created () {
-      if (!this.lineBindingStudentCard) {
-        this.$router.replace({
+      const vueModel = this
+      if (!vueModel.lineBindingStudentCard) {
+        vueModel.$router.replace({
           name: 'MultiProfile',
           params: {
             refresh: true
@@ -67,11 +69,13 @@
 
     methods: {
       toggle (currentPanel) {
-        this.showPanel = (currentPanel === this.showPanel ? '' : currentPanel)
+        const vueModel = this
+        vueModel.showPanel = (currentPanel === vueModel.showPanel ? '' : currentPanel)
       },
 
       determineParent () {
-        this.isParent = true
+        const vueModel = this
+        vueModel.isParent = true
       }
     }
   }

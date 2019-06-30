@@ -1,10 +1,70 @@
 const gulp = require('gulp')
 const replace = require('gulp-replace')
-const gcPub = require('gulp-gcloud-publish')
+const { Storage } = require('@google-cloud/storage')
 const cache = require('gulp-cache')
 const imageMin = require('gulp-imagemin')
 const pngquant = require('imagemin-pngquant')
-const sleep = require('system-sleep')
+
+const fs = require('fs').promises
+const path = require('path')
+
+const distDir = path.join(__dirname, 'dist/')
+const storage = new Storage({
+  projectId: 'tutor-204108',
+  keyFilename: './tutor.json'
+})
+
+const cleanGCS = async bucketName => {
+  const options = {
+    prefix: 'app/linebot/',
+  }
+
+  const [files] = await storage.bucket(bucketName).getFiles(options)
+  for (let file of files) {
+    await storage.bucket(bucketName)
+      .file(file.name)
+      .delete()
+    console.log(`${file.name} is deleted`)
+  }
+}
+
+const findAllUploadFilesPath = async (dir, multiDistEntireFilePath = []) => {
+  const files = await fs.readdir(dir)
+
+  for (let file of files) {
+    const entireFilepath = path.join(dir, file)
+    const fileStatus = await fs.stat(entireFilepath)
+
+    if (fileStatus.isDirectory()) {
+      multiDistEntireFilePath = await findAllUploadFilesPath(entireFilepath, multiDistEntireFilePath)
+    } else {
+      multiDistEntireFilePath.push(entireFilepath)
+    }
+  }
+
+  return multiDistEntireFilePath
+}
+
+const uploadToGCS = async bucketName => {
+  await cleanGCS(bucketName)
+
+  const multiDistEntireFilePath = await findAllUploadFilesPath(distDir)
+  multiDistEntireFilePath.forEach(distEntireFilePath => {
+    storage.bucket(bucketName)
+      .upload(distEntireFilePath,
+        {
+          destination: `/app/linebot/${distEntireFilePath.replace(distDir, '')}`,
+          metadata: {
+            cacheControl: 'no-store',
+          },
+          public: true
+        },
+        (err, file) => {
+          console.log(`Upload ${file.name} successfully`)
+        }
+      )
+  })
+}
 
 const minifyImage = sourceImage => {
   return gulp
@@ -17,26 +77,6 @@ const minifyImage = sourceImage => {
     .pipe(gulp.dest('./dist'))
 }
 
-const uploadGCS = bucket => {
-  sleep(1200)
-  return gulp
-    .src([
-      './dist/index.html',
-      './dist/css/**/*.css',
-      './dist/js/**/*.js',
-      './dist/img/**/*.@(jpg|png|gif|svg)'
-    ], {base: `${__dirname}/dist/`})
-    .pipe(gcPub({
-      bucket: bucket,
-      keyFilename: 'tutor.json',
-      base: 'app/linebot/',
-      projectId: 'tutor-204108',
-      public: true,
-      metadata: {
-        cacheControl: 'private, no-transform',
-      }
-    }))
-}
 
 gulp.task('minifyImage', minifyImage.bind(minifyImage, './src/img/**/*.@(jpg|png)'))
 /* 開發 */
@@ -72,14 +112,14 @@ gulp.task('switchEnv', () => {
 })
 
 /* 上傳 GCS */
-gulp.task('uploadGcsTest', uploadGCS.bind(uploadGCS, 'tutor-apps-test'))
-gulp.task('uploadGcsProduction', uploadGCS.bind(uploadGCS, 'tutor-apps'))
+gulp.task('uploadToGcsTest', uploadToGCS.bind(uploadToGCS, 'tutor-apps-test/'))
+gulp.task('uploadToGcsProduction', uploadToGCS.bind(uploadToGCS, 'tutor-apps/'))
 
 /* 部署 */
-gulp.task('deployToTest', ['minifyImage', 'uploadGcsTest'], () => {
-  console.log('Package and upload files to test GCS')
-})
+gulp.task('deployToTest',
+  gulp.series('minifyImage', 'uploadToGcsTest')
+)
 
-gulp.task('deployToProduction', ['minifyImage', 'uploadGcsProduction'], () => {
-  console.log('Package and upload files to production GCS')
-})
+gulp.task('deployToProduction',
+  gulp.series('minifyImage', 'uploadToGcsProduction')
+)

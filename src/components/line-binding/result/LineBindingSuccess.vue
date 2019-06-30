@@ -53,13 +53,14 @@
   import { mapState } from 'vuex'
   import dayjs from 'dayjs'
   import 'dayjs/locale/zh-tw'
-  import DetermineUnsuccessfulStatus from '../../layout/DetermineUnsuccessfulStatus'
+  import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
 
   export default {
     name: 'LineBindingSuccess',
     data () {
+      const vueModel = this
       return {
-        lineUserId: this.$route.params['specificLineUser'],
+        lineUserId: vueModel.$route.params['specificLineUser'],
         status: '',
         coupons: [],
         couponCount: 0
@@ -73,63 +74,68 @@
     /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
     computed: mapState('binding', ['lineBindingStudentCard']),
 
-    created () {
-      let vueModel = this
-      let studentCard = vueModel.lineBindingStudentCard.studentCard
-      vueModel
-        .axios({
+    async created () {
+      const vueModel = this
+      const studentCard = vueModel.lineBindingStudentCard.studentCard
+
+      try {
+        const response = await vueModel.$axios({
           method: 'get',
           url: `/Coupon?studentCard=${studentCard}&from=line@`
         })
-        .then(response => {
-          let coupons = response.data
-          vueModel.status = 'empty'
-          vueModel.couponCount = Object.keys(coupons).length
-          for (let i = 0; i < vueModel.couponCount; i++) {
-            let coupon = coupons[i]
-            if (coupon && coupon.code) {
-              if (!vueModel.isDeadLine(coupon.date.disable)) {
-                let discountRegularExp = /^\d\.\d{2}/
-                let showCoupon = {
-                  name: coupon.name,
-                  code: coupon.code,
-                  discount:
-                    discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-                  expireDate:
-                    coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-                  isShowDescription: false
-                }
-                showCoupon['description'] =
-                  vueModel.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
-
-                vueModel.coupons.push(showCoupon)
-                vueModel.status = 'success'
-                vueModel.mappingUserRichmenu(vueModel.lineUserId)
+        const coupons = response.data
+        vueModel.status = 'empty'
+        vueModel.couponCount = Object.keys(coupons).length
+        for (let i = 0; i < vueModel.couponCount; i++) {
+          const coupon = coupons[i]
+          if (coupon && coupon.code) {
+            if (!vueModel.isDeadLine(coupon.date.disable)) {
+              const discountRegularExp = /^\d\.\d{2}/
+              const showCoupon = {
+                name: coupon.name,
+                code: coupon.code,
+                discount:
+                  discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
+                expireDate:
+                  coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
+                isShowDescription: false
               }
+              showCoupon['description'] =
+                vueModel.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
+
+              vueModel.coupons.push(showCoupon)
+              vueModel.status = 'success'
+              vueModel.mappingUserRichmenu(vueModel.lineUserId)
             }
           }
-        })
-        .catch(error => {
-          console.error(error)
-          vueModel.status = 'failure'
-        })
+        }
+      } catch (error) {
+        console.error(error)
+        vueModel.status = 'failure'
+      }
     },
 
     methods: {
       queryProfiles () {
-        this.$router.push(`/profile/${this.lineUserId}/#`)
+        const vueModel = this
+        vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
       },
 
-      mappingUserRichmenu (lineUserId) {
-        this
-          .axios({
-            method: 'post',
-            url: `https://asia-northeast1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
-            data: {
-              lineUserId: lineUserId
+      async mappingUserRichmenu (lineUserId) {
+        const vueModel = this
+        try {
+          await vueModel.$axios(
+            {
+              method: 'post',
+              url: `https://asia-northeast1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
+              data: {
+                lineUserId: lineUserId
+              }
             }
-          })
-          .catch(console.error)
+          )
+        } catch (error) {
+          console.error(error)
+        }
       },
 
       composeDescriptionContent (rules, applicable) {
@@ -164,8 +170,8 @@
       },
 
       unfold (event, coupon) {
-        let parentNode = event.currentTarget.parentNode
-        let unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
+        const parentNode = event.currentTarget.parentNode
+        const unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
         parentNode.querySelectorAll('span[name=detail]')[0].style.display = ''
         unfoldTarget.style.overflow = 'visible'
         unfoldTarget.style.whiteSpace = 'normal'
@@ -175,8 +181,8 @@
       },
 
       fold (event, coupon) {
-        let parentNode = event.currentTarget.parentNode
-        let unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
+        const parentNode = event.currentTarget.parentNode
+        const unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
         parentNode.querySelectorAll('span[name=detail]')[0].style.display = 'none'
         unfoldTarget.removeAttribute('style')
         coupon.isShowDescription = false
