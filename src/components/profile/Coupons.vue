@@ -1,36 +1,44 @@
 <template>
   <section id="coupons">
-    <mu-card v-show="status === 'success'" v-for="coupon of coupons" :key="coupon['_id']">
-      <mu-card-title title="我目前擁有的優惠卷如下：" :sub-title="coupon.code"></mu-card-title>
-      <mu-card-text>
-        <div>
-          <span class="coupon-field-width">折扣：</span>
-          {{ coupon.discount }} 折
-        </div>
-        <div><span class="coupon-field-width">使用期限：</span>{{ coupon.expireDate }}</div>
-        <div><span class="coupon-field-width">狀態：</span>{{ coupon.isAvailable }}</div>
-        <div><span class="coupon-field-width">適用產品：</span></div>
-        <div class="ellipsis">
-          {{ coupon.description['applicable'] }}
-          <span id="applicable-detail" style="display: none;"></span>
-          <span class="collapse color-primary" style="display: none" v-if="!coupon['isShowApplicable']"
-                @click="unfold(coupon, 'isShowApplicable', '#applicable-detail', $event)">展開</span>
-          <span class="collapse color-primary" style="display: none" v-else
-                @click="fold(coupon, 'isShowApplicable', '#applicable-detail', $event)">收合</span>
-        </div>
-        <div><span class="coupon-field-width">使用規則：</span></div>
-        <div class="ellipsis">
-          {{ retrieveRules(coupon.description['rules']) }}
-          <span id="rules-detail" style="display: none;">
-          </span>
-          <span class="collapse color-primary" v-if="!coupon['isShowRules']"
-                @click="unfold(coupon, 'isShowRules', '#rules-detail', $event)">展開</span>
-          <span class="collapse color-primary" v-else
-                @click="fold(coupon, 'isShowRules', '#rules-detail', $event)">收合</span>
-          <br />
-        </div>
-      </mu-card-text>
-    </mu-card>
+    <div v-if="coupons.length > 0">
+      <mu-card v-show="status === 'success'" v-for="coupon of coupons" :key="coupon['_id']">
+        <mu-card-title title="我目前擁有的優惠卷如下：" :sub-title="coupon.code"></mu-card-title>
+        <mu-card-text>
+          <div>
+            <span class="coupon-field-width">折扣：</span>
+            {{ coupon.discount }} 折
+          </div>
+          <div><span class="coupon-field-width">使用期限：</span>{{ coupon.expireDate }}</div>
+          <div><span class="coupon-field-width">狀態：</span>{{ coupon.isAvailable }}</div>
+          <div><span class="coupon-field-width">適用產品：</span></div>
+          <div class="ellipsis">
+            {{ coupon.description['applicable'] }}
+            <span id="applicable-detail" style="display: none;"></span>
+            <span class="collapse color-primary" style="display: none" v-if="!coupon['isShowApplicable']"
+                  @click="unfold(coupon, 'isShowApplicable', '#applicable-detail', $event)">展開</span>
+            <span class="collapse color-primary" style="display: none" v-else
+                  @click="fold(coupon, 'isShowApplicable', '#applicable-detail', $event)">收合</span>
+          </div>
+          <div><span class="coupon-field-width">使用規則：</span></div>
+          <div class="ellipsis">
+            {{ retrieveRules(coupon.description['rules']) }}
+            <span id="rules-detail" style="display: none;">
+            </span>
+            <span class="collapse color-primary" v-if="!coupon['isShowRules']"
+                  @click="unfold(coupon, 'isShowRules', '#rules-detail', $event)">展開</span>
+            <span class="collapse color-primary" v-else
+                  @click="fold(coupon, 'isShowRules', '#rules-detail', $event)">收合</span>
+            <br />
+          </div>
+        </mu-card-text>
+      </mu-card>
+    </div>
+    <div v-else>
+      <mu-card>
+        <mu-card-title title="Ooops! 還沒有優惠券耶"></mu-card-title>
+      </mu-card>
+        
+    </div>
     <DetermineUnsuccessfulStatus :status="status">{{ retrieveFailed }}</DetermineUnsuccessfulStatus>
   </section>
 </template>
@@ -65,7 +73,7 @@
       try {
         const response = await vueModel.$axios({
           method: 'get',
-          url: `/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
+          url: `/cart/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
         })
         const showCoupons = []
         const coupons = response.data

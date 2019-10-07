@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.baseURL = ''
 axios.interceptors.response.use(response => response, Promise.reject)
 
 export default {

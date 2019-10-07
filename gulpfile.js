@@ -9,16 +9,22 @@ const fs = require('fs').promises
 const path = require('path')
 
 const distDir = path.join(__dirname, 'dist/')
-const storage = new Storage({
+const bucketNameProd = 'tutor-apps'
+const bucketNameTest = 'tutor-test-apps'
+const prodStorage = new Storage({
   projectId: 'tutor-204108',
   keyFilename: './tutor.json'
 })
+const testStorage = new Storage({
+  projectId: 'tutor-test-238709',
+  keyFilename: './tutor-test.json'
+})
 
-const cleanGCS = async bucketName => {
+const cleanGCS = async (bucketName, storage) => {
   const options = {
     prefix: 'app/linebot/',
   }
-
+  
   const [files] = await storage.bucket(bucketName).getFiles(options)
   for (let file of files) {
     await storage.bucket(bucketName)
@@ -46,7 +52,8 @@ const findAllUploadFilesPath = async (dir, multiDistEntireFilePath = []) => {
 }
 
 const uploadToGCS = async bucketName => {
-  await cleanGCS(bucketName)
+  const storage = bucketName === bucketNameProd? prodStorage: testStorage
+  await cleanGCS(bucketName, storage)
 
   const multiDistEntireFilePath = await findAllUploadFilesPath(distDir)
   multiDistEntireFilePath.forEach(distEntireFilePath => {
@@ -85,13 +92,13 @@ gulp.task('switchDev', () => {
     .src(['./src/modules/axios-config.js'], {
       base: './'
     })
-    .pipe(
-      replace(/axios.defaults.baseURL = ''/g, match => {
-        let dev = `axios.defaults.baseURL = 'http://localhost:8080'`
-        console.log(`baseURL => ${match} to ${dev}`)
-        return dev
-      })
-    )
+    // .pipe(
+    //   replace(/axios.defaults.baseURL = ''/g, match => {
+    //     let dev = `axios.defaults.baseURL = 'http://localhost:8080'`
+    //     console.log(`baseURL => ${match} to ${dev}`)
+    //     return dev
+    //   })
+    // )
     .pipe(gulp.dest('./'))
 })
 
@@ -101,19 +108,19 @@ gulp.task('switchEnv', () => {
     .src(['./src/modules/axios-config.js'], {
       base: './'
     })
-    .pipe(
-      replace(/axios.defaults.baseURL = 'http:\/\/localhost:8080'/g, match => {
-        let buildEnv = 'axios.defaults.baseURL = \'\''
-        console.log(`baseURL => ${match} to ${buildEnv}`)
-        return buildEnv
-      })
-    )
+    // .pipe(
+    //   replace(/axios.defaults.baseURL = 'http:\/\/localhost:8080'/g, match => {
+    //     let buildEnv = 'axios.defaults.baseURL = \'\''
+    //     console.log(`baseURL => ${match} to ${buildEnv}`)
+    //     return buildEnv
+    //   })
+    // )
     .pipe(gulp.dest('./'))
 })
 
 /* 上傳 GCS */
-gulp.task('uploadToGcsTest', uploadToGCS.bind(uploadToGCS, 'tutor-apps-test/'))
-gulp.task('uploadToGcsProduction', uploadToGCS.bind(uploadToGCS, 'tutor-apps/'))
+gulp.task('uploadToGcsTest', uploadToGCS.bind(uploadToGCS, bucketNameTest))
+gulp.task('uploadToGcsProduction', uploadToGCS.bind(uploadToGCS, bucketNameProd))
 
 /* 部署 */
 gulp.task('deployToTest',
