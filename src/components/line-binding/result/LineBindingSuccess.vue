@@ -81,7 +81,7 @@
       try {
         const response = await vueModel.$axios({
           method: 'get',
-          url: `/Coupon?studentCard=${studentCard}&from=line@`
+          url: `/cart/Coupon?studentCard=${studentCard}&from=line@`
         })
         const coupons = response.data
         vueModel.status = 'empty'
@@ -118,7 +118,7 @@
     methods: {
       queryProfiles () {
         const vueModel = this
-        vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
+        vueModel.$router.push(`/linebot/profile/${vueModel.lineUserId}/#`)
       },
 
       async mappingUserRichmenu (lineUserId) {
