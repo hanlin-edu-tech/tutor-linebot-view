@@ -118,7 +118,7 @@
     methods: {
       queryProfiles () {
         const vueModel = this
-        vueModel.$router.push(`/linebot/profile/${vueModel.lineUserId}/#`)
+        vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
       },
 
       async mappingUserRichmenu (lineUserId) {
