@@ -73,7 +73,7 @@
       try {
         const response = await vueModel.$axios({
           method: 'get',
-          url: `/cart/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
+          url: `/cart/Coupon?studentCard=${vueModel.$route.params['studentCard']}?from=line@`
         })
         const showCoupons = []
         const coupons = response.data

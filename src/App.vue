@@ -48,7 +48,6 @@
       return {
         isAlive: true,
         isOpen: false,
-        lineUserId: vueModel.$route.params['specificLineUser']
       }
     },
 
@@ -66,17 +65,19 @@
 
       binding () {
         const vueModel = this
+        const uId = vueModel.$route.params['specificLineUser']
         vueModel.closeDrawer()
-        vueModel.$router.replace(`/lineBinding/${vueModel.lineUserId}`)
+        vueModel.$router.replace(`/lineBinding/${uId}`)
       },
 
       queryProfiles (menuFunction) {
         const vueModel = this
+        const uId = vueModel.$route.params['specificLineUser']
         vueModel.closeDrawer()
         if (menuFunction) {
-          vueModel.$router.push(`/profile/${vueModel.lineUserId}?menuFunction=${menuFunction}`)
+          vueModel.$router.push(`/profile/${uId}?menuFunction=${menuFunction}`)
         } else {
-          vueModel.$router.push(`/profile/${vueModel.lineUserId}`)
+          vueModel.$router.push(`/profile/${uId}`)
         }
       }
     }
