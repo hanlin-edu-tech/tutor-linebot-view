@@ -23,12 +23,13 @@
             </mu-list-item-action>
             <mu-list-item-title>帳號查詢</mu-list-item-title>
           </mu-list-item>
-          <mu-list-item button @click="queryProfiles('parentsOnLine')">
+          <!-- deprecated -->
+          <!-- <mu-list-item button @click="queryProfiles('parentsOnLine')">
             <mu-list-item-action>
               <mu-icon value="alarm"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>學習通知</mu-list-item-title>
-          </mu-list-item>
+          </mu-list-item> -->
         </mu-list>
       </mu-drawer>
     </header>
