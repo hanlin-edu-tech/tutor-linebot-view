@@ -104,11 +104,11 @@
                 vueModel.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
 
               vueModel.coupons.push(showCoupon)
-              vueModel.status = 'success'
-              vueModel.mappingUserRichmenu(vueModel.lineUserId)
+              vueModel.status = 'success'              
             }
           }
         }
+        vueModel.mappingUserRichmenu(vueModel.lineUserId)
       } catch (error) {
         console.error(error)
         vueModel.status = 'failure'

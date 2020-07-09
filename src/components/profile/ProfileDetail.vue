@@ -30,6 +30,13 @@
           <mu-list-item-action>
             <mu-icon value="bubble_chart"></mu-icon>
           </mu-list-item-action>
+          <mu-list-item-title>會員等級：{{ profile.rank }}</mu-list-item-title>
+        </mu-list-item>
+        <mu-divider class="divider"></mu-divider>
+        <mu-list-item class="general">
+          <mu-list-item-action>
+            <mu-icon value="bubble_chart"></mu-icon>
+          </mu-list-item-action>
           <mu-list-item-title>年級：{{ profile.grade }}</mu-list-item-title>
         </mu-list-item>
         <mu-divider class="divider"></mu-divider>

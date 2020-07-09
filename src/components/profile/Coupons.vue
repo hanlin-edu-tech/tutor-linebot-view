@@ -6,7 +6,7 @@
         <mu-card-text>
           <div>
             <span class="coupon-field-width">折扣：</span>
-            {{ coupon.discount }} 折
+            {{ coupon.discount }} 
           </div>
           <div><span class="coupon-field-width">使用期限：</span>{{ coupon.expireDate }}</div>
           <div><span class="coupon-field-width">狀態：</span>{{ coupon.isAvailable }}</div>
@@ -25,9 +25,9 @@
             <span id="rules-detail" style="display: none;">
             </span>
             <span class="collapse color-primary" v-if="!coupon['isShowRules']"
-                  @click="unfold(coupon, 'isShowRules', '#rules-detail', $event)">展開</span>
+                  @click="unfold(coupon, 'isShowRules', '#rules-detail', $event, coupon.description['rules'])">展開</span>
             <span class="collapse color-primary" v-else
-                  @click="fold(coupon, 'isShowRules', '#rules-detail', $event)">收合</span>
+                  @click="fold(coupon, 'isShowRules', '#rules-detail', $event, coupon.description['rules'])">收合</span>
             <br />
           </div>
         </mu-card-text>
@@ -81,7 +81,12 @@
           const coupon = coupons[i]
           // 取回效期尚未截止之優惠卷
           if (!vueModel.determineDeadline(coupon.date) && coupon.enabled === true) {
-            coupon.discount = vueModel.retrieveDiscount(coupon.discount)
+            if(coupon.type === 'PERCENTAGE'){
+              coupon.discount = vueModel.retrieveDiscount(coupon.discount) + " 折"
+            }else {
+              coupon.discount = coupon.discount + " 元"
+            }
+            
             coupon.expireDate = vueModel.retrieveExpireDate(coupon.date)
             coupon.isAvailable = coupon.times > 0 ? '可使用' : '無法再使用'
             showCoupons.push(coupon)
@@ -122,7 +127,20 @@
         return isDeadLine
       },
 
-      retrieveRules (rulesContent) {
+      retrieveRules (rulesContent) {        
+        const vueModel = this
+        const rules = rulesContent.split('<br>')
+        const firstRule = rules[0]
+        let rulesDetail = ''
+        for (let i = 1; i < rules.length; i++) {
+          rulesDetail += `<br/>${rules[i]}`
+        }
+        rulesDetail += '<br/>'
+        console.log("retrieveRules ",firstRule)
+        return firstRule
+      },
+
+      retrieveRuleDetails (rulesContent) {        
         const vueModel = this
         const rules = rulesContent.split('<br>')
         const firstRule = rules[0]
@@ -132,13 +150,16 @@
         }
         rulesDetail += '<br/>'
         vueModel.rulesDetail = rulesDetail
+        console.log("retrieveRulesDetails ",rulesDetail)
         return firstRule
       },
 
       /* 展開內容 */
-      unfold (coupon, isShowCurrentContent, detailId, event) {
+      unfold (coupon, isShowCurrentContent, detailId, event, rulesContent) {
+        console.log("unfold")
         const vueModel = this
         const unfoldTarget = event.currentTarget.parentNode
+        this.retrieveRuleDetails(rulesContent)
         unfoldTarget.querySelector(detailId).style.display = ''
         unfoldTarget.style.overflow = 'visible'
         unfoldTarget.style.whiteSpace = 'normal'
@@ -150,16 +171,17 @@
             unfoldTarget.querySelector(detailId).innerHTML = vueModel.rulesDetail
           }
         }
-
         vueModel.$set(coupon, isShowCurrentContent, true)
       },
 
       /* 收合內容 */
-      fold (coupon, isShowCurrentContent, detailId, event) {
+      fold (coupon, isShowCurrentContent, detailId, event, rulesContent) {
+        console.log("fold")
+        this.retrieveRuleDetails(rulesContent)
         const vueModel = this
         const unfoldTarget = event.currentTarget.parentNode
         unfoldTarget.querySelector(detailId).style.display = 'none'
-        unfoldTarget.removeAttribute('style')
+        unfoldTarget.removeAttribute('style')        
         vueModel.$set(coupon, isShowCurrentContent, false)
       }
     }
