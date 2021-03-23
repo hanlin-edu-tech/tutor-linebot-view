@@ -190,24 +190,12 @@
             mobile: vueModel.mobile,
           }
 
-          if (vueModel.role === 'parent') {
-            lineBindingStudentCard.authentications = [
-              {
-                lineUserId: vueModel.lineUserId,
-                role: vueModel.role,
-                parentsOnLine: {
-                  notifyFrequency: 'hourly'
-                }
-              }
-            ]
-          } else {
-            lineBindingStudentCard.authentications = [
-              {
-                lineUserId: vueModel.lineUserId,
-                role: vueModel.role
-              }
-            ]
-          }
+          lineBindingStudentCard.authentications = [
+            {
+              lineUserId: vueModel.lineUserId,
+              role: vueModel.role
+            }
+          ]
 
           vueModel.assignBindingAction(lineBindingStudentCard)
           vueModel.handleNext()

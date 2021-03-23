@@ -117,15 +117,7 @@
 
         determineRouteFunction (menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard) {
           const vueModel = this
-          switch (menuFunction) {
-            case 'parentsOnLine': {
-              vueModel.routeNotifySetting(lineBindingStudentCard, isMultiLineBindingStudentCard)
-              break
-            }
-            default : {
-              vueModel.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
-            }
-          }
+          vueModel.routeProfile(lineBindingStudentCard, isMultiLineBindingStudentCard)
         },
 
         retrieveSpecificInfo (lineBindingStudentCard) {
@@ -134,21 +126,6 @@
           const isMultiLineBindingStudentCard = true
           const menuFunction = vueModel.menuFunction
           vueModel.determineRouteFunction(menuFunction, lineBindingStudentCard, isMultiLineBindingStudentCard)
-        },
-
-        routeNotifySetting (lineBindingStudentCard, isMultiLineBindingStudentCard) {
-          const vueModel = this
-          vueModel.$router.replace(
-            {
-              name: 'NotifySetting',
-              params: {
-                specificLineUser: vueModel.lineUserId,
-                studentCard: lineBindingStudentCard.studentCard,
-                lineBindingStudentCard: lineBindingStudentCard,
-                isMultiLineBindingStudentCard: isMultiLineBindingStudentCard
-              }
-            }
-          )
         },
 
         routeProfile (lineBindingStudentCard, isMultiLineBindingStudentCard) {

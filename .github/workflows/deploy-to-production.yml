@@ -1,0 +1,26 @@
+name: production CD
+
+on:
+  push:
+    tags:
+        - v\d+\.\d+\.\d+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: 
+            - 12.0.0
+
+    steps:
+        - uses: actions/checkout@v2
+        - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v1
+          with:
+              node-version: ${{ matrix.node-version }}
+        - run: echo -n '${{ secrets.GCS_TUTOR }}' > tutor.json
+        - run: npm install
+        - run: npm run deployProduction

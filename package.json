@@ -1,15 +1,19 @@
 {
   "name": "line-bot-tutor-frontend",
   "version": "0.1.0",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "author": "infinityAlive <sonicx7boyboyboy@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/hanlin-edu-tech/tutor-linebot-frontend.git"
   },
   "scripts": {
-    "dev": "gulp switchDev && vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "production": "gulp switchEnv && vue-cli-service build && gulp deployToProduction"
+    "deployTest": "vue-cli-service build && gulp deployToTest",
+    "deployProduction": "vue-cli-service build && gulp deployToProduction"
   },
   "dependencies": {
     "axios": "^0.21.1",
