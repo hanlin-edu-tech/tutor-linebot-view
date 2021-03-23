@@ -1,5 +1,4 @@
 const gulp = require('gulp')
-const replace = require('gulp-replace')
 const { Storage } = require('@google-cloud/storage')
 const cache = require('gulp-cache')
 const imageMin = require('gulp-imagemin')
@@ -86,37 +85,6 @@ const minifyImage = sourceImage => {
 
 
 gulp.task('minifyImage', minifyImage.bind(minifyImage, './src/img/**/*.@(jpg|png)'))
-/* 開發 */
-gulp.task('switchDev', () => {
-  return gulp
-    .src(['./src/modules/axios-config.js'], {
-      base: './'
-    })
-    // .pipe(
-    //   replace(/axios.defaults.baseURL = ''/g, match => {
-    //     let dev = `axios.defaults.baseURL = 'http://localhost:8080'`
-    //     console.log(`baseURL => ${match} to ${dev}`)
-    //     return dev
-    //   })
-    // )
-    .pipe(gulp.dest('./'))
-})
-
-/* 正式 */
-gulp.task('switchEnv', () => {
-  return gulp
-    .src(['./src/modules/axios-config.js'], {
-      base: './'
-    })
-    // .pipe(
-    //   replace(/axios.defaults.baseURL = 'http:\/\/localhost:8080'/g, match => {
-    //     let buildEnv = 'axios.defaults.baseURL = \'\''
-    //     console.log(`baseURL => ${match} to ${buildEnv}`)
-    //     return buildEnv
-    //   })
-    // )
-    .pipe(gulp.dest('./'))
-})
 
 /* 上傳 GCS */
 gulp.task('uploadToGcsTest', uploadToGCS.bind(uploadToGCS, bucketNameTest))

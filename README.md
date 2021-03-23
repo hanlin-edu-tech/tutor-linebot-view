@@ -2,13 +2,18 @@
 
 Linebot 前端
 
-## Deployment
-### Test
+## Build
 ```
-  npm run test
+  npm run build
 ```
 
-### Production
+## Deployment
+### 測試機
 ```
-  npm run production
+  npm run deployTest
+```
+
+### 正式機
+```
+  npm run deployProduction
 ```
