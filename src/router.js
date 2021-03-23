@@ -29,12 +29,6 @@ export default new Router({
     {
       path: '/:specificLineUser?',
       redirect: { name: 'MultiProfile' }
-    },
-    {
-      path: '/parentsOnLine/:specificLineUser',
-      name: 'NotifySetting',
-      component: () => import('@/views/NotifySetting.vue'),
-      props: route => ({ ...route.params })
     }
   ]
 })
