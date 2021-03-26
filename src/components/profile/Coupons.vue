@@ -73,14 +73,14 @@
       try {
         const response = await vueModel.$axios({
           method: 'get',
-          url: `/cart/Coupon?studentCard=${vueModel.$route.params['studentCard']}`
+          url: `/shop/coupon/list?studentCard=${vueModel.$route.params['studentCard']}`
         })
         const showCoupons = []
         const coupons = response.data
         for (let i = 0; i < Object.keys(coupons).length; i++) {
           const coupon = coupons[i]
           // 取回效期尚未截止之優惠卷
-          if (!vueModel.determineDeadline(coupon.date) && coupon.enabled === true) {
+          if (!vueModel.determineDeadline(coupon.date)) {
             if(coupon.type === 'PERCENTAGE'){
               coupon.discount = vueModel.retrieveDiscount(coupon.discount) + " 折"
             }else {
@@ -136,7 +136,6 @@
           rulesDetail += `<br/>${rules[i]}`
         }
         rulesDetail += '<br/>'
-        console.log("retrieveRules ",firstRule)
         return firstRule
       },
 
