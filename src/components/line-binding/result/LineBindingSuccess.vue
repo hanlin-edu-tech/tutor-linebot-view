@@ -81,7 +81,7 @@
       try {
         const response = await vueModel.$axios({
           method: 'get',
-          url: `/cart/Coupon?studentCard=${studentCard}&from=line@`
+          url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
         })
         const coupons = response.data
         vueModel.status = 'empty'
