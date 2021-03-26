@@ -127,9 +127,11 @@
           await vueModel.$axios(
             {
               method: 'post',
-              url: `https://asia-northeast1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
+              url: "https://www.ehanlin.com.tw/linebot/richmenu/map-binding",
               data: {
-                lineUserId: lineUserId
+                lineId: lineUserId,
+                platform: "eHanlin",
+                role: "STUDENT"
               }
             }
           )
