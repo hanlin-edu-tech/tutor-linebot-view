@@ -108,7 +108,6 @@
             }
           }
         }
-        vueModel.mappingUserRichmenu(vueModel.lineUserId)
       } catch (error) {
         console.error(error)
         vueModel.status = 'failure'
@@ -119,25 +118,6 @@
       queryProfiles () {
         const vueModel = this
         vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
-      },
-
-      async mappingUserRichmenu (lineUserId) {
-        const vueModel = this
-        try {
-          await vueModel.$axios(
-            {
-              method: 'post',
-              url: "https://www.ehanlin.com.tw/linebot/richmenu/map-binding",
-              data: {
-                lineId: lineUserId,
-                platform: "eHanlin",
-                role: "STUDENT"
-              }
-            }
-          )
-        } catch (error) {
-          console.error(error)
-        }
       },
 
       composeDescriptionContent (rules, applicable) {
