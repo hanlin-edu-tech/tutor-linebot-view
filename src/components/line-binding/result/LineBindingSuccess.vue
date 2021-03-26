@@ -108,7 +108,6 @@
             }
           }
         }
-        vueModel.mappingUserRichmenu(vueModel.lineUserId)
       } catch (error) {
         console.error(error)
         vueModel.status = 'failure'
@@ -119,23 +118,6 @@
       queryProfiles () {
         const vueModel = this
         vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
-      },
-
-      async mappingUserRichmenu (lineUserId) {
-        const vueModel = this
-        try {
-          await vueModel.$axios(
-            {
-              method: 'post',
-              url: `https://asia-northeast1-tutor-204108.cloudfunctions.net/mappingUserRichmenu`,
-              data: {
-                lineUserId: lineUserId
-              }
-            }
-          )
-        } catch (error) {
-          console.error(error)
-        }
       },
 
       composeDescriptionContent (rules, applicable) {
