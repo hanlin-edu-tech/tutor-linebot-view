@@ -16,7 +16,7 @@
     "deployProduction": "vue-cli-service build && gulp deployToProduction"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "core-js": "^2.6.5",
     "dayjs": "^1.8.14",
     "muse-ui": "^3.0.2",
