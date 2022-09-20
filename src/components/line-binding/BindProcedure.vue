@@ -19,7 +19,7 @@
 
 <script>
 import LineBindingInput from '@/components/line-binding/LineBindingInput'
-import {mapActions} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: "BindProcedure",
@@ -28,30 +28,20 @@ export default {
   },
   data() {
     return {
-      isShowNextToConfirmBtn: false,
-      student: this.$store.state.binding.student
+      isShowNextToConfirmBtn: false
     }
   },
   methods: {
     givenStudentCard(studentCard) {
-      if (studentCard) {
-        this.isShowNextToConfirmBtn = true
-      } else {
-        this.isShowNextToConfirmBtn = false
-      }
-      this.student['mobile'] = ''
-      this.student['studentCard'] = studentCard
+      this.isShowNextToConfirmBtn = !!studentCard;
+      this.student.mobile = ''
+      this.student.studentCard = studentCard
     },
 
     givenMobile(mobile) {
-      if (mobile) {
-        this.student['mobile'] = mobile
-        this.isShowNextToConfirmBtn = true
-      } else {
-        this.isShowNextToConfirmBtn = false
-      }
-      this.student['studentCard'] = ''
-      this.student['mobile'] = mobile
+      this.isShowNextToConfirmBtn = !!mobile;
+      this.student.studentCard = ''
+      this.student.mobile = mobile
     },
 
     // 恢復當當前步驟到上個步驟間的 connector line color
@@ -76,16 +66,13 @@ export default {
       this.changePreviousConnectorLineColor('#bdbdbd')
       this.isShowNextToInputBtn = false
       this.handlePrevious()
-      this.student['role'] = ''
-      this.student['student'] = ''
-      this.student['mobile'] = ''
-      this.assignStudentAction(this.student)
+      this.student.role = ''
+      this.student.studentCard = ''
+      this.student.mobile = ''
     },
 
     nextStep() {
       this.changeNextConnectorLineColor('orange')
-      this.assignStudentAction(this.student)
-      this.assignStudentCardsAction(this.student['studentCard'])
       this.handleNext()
     },
 
@@ -96,6 +83,12 @@ export default {
     }),
 
     ...mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction', 'assignStudentAction'])
+  },
+
+  computed: {
+    ...mapState('binding', {
+      student: state => state.student
+    })
   }
 }
 </script>
