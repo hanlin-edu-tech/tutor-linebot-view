@@ -14,7 +14,6 @@
       <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
       <mu-button @click="nextStep" color="lightBlue900" round v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
-
   </div>
 </template>
 
@@ -35,27 +34,24 @@ export default {
   },
   methods: {
     givenStudentCard(studentCard) {
-      const obj = {...this.student}
       if (studentCard) {
-        obj.studentCard = studentCard
         this.isShowNextToConfirmBtn = true
       } else {
         this.isShowNextToConfirmBtn = false
       }
-      this.student = obj
+      this.student['mobile'] = ''
+      this.student['studentCard'] = studentCard
     },
 
     givenMobile(mobile) {
-      const obj = {...this.student}
-
       if (mobile) {
-        this.student.mobile = mobile
+        this.student['mobile'] = mobile
         this.isShowNextToConfirmBtn = true
       } else {
         this.isShowNextToConfirmBtn = false
       }
-
-      this.student = obj
+      this.student['studentCard'] = ''
+      this.student['mobile'] = mobile
     },
 
     // 恢復當當前步驟到上個步驟間的 connector line color
@@ -80,14 +76,16 @@ export default {
       this.changePreviousConnectorLineColor('#bdbdbd')
       this.isShowNextToInputBtn = false
       this.handlePrevious()
-      this.student.role = ''
+      this.student['role'] = ''
+      this.student['student'] = ''
+      this.student['mobile'] = ''
       this.assignStudentAction(this.student)
     },
 
     nextStep() {
       this.changeNextConnectorLineColor('orange')
       this.assignStudentAction(this.student)
-      this.assignStudentCardsAction(this.student.studentCard)
+      this.assignStudentCardsAction(this.student['studentCard'])
       this.handleNext()
     },
 
