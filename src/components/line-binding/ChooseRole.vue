@@ -7,18 +7,18 @@
 
     <div class="role">
       <img id="studentImage"
-           :src="studentImage"
+           src="../../static/img/student.png"
            @click="checkSelectStatus"
-           v-bind:class="{selected: student.role === 'student'}">
+           v-bind:class="{selected: role === 'student'}">
 
       <img id="parentImage"
-           :src="parentImage"
+           src="../../static/img/parents.png"
            @click="checkSelectStatus"
-           v-bind:class="{selected: student.role === 'parent'}">
+           v-bind:class="{selected: role === 'parent'}">
     </div>
 
     <div class="button-div">
-      <mu-button @click="nextStep" color="orange" round v-if="student.role !== undefined">下一步</mu-button>
+      <mu-button @click="nextStep" color="orange" round v-if="role !== ''">下一步</mu-button>
     </div>
 
   </div>
@@ -26,8 +26,6 @@
 </template>
 
 <script>
-import studentImage from '../../static/img/student.png'
-import parentImage from '../../static/img/parents.png'
 import {mapActions} from 'vuex'
 
 export default {
@@ -35,24 +33,18 @@ export default {
 
   data() {
     return {
-      student: {},
-      studentImage: studentImage,
-      parentImage: parentImage
+      role: '',
+      student: {}
     }
   },
 
   methods: {
     checkSelectStatus(event) {
-      // 不能直接reassign field
-      const obj = {}
-
       if (event.target.id === "studentImage")
-        obj.role = this.student.role === 'student' ? undefined : 'student'
+        this.role = this.role === 'student' ? '' : 'student'
 
       if (event.target.id === "parentImage")
-        obj.role = this.student.role === 'parent' ? undefined : 'parent'
-
-      this.student = obj
+        this.role = this.role === 'parent' ? '' : 'parent'
     },
 
     // 更改當前步驟到下個步驟間的 connector line color
@@ -71,6 +63,7 @@ export default {
 
     nextStep() {
       this.changeNextConnectorLineColor('orange')
+      this.student['role'] = this.role
       this.assignStudentAction(this.student)
       this.handleNext()
     },
