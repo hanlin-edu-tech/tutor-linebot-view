@@ -9,16 +9,16 @@
       <img id="studentImage"
            src="../../static/img/student.png"
            @click="checkSelectStatus"
-           v-bind:class="{selected: role === 'student'}">
+           v-bind:class="{selected: selectedRole === 'student'}">
 
       <img id="parentImage"
            src="../../static/img/parents.png"
            @click="checkSelectStatus"
-           v-bind:class="{selected: role === 'parent'}">
+           v-bind:class="{selected: selectedRole === 'parent'}">
     </div>
 
     <div class="button-div">
-      <mu-button @click="nextStep" color="orange" round v-if="role !== ''">下一步</mu-button>
+      <mu-button @click="nextStep" color="orange" round v-if="selectedRole !== ''">下一步</mu-button>
     </div>
 
   </div>
@@ -26,25 +26,23 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import {mapActions, mapState} from 'vuex'
 
 export default {
   name: "ChooseRole",
-
   data() {
     return {
-      role: '',
-      student: {}
+      selectedRole: ''
     }
   },
 
   methods: {
     checkSelectStatus(event) {
       if (event.target.id === "studentImage")
-        this.role = this.role === 'student' ? '' : 'student'
+        this.selectedRole = this.selectedRole === 'student' ? '' : 'student'
 
       if (event.target.id === "parentImage")
-        this.role = this.role === 'parent' ? '' : 'parent'
+        this.selectedRole = this.selectedRole === 'parent' ? '' : 'parent'
     },
 
     // 更改當前步驟到下個步驟間的 connector line color
@@ -63,18 +61,16 @@ export default {
 
     nextStep() {
       this.changeNextConnectorLineColor('orange')
-      this.student['role'] = this.role
-      this.assignStudentAction(this.student)
       this.handleNext()
+      this.assignRoleAction(this.selectedRole)
     },
 
     ...mapActions('step', {
       handleNext: 'forwardStepAction',
-      handlePrevious: 'backwardStepAction',
       resetStepAction: 'resetStepAction'
     }),
 
-    ...mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction', 'assignStudentAction'])
+    ...mapActions('binding', ['assignStudentAction', 'assignRoleAction'])
   }
 }
 
