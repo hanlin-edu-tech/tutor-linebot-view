@@ -3,7 +3,11 @@ export default {
   state: {
     lineBindingStudentCard: Object,
     studentCards: Object,
-    student: Object,
+    student: {
+      role: '',
+      mobile: '',
+      studentCard: ''
+    }
   },
 
   actions: {
@@ -17,10 +21,6 @@ export default {
     
     assignStudentAction ({commit}, student) {
       commit('setStudent', student)
-    },
-    
-    assignRoleAction({commit}, role) {
-      commit('setRole', role)
     }
   },
 
@@ -35,10 +35,6 @@ export default {
   
     setStudent(state, student) {
         state.student = student
-    },
-    
-    setRole(state, role) {
-        state.studentCards['role'] = role
     }
   }
 }
