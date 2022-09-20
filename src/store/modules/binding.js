@@ -2,7 +2,8 @@ export default {
   namespaced: true,
   state: {
     lineBindingStudentCard: Object,
-    studentCards: Object
+    studentCards: Object,
+    student: Object,
   },
 
   actions: {
@@ -12,6 +13,14 @@ export default {
 
     assignStudentCardsAction ({commit}, studentCards) {
       commit('assignStudentCards', studentCards)
+    },
+    
+    assignStudentAction ({commit}, student) {
+      commit('setStudent', student)
+    },
+    
+    assignRoleAction({commit}, role) {
+      commit('setRole', role)
     }
   },
 
@@ -22,6 +31,14 @@ export default {
 
     assignStudentCards (state, studentCards) {
       state.studentCards = studentCards
+    },
+  
+    setStudent(state, student) {
+        state.student = student
+    },
+    
+    setRole(state, role) {
+        state.studentCards['role'] = role
     }
   }
 }
