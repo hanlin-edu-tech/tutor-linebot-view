@@ -3,7 +3,7 @@
     <LineBindingSuccess></LineBindingSuccess>
   </mu-container>
   <mu-container id="line-binding-result" v-else-if="status === 'failure'">
-    <LineBindingFailure></LineBindingFailure>
+    <LineBindingFailure @binding-again="$emit('binding-again')"></LineBindingFailure>
   </mu-container>
 </template>
 
@@ -11,7 +11,7 @@
   import LineBindingReachLimited from '@/components/line-binding/result/LineBindingReachLimited'
   import LineBindingFailure from '@/components/line-binding/result/LineBindingFailure'
   import LineBindingSuccess from '@/components/line-binding/result/LineBindingSuccess'
-  import { mapState } from 'vuex'
+  import {mapActions, mapState} from 'vuex'
 
   export default {
     name: 'LineBindingResult',
@@ -20,6 +20,8 @@
       LineBindingFailure,
       LineBindingReachLimited
     },
+
+    props:['lineUserId'],
 
     data () {
       return {
@@ -30,18 +32,30 @@
       }
     },
 
-    /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
-    computed: mapState('binding', ['lineBindingStudentCard']),
-
    async created () {
-      const vueModel = this
+     const lineBindingStudentCardObj = {
+       studentCard: this.student.studentCard,
+       email: this.student.email,
+       name: this.student.name,
+       mobile: this.student.mobile,
+     }
+
+     lineBindingStudentCardObj.authentications = [
+       {
+         lineUserId: this.lineUserId,
+         role: this.student.role
+       }
+     ]
+     this.assignBindingAction(lineBindingStudentCardObj)
+
 
       try {
-        const response = await vueModel.$axios(
+        const response = await this.$axios(
           {
             method: 'post',
-            url: `/linebot/lineBinding`,
-            data: vueModel.lineBindingStudentCard
+            // url: `/linebot/lineBinding`,
+            url: `https://www.tbbt.com.tw/linebot/lineBinding`,
+            data: this.lineBindingStudentCard
           }
         )
         const jsonData = response.data
@@ -55,15 +69,22 @@
           status = 'failure'
         }
 
-        vueModel.status = status
+        this.status = 'success'
       } catch (error) {
         console.error(error)
-        vueModel.status = 'failure'
+        this.status = 'success'
       }
     },
 
-    mounted () {
-      document.querySelector('#line-binding .mu-stepper').style.display = 'none'
+    methods: {
+      ...mapActions('binding', ['assignBindingAction'])
+    },
+
+    computed: {
+      ...mapState('binding', {
+        lineBindingStudentCard: state => state.lineBindingStudentCard,
+        student: state => state.student
+      })
     }
   }
 </script>
