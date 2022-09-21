@@ -22,7 +22,7 @@ import LineBindingInput from '@/components/line-binding/LineBindingInput'
 import {mapActions, mapState} from "vuex";
 
 export default {
-  name: "BindProcedure",
+  name: "BindingProcedure",
   components: {
     LineBindingInput
   },
@@ -78,11 +78,9 @@ export default {
 
     ...mapActions('step', {
       handleNext: 'forwardStepAction',
-      handlePrevious: 'backwardStepAction',
-      resetStepAction: 'resetStepAction'
+      handlePrevious: 'backwardStepAction'
     }),
 
-    ...mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction', 'assignStudentAction'])
   },
 
   computed: {
