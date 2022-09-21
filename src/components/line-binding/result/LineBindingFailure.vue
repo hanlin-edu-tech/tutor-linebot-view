@@ -30,16 +30,14 @@
 
   export default {
     name: 'LineBindingFailure',
-    methods: Object.assign(
-      {
-        reLineBinding () {
-          const vueModel = this
-          document.querySelector('#line-binding .mu-stepper').style.display = ''
-          vueModel.resetStepAction()
-        }
+    methods: {
+      reLineBinding () {
+        this.resetStepAction()
+        this.$emit('binding-again')
       },
-      mapActions('step', ['resetStepAction'])
-    )
+
+      ...mapActions('step', ['resetStepAction'])
+    }
   }
 </script>
 
