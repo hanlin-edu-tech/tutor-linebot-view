@@ -6,7 +6,9 @@ export default {
     student: {
       role: '',
       mobile: '',
-      studentCard: ''
+      email:'',
+      studentCard: '',
+      studentCards: []
     }
   },
 
@@ -18,10 +20,6 @@ export default {
     assignStudentCardsAction ({commit}, studentCards) {
       commit('assignStudentCards', studentCards)
     },
-    
-    assignStudentAction ({commit}, student) {
-      commit('setStudent', student)
-    }
   },
 
   mutations: {
@@ -32,9 +30,5 @@ export default {
     assignStudentCards (state, studentCards) {
       state.studentCards = studentCards
     },
-  
-    setStudent(state, student) {
-        state.student = student
-    }
   }
 }
