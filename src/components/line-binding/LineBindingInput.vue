@@ -6,7 +6,7 @@
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
-                     @keyup="emitGivenStudentCard" full-width></mu-text-field>
+                     @keyup="emitGivenStudentCard" full-width max-length="8"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'">
         <div id="student-card-query" class="student-card-query" style="display: none;"></div>
       </a>
@@ -35,7 +35,7 @@
     </div>
     <div v-show="choice === 'mobile'">
       <mu-text-field v-model="mobile" type="text" placeholder="請輸入學生證註冊手機號碼" action-icon="phone"
-                     @keyup="emitGivenMobile" :error-text="errorText" full-width></mu-text-field>
+                     @keyup="emitGivenMobile" :error-text="errorText" full-width max-length="10"></mu-text-field>
     </div>
   </article>
 </template>
