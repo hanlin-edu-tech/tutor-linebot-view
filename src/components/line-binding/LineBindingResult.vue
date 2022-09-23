@@ -1,36 +1,13 @@
 <template>
-  <mu-container id="line-binding-result" v-if="status === 'success'">
-    <LineBindingSuccess></LineBindingSuccess>
-  </mu-container>
-  <mu-container id="line-binding-result" v-else-if="status === 'failure'">
-    <LineBindingFailure @binding-again="$emit('binding-again')"></LineBindingFailure>
-  </mu-container>
 </template>
 
 <script>
-  import LineBindingReachLimited from '@/components/line-binding/result/LineBindingReachLimited'
-  import LineBindingFailure from '@/components/line-binding/result/LineBindingFailure'
-  import LineBindingSuccess from '@/components/line-binding/result/LineBindingSuccess'
   import {mapActions, mapState} from 'vuex'
 
   export default {
     name: 'LineBindingResult',
-    components: {
-      LineBindingSuccess,
-      LineBindingFailure,
-      LineBindingReachLimited
-    },
 
     props:['lineUserId'],
-
-    data () {
-      return {
-        status: '',
-        discount: 0,
-        code: '',
-        expireDate: '',
-      }
-    },
 
    async created () {
      const lineBindingStudentCardObj = {
@@ -48,6 +25,7 @@
      ]
      this.assignBindingAction(lineBindingStudentCardObj)
 
+     let status
 
       try {
         const response = await this.$axios(
@@ -60,7 +38,6 @@
         )
         const jsonData = response.data
         const message = jsonData.message
-        let status
         if (message.indexOf('success') > 0) {
           status = 'success'
         } else if (message.indexOf('limited') > 0) {
@@ -69,11 +46,12 @@
           status = 'failure'
         }
 
-        this.status = 'success'
+        status = 'success'
       } catch (error) {
         console.error(error)
-        this.status = 'success'
+        status = 'success'
       }
+      this.$emit('binding-result', status)
     },
 
     methods: {
