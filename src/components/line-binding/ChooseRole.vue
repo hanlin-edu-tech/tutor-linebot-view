@@ -32,20 +32,6 @@ export default {
   name: "ChooseRole",
 
   methods: {
-    // 更改當前步驟到下個步驟間的 connector line color
-    changeNextConnectorLineColor(color) {
-      // 取得目前步驟的 label
-      const activeStepLabel = document.querySelector('span[class="mu-step-label active"]')
-      // 取得parent node
-      const parentNode = activeStepLabel.parentNode
-      // 取得下個 sibling node
-      const stepConnector = parentNode.nextSibling
-      // 取得第一個child node
-      const connectorLine = stepConnector.childNodes[0]
-      // 更改顏色
-      connectorLine.style.borderColor = color
-    },
-
     nextStep() {
       this.handleNext()
     },
