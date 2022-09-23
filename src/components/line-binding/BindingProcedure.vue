@@ -11,7 +11,7 @@
     </p>
 
     <div class="button-div">
-      <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
+      <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary" v-if="!isAlreadyBinding">上一步</mu-button>
       <mu-button @click="nextStep" color="lightBlue900" round v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
   </div>
@@ -26,6 +26,9 @@ export default {
   components: {
     LineBindingInput
   },
+
+  props:['isAlreadyBinding'],
+
   data() {
     return {
       isShowNextToConfirmBtn: false
@@ -44,26 +47,7 @@ export default {
       this.student.mobile = mobile
     },
 
-    // 恢復當當前步驟到上個步驟間的 connector line color
-    changePreviousConnectorLineColor(color) {
-      const activeStepLabel = document.querySelector('span[class="mu-step-label active"]')
-      const parentNode = activeStepLabel.parentNode
-      const stepConnector = parentNode.previousSibling
-      const connectorLine = stepConnector.childNodes[0]
-      connectorLine.style.borderColor = color
-    },
-
-    // 更改當前步驟到下個步驟間的 connector line color
-    changeNextConnectorLineColor(color) {
-      const activeStepLabel = document.querySelector('span[class="mu-step-label active"]')
-      const parentNode = activeStepLabel.parentNode
-      const stepConnector = parentNode.nextSibling
-      const connectorLine = stepConnector.childNodes[0]
-      connectorLine.style.borderColor = color
-    },
-
     inputToPrevious() {
-      this.changePreviousConnectorLineColor('#bdbdbd')
       this.isShowNextToInputBtn = false
       this.handlePrevious()
       this.student.role = ''
@@ -72,7 +56,6 @@ export default {
     },
 
     nextStep() {
-      this.changeNextConnectorLineColor('orange')
       this.handleNext()
     },
 
