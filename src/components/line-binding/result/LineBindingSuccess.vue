@@ -18,42 +18,49 @@
         </mu-col>
       </mu-row>
       <mu-row>
-        <mu-col span="12" class="coupon" @click="isClickCouponDetail = true">
+        <mu-col span="12" class="coupon">
           <span>您已獲得{{ couponCount }}張綁定優惠券：</span>
-          <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
-            <div class="coupon-card" @click>
-            <span class="coupon-discount-block">
-              <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
-            </span>
+          <div class="app-center" v-for="coupon in coupons" :key="coupon['id']">
+            <div class="coupon-card" @click="passIdToCouponDetail(coupon['id'])">
+              <span class="coupon-discount-block">
+                <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
+              </span>
               <span class="coupon-card-block">
-              <mu-paper>
-                {{ coupon.name }} <br>
-                日期:{{ coupon.expireDate }} <br>
+                <mu-paper>
+                  <h1> 新手綁定優惠方案 </h1> <br>
+                  日期:{{ coupon.expireDate }} <br>
 
-                優惠折扣碼 <br>
-                {{ coupon.code }} <br>
-              </mu-paper>
-            </span>
+                  優惠折扣碼 <br>
+                  {{ coupon.code }} <br>
+                </mu-paper>
+              </span>
               <mu-button color="orange">查看詳情</mu-button>
-              <CouponDetail v-if="isClickCouponDetail" @go-back="isClickCouponDetail = false" :coupon="coupon"></CouponDetail>
+
             </div>
-            熱門活動：
           </div>
+          熱門活動：
         </mu-col>
       </mu-row>
-      <!--    <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>-->
+      <DetermineUnsuccessfulStatus v-if="coupons.length === 0">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
     </article>
+
+
+    <div class="app-center" v-if="!isClickCouponDetail">
+      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
+    </div>
+
+    <CouponDetail v-if="isClickCouponDetail"
+                  @go-back="isClickCouponDetail = false"
+                  :coupon="clickedCoupon">
+    </CouponDetail>
 
     <mu-carousel hide-indicators interval="9999999">
       <mu-carousel-item v-for="image in courseImages">
         <img :src="image" @click="goCoursePage">
       </mu-carousel-item>
     </mu-carousel>
-
-    <div class="app-center">
-      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
-    </div>
   </div>
+
 </template>
 
 <script>
@@ -61,7 +68,7 @@ import {mapState} from 'vuex'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
-import CouponDetail from "@/components/line-binding/CouponDetail";
+import CouponDetail from "@/components/profile/CouponDetail"
 import courseImage1 from "../../../static/img/course1.png"
 import courseImage2 from "../../../static/img/course2.png"
 
@@ -71,11 +78,11 @@ export default {
     const vueModel = this
     return {
       lineUserId: vueModel.$route.params['specificLineUser'],
-      status: '',
       coupons: [],
       couponCount: 0,
       isClickCouponDetail: false,
-      courseImages: [courseImage1, courseImage2]
+      courseImages: [courseImage1, courseImage2],
+      clickedCoupon: {}
     }
   },
 
@@ -97,33 +104,33 @@ export default {
         url: `https://www.tbbt.com.tw/shop/coupon/list?studentCard=${studentCard}&from=line@`
       })
       const coupons = response.data
-      this.status = 'empty'
       this.couponCount = Object.keys(coupons).length
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
         if (coupon && coupon.code) {
           if (!this.isDeadLine(coupon.date.disable)) {
             const discountRegularExp = /^\d\.\d{2}/
+            const illustrate = {
+              'rules': coupon.description.rules,
+              'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
+            }
             const showCoupon = {
+              id: coupon._id,
               name: coupon.name,
               code: coupon.code,
               discount:
                 discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
               expireDate:
                 coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-              isShowDescription: false
+              description: illustrate
             }
-            showCoupon['description'] =
-                this.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
 
             this.coupons.push(showCoupon)
-            this.status = 'success'
           }
         }
       }
     } catch (error) {
       console.error(error)
-      this.status = 'failure'
     }
   },
 
@@ -131,37 +138,6 @@ export default {
     queryProfiles() {
       const vueModel = this
       vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
-    },
-
-    composeDescriptionContent(rules, applicable) {
-      let content = '【適用產品】<br/>'
-      content += '<div name="description" class="ellipsis app-left">'
-
-      if (applicable) {
-        content += applicable
-      } else {
-        content += '全'
-      }
-
-      if (rules) {
-        let rulesDetail = ''
-        let rulesList = rules.split('<br>')
-
-        content += '<br /><br />'
-        content += '※ 優惠券使用注意事項：<br />'
-        if (rulesList.length > 0) {
-          rulesDetail += `${rulesList[0]}<br/>`
-          rulesDetail += '<span name="detail" style="display: none; font-size: 16px;">'
-          for (let i = 1; i < rulesList.length; i++) {
-            rulesDetail += `${rulesList[i]}<br/>`
-          }
-          content += rulesDetail
-        }
-      }
-
-      content += '</span>'
-      content += '</div>'
-      return content
     },
 
     isDeadLine: dateDisable => {
@@ -174,6 +150,12 @@ export default {
     goCoursePage() {
       // window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
       window.open('https://www.tbbt.com.tw/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+    },
+
+    passIdToCouponDetail(id) {
+      this.isClickCouponDetail = true
+      const couponObj = this.coupons.find(coupon => coupon.id === id)
+      this.clickedCoupon = couponObj
     }
   }
 }
