@@ -1,49 +1,52 @@
 <template>
   <article id="line-binding-confirm" class="font-secondary-info">
     <mu-container>
-      <mu-row v-if="isLineUserBoundTwice()">
+      <!-- <mu-row v-if="isLineUserBoundTwice()">
         <mu-col span="12">
           <span class="verify-result font-important-info">您已綁定過此帳號囉，請至帳號查詢頁面查看詳情！</span>
         </mu-col>
-      </mu-row>
-      <div v-else>
-        <mu-row v-if="isBoundStudentTwice === true">
-          <mu-col span="12">
+      </mu-row> -->
+      <!-- <div v-else> -->
+        <!-- <mu-row v-if="isBoundStudentTwice === true"> -->
+          <!-- <mu-col span="12">
             <span
                 class="verify-result font-important-info">一個雲端學院帳號僅能提供一位學生綁定，請回上一步重新輸入</span>
           </mu-col>
-        </mu-row>
-        <div v-else>
-          <div v-show="student.email && student.studentCard && student.email !== 'empty'">
+        </mu-row> -->
+        <!-- <div v-else> -->
+          <!-- <div v-show="student.email && student.studentCard && student.email !== 'empty'"> -->
             <div>
               <div id="title-area">
-                <p class="title">資料確認：</p>
-                <small>- 會員升級綁定 -</small>
+                <p class="title">資料確認!</p>
+                <span>會員升級綁定</span>
               </div>
               <mu-row>
-                <mu-col span="12">
+                <mu-col class="textarea" span="12">
                   以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
                 </mu-col>
               </mu-row>
               <mu-row>
-                <mu-col span="12">
-                  <mu-icon size="18" value="circle" color="#01579b"></mu-icon>
-                  學號：<span class="font-important-info"> {{ student.studentCard }} </span>
-                  <br>
-                  <mu-icon size="18" value="circle" color="#01579b"></mu-icon>
-                  帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
+                <mu-col class="personal-list" span="12">
+                  <div class="personal-list-in">
+                    <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                    學號：<span class="font-important-info"> {{ student.studentCard }} </span>
+                  </div>
+                  <div class="personal-list-in">
+                    <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                    帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
+                  </div>
                 </mu-col>
               </mu-row>
 
               <div class="button-div">
-                <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
-                <mu-button @click="bindingCompleted" color="orange" round v-if="isCompleted">完成</mu-button>
-                <mu-button @click="queryProfiles" color="orange" round v-if="isExistStudentCard">帳號查詢</mu-button>
+                <mu-button class="btn_style back color-primary" @click="inputToPrevious">上一步</mu-button>
+                <mu-button class="btn_style back color-primary" @click="bindingCompleted" v-if="isCompleted">完成</mu-button>
+                <mu-button class="btn_style back color-primary" @click="queryProfiles" v-if="isExistStudentCard">帳號查詢</mu-button>
 
               </div>
             </div>
 
-            <div v-show="student.email && !student.studentCard && student.email !== 'empty'">
+            <!-- <div v-show="student.email && !student.studentCard && student.email !== 'empty'">
               <mu-row>
                 <mu-col span="12">
                 <span class="verify-result font-important-info">
@@ -51,9 +54,9 @@
                 </span>
                 </mu-col>
               </mu-row>
-            </div>
+            </div> -->
             <!-- 查無 email -->
-            <div v-show="student.email && student.email === 'empty'">
+            <!-- <div v-show="student.email && student.email === 'empty'">
               <mu-row>
                 <mu-col span="12">
                 <span class="verify-result font-important-info">
@@ -61,13 +64,13 @@
                 </span>
                 </mu-col>
               </mu-row>
-            </div>
-            <div class="app-center" v-show="!student.email">
+            </div> -->
+            <!-- <div class="app-center" v-show="!student.email">
               <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-            </div>
-          </div>
-        </div>
-      </div>
+            </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div> -->
     </mu-container>
   </article>
 </template>
@@ -213,6 +216,46 @@ export default {
 .button-div {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
 }
+
+// 資料確認說明
+.textarea{
+  font-size: 16px;
+  color: #A8A8A8;
+}
+// 個人資訊表
+.personal-list{
+  margin: 16px 0px;
+  font-size: 16px;
+}
+  .personal-list-in{
+    margin: 10px 0px;
+    position: relative;
+  }
+  // 裝飾線
+  .personal-list-in::after{
+    content: "";
+    display: block;
+    width: 1px;
+    height: 10px;
+    background-color: #DBDBDB;
+    position: absolute;
+    left: 6px;
+    bottom: -6;
+  }
+  .personal-list-in:last-of-type:after{
+    content: unset;
+  }
+  // 符號
+  .mu-icon.resize{
+    font-size: 14px!important;
+    width: 14px!important;
+    height: 14px!important;
+    margin-right: 4px;
+  }
+  // 文字
+  .font-important-info{
+    font-size: 16px;
+    font-weight: bold!important;
+  }
 </style>

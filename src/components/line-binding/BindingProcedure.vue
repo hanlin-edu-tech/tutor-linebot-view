@@ -1,18 +1,20 @@
 <template>
   <div>
+    <!-- 標題 -->
     <div id="title-area">
-      <p class="title">請輸入欲綁定的學號：</p>
-      <small>- 會員升級綁定 -</small>
+      <p class="title">請輸入欲綁定的學號!</p>
+      <span>會員升級綁定</span>
     </div>
 
     <p>
       <LineBindingInput @given-student-card="givenStudentCard"
                         @given-mobile="givenMobile"></LineBindingInput>
     </p>
-
+    
+    <!-- 按鈕區塊 -->
     <div class="button-div">
-      <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
-      <mu-button @click="nextStep" color="lightBlue900" round v-if="isShowNextToConfirmBtn">下一步</mu-button>
+      <mu-button class="color-primary btn_style back" @click="inputToPrevious">上一步</mu-button>
+      <mu-button class="btn_style next" @click="nextStep" v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
   </div>
 </template>
@@ -101,11 +103,12 @@ export default {
 .button-div {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
 }
 
 .title {
   color: #01579b;
 }
+
+
 
 </style>

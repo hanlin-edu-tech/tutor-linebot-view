@@ -1,24 +1,36 @@
 <template>
   <div>
+    <!-- 標題 -->
     <div id="title-area">
       <p class="title">請選擇你的身份!</p>
-      <small>- 會員升級綁定 -</small>
+      <span>會員升級綁定</span>
     </div>
 
+    <!-- 選擇身份 -->
     <div class="role">
-      <img id="studentImage"
-           src="../../static/img/student.png"
-           @click="student.role = student.role === 'student' ? '' : 'student'"
-           v-bind:class="{selected: student.role === 'student'}">
-
-      <img id="parentImage"
-           src="../../static/img/parents.png"
-           @click="student.role = student.role === 'parent' ? '' : 'parent'"
-           v-bind:class="{selected: student.role === 'parent'}">
+      <div class="role_in">
+        <!-- 學生 -->
+        <div class="student" id="studentImage"
+              v-bind:class="{selected: student.role === 'student'}"
+              @click="student.role = student.role === 'student' ? '' : 'student'">
+          <img src="../../asset/student.svg">
+          <!-- 小標 -->
+          <span>我是學生</span>
+        </div>
+        <!-- 家長 -->
+        <div class="parents" id="parentImage"
+              v-bind:class="{selected: student.role === 'parent'}"
+              @click="student.role = student.role === 'parent' ? '' : 'parent'">
+          <img src="../../asset/parents.svg">
+          <!-- 小標 -->
+          <span>我是家長</span>
+        </div>
+      </div>
     </div>
 
+    <!-- 按鈕區塊 -->
     <div class="button-div">
-      <mu-button @click="nextStep" color="orange" round v-if="student.role !== ''">下一步</mu-button>
+      <mu-button class="btn_style next" @click="nextStep" v-if="student.role !== ''">下一步</mu-button>
     </div>
 
   </div>
@@ -68,39 +80,52 @@ export default {
 </script>
 
 <style scoped>
-
-#title-area {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
+/* 選擇身份 */
 .role {
   display: flex;
   justify-content: center;
 }
+  .role_in{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+    .student,.parents{
+      width: calc(50% - 5px);
+      border-radius: 5px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+      padding: 16px 8px;
+      background-color: #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+      /* 被點擊時 */
+      .selected {
+      border: 1px solid orange;
+      }
+      .student > img,.parents > img{
+        width: 75%;
+        height: auto;
+        max-width: 100%;
+        margin: auto;
+      }
+      /* 小標 */
+      .student > span,.parents > span{
+        text-align: center;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0D6CBE;
+      }
 
-img {
-  width: 100px;
-  height: 100px;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.selected {
-  border: 5px solid orange;
-}
-
+/* 按鈕區塊 */
 .button-div {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
 }
-
-.title {
-  color: #01579b;
-}
-
 .connector-line {
   border-color: orange;
 }

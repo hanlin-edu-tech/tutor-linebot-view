@@ -53,34 +53,35 @@ export default {
 
   async created() {
     this.resetStepAction()
-    try {
-      // await 後端回傳data，不然這裡取不到資料
-      const response = await this.$axios({
-        method: 'get',
-        // url: `/linebot/profile/${this.lineUserId}`,
-        url: `https://www.tbbt.com.tw/linebot/profile/Ued56be43c9fcda3033ef0952cd4e7911`,
-      })
-      const jsonData = response.data
-      const lineBindingStudentCards = jsonData.content
-      this.isParentBound = false
+    // try {
+    //   // await 後端回傳data，不然這裡取不到資料
+    //   const response = await this.$axios({
+    //     method: 'get',
+    //     // url: `/linebot/profile/${this.lineUserId}`,
+    //     url: `https://www.tbbt.com.tw/linebot/profile/U66056dae13d4f659feecca4c70e32bae`,
 
-      if (lineBindingStudentCards.length > 0) {
-        const studentCards = []
-        lineBindingStudentCards.forEach(lineBindingStudentCard => {
-          studentCards.push(lineBindingStudentCard.studentCard)
-          lineBindingStudentCard.authentications.forEach(authentication => {
-            if (authentication.role === 'parent') {
-              this.isParentBound = true
-              this.student.role = 'parent'
-            }
-          })
-        })
-        this.student.studentCards = studentCards
-      }
-    } catch (error) {
-      console.error(error)
-      this.isParentBound = false
-    }
+    //   })
+    //   const jsonData = response.data
+    //   const lineBindingStudentCards = jsonData.content
+    //   this.isParentBound = false
+
+    //   if (lineBindingStudentCards.length > 0) {
+    //     const studentCards = []
+    //     lineBindingStudentCards.forEach(lineBindingStudentCard => {
+    //       studentCards.push(lineBindingStudentCard.studentCard)
+    //       lineBindingStudentCard.authentications.forEach(authentication => {
+    //         if (authentication.role === 'parent') {
+    //           this.isParentBound = true
+    //           this.student.role = 'parent'
+    //         }
+    //       })
+    //     })
+    //     this.student.studentCards = studentCards
+    //   }
+    // } catch (error) {
+    //   console.error(error)
+    //   this.isParentBound = false
+    // }
   },
 
   methods: {
@@ -121,4 +122,29 @@ export default {
 .mu-step-connector-line {
   border-top-width: 3px;
 }
+
+/* 步驟樣式 */
+.mu-stepper{
+  position: relative;
+  width: 50%;
+  max-width: 320px;
+  margin: auto;
+  margin-top: 16px;
+}
+  .mu-step{
+    z-index: 1;
+  }
+  .mu-step-label{
+    height: unset;
+    padding: unset;
+  }
+  .mu-step-label.active{
+
+  }
+    .mu-step-label-icon-container{
+      margin: 0;
+      width: unset;
+    }
+
+
 </style>
