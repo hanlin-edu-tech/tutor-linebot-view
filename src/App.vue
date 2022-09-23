@@ -1,5 +1,5 @@
 <template>
-  <div id="line-bot">
+  <div id="line-bot" @click="student.role = ''">
     <header>
       <mu-appbar style="width: 100%;" color="lightBlue900" text-color="#fbfbfb">
         <mu-menu slot="left">
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+  import store from "@/store/store";
+
   export default {
     name: 'app',
     data () {
@@ -74,6 +76,10 @@
           vueModel.$router.push(`/profile/${uId}`)
         }
       }
+    },
+
+    computed: {
+      student: () => store.state.binding.student
     }
   }
 </script>
