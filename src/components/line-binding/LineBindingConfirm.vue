@@ -39,7 +39,6 @@
                 <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
                 <mu-button @click="bindingCompleted" color="orange" round v-if="isCompleted">完成</mu-button>
                 <mu-button @click="queryProfiles" color="orange" round v-if="isExistStudentCard">帳號查詢</mu-button>
-
               </div>
             </div>
 
@@ -74,13 +73,9 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
-import CouponDetail from "@/components/line-binding/CouponDetail";
 
 export default {
   name: 'LineBindingConfirm',
-  components: {
-    CouponDetail
-  },
 
   props: {
     lineUserId: String
@@ -148,23 +143,12 @@ export default {
       })
     },
 
-    // 恢復當當前步驟到上個步驟間的 connector line color
-    changePreviousConnectorLineColor(color) {
-      const activeStepLabel = document.querySelector('span[class="mu-step-label active"]')
-      const parentNode = activeStepLabel.parentNode
-      const stepConnector = parentNode.previousSibling
-      const connectorLine = stepConnector.childNodes[0]
-      connectorLine.style.borderColor = color
-    },
-
     inputToPrevious() {
-      this.changePreviousConnectorLineColor('#bdbdbd')
       this.handlePrevious()
     },
 
     bindingCompleted() {
-      this.$emit('binding-completed')
-      // step +1 改變LineBinding的步驟
+      // step +1 改變LineBinding的步驟 前往下一步Result
       this.handleNext()
     },
 
