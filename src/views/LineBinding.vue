@@ -1,28 +1,30 @@
 <template>
   <section id="line-binding">
-    <mu-stepper :active-step="bindingStep">
-      <mu-step v-for="num in 3">
+    <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
+      <mu-step v-for="num in 3" :class="{'connector-line': bindingStep >= num}">
         <mu-step-label></mu-step-label>
       </mu-step>
     </mu-stepper>
 
-    <p v-if="bindingStep === 0 && !isParentBound">
-      <ChooseRole></ChooseRole>
-    </p>
-    <p v-if="bindingStep === 1">
-      <BindingProcedure></BindingProcedure>
-    </p>
-    <p v-if="bindingStep === 2">
-      <LineBindingConfirm
-          :line-user-id="lineUserId"
-          @binding-completed="bindingSuccess">
-      </LineBindingConfirm>
-    </p>
+    <ChooseRole v-if="bindingStep === 0 && !isAlreadyBinding"></ChooseRole>
 
-    <p v-if="isBindingCompleted">
-      <LineBindingResult @binding-again="resetStepAction" :line-user-id="lineUserId">
-      </LineBindingResult>
-    </p>
+    <BindingProcedure
+        v-if="bindingStep === 1"
+        :is-already-binding="isAlreadyBinding"></BindingProcedure>
+    <LineBindingConfirm
+        v-if="bindingStep === 2"
+        :line-user-id="lineUserId"
+        @binding-completed="isBindingCompleted = true"></LineBindingConfirm>
+
+    <LineBindingResult
+        v-if="bindingStep === 3"
+        @binding-result="setBindingResult"
+        :line-user-id="lineUserId"></LineBindingResult>
+
+    <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
+
+    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
+
   </section>
 </template>
 
@@ -33,10 +35,14 @@ import LineBindingConfirm from "@/components/line-binding/LineBindingConfirm"
 import LineBindingResult from "@/components/line-binding/LineBindingResult"
 import store from '@/store/store'
 import {mapActions} from 'vuex'
+import LineBindingSuccess from "@/components/line-binding/result/LineBindingSuccess";
+import LineBindingFailure from "@/components/line-binding/result/LineBindingFailure";
 
 export default {
   name: 'LineBinding',
   components: {
+    LineBindingFailure,
+    LineBindingSuccess,
     ChooseRole,
     BindingProcedure,
     LineBindingConfirm,
@@ -45,24 +51,23 @@ export default {
   data() {
     return {
       lineUserId: this.$route.params['specificLineUser'],
-      isParentBound: false,
       isBindingCompleted: false,
-      isBindingAgain: false
+      isBindingAgain: false,
+      isAlreadyBinding: false,
+      bindingResult: ''
     }
   },
 
   async created() {
-    this.resetStepAction()
     try {
       // await 後端回傳data，不然這裡取不到資料
       const response = await this.$axios({
         method: 'get',
         // url: `/linebot/profile/${this.lineUserId}`,
-        url: `https://www.tbbt.com.tw/linebot/profile/Ued56be43c9fcda3033ef0952cd4e7911`,
+        url: `https://www.tbbt.com.tw/linebot/profile/U8a08e7bb7a2896d06dfb2907c896dfe4`,
       })
       const jsonData = response.data
       const lineBindingStudentCards = jsonData.content
-      this.isParentBound = false
 
       if (lineBindingStudentCards.length > 0) {
         const studentCards = []
@@ -70,25 +75,23 @@ export default {
           studentCards.push(lineBindingStudentCard.studentCard)
           lineBindingStudentCard.authentications.forEach(authentication => {
             if (authentication.role === 'parent') {
-              this.isParentBound = true
               this.student.role = 'parent'
+            } else {
+              this.student.role = 'student'
             }
           })
         })
+        this.handleNext()
+        this.isAlreadyBinding = true
         this.student.studentCards = studentCards
       }
     } catch (error) {
       console.error(error)
-      this.isParentBound = false
+      this.isAlreadyBinding = false
     }
   },
 
   methods: {
-    bindingSuccess() {
-      this.resetConnectorLineColor('#bdbdbd')
-      this.isBindingCompleted = true
-    },
-
     resetConnectorLineColor(color) {
       const connectorLineList = document.querySelectorAll('span[class="mu-step-connector-line"]')
       connectorLineList.forEach(connectorLine => {
@@ -96,8 +99,18 @@ export default {
       })
     },
 
+    bindingAgain() {
+      this.resetStepAction()
+      this.resetConnectorLineColor('#bdbdbd')
+    },
+
+    setBindingResult(result) {
+      this.bindingResult = result
+    },
+
     ...mapActions('step', {
-      resetStepAction: 'resetStepAction'
+      resetStepAction: 'resetStepAction',
+      handleNext: 'forwardStepAction'
     }),
 
   },
@@ -119,6 +132,10 @@ export default {
 }
 
 .mu-step-connector-line {
+}
+
+div[class~="connector-line"] + div > span[class="mu-step-connector-line"] {
   border-top-width: 3px;
+  border-color: orange;
 }
 </style>
