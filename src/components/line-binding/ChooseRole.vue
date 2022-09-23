@@ -8,12 +8,12 @@
     <div class="role">
       <img id="studentImage"
            src="../../static/img/student.png"
-           @click="student.role = student.role === 'student' ? '' : 'student'"
+           @click.stop="student.role = student.role === 'student' ? '' : 'student'"
            v-bind:class="{selected: student.role === 'student'}">
 
       <img id="parentImage"
            src="../../static/img/parents.png"
-           @click="student.role = student.role === 'parent' ? '' : 'parent'"
+           @click.stop="student.role = student.role === 'parent' ? '' : 'parent'"
            v-bind:class="{selected: student.role === 'parent'}">
     </div>
 
@@ -47,7 +47,6 @@ export default {
     },
 
     nextStep() {
-      this.changeNextConnectorLineColor('orange')
       this.handleNext()
     },
 
@@ -99,9 +98,5 @@ img {
 
 .title {
   color: #01579b;
-}
-
-.connector-line {
-  border-color: orange;
 }
 </style>
