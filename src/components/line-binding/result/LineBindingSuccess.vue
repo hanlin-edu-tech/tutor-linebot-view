@@ -43,12 +43,7 @@
       </mu-row>
       <DetermineUnsuccessfulStatus v-if="coupons.length === 0">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
     </article>
-
-
-    <div class="app-center" v-if="!isClickCouponDetail">
-      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
-    </div>
-
+    
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
                   :coupon="clickedCoupon">
@@ -59,6 +54,9 @@
         <img :src="image" @click="goCoursePage">
       </mu-carousel-item>
     </mu-carousel>
+    <div class="app-center" v-if="!isClickCouponDetail">
+      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
+    </div>
   </div>
 
 </template>
@@ -75,9 +73,8 @@ import courseImage2 from "../../../static/img/course2.png"
 export default {
   name: 'LineBindingSuccess',
   data() {
-    const vueModel = this
     return {
-      lineUserId: vueModel.$route.params['specificLineUser'],
+      lineUserId: this.$route.params['specificLineUser'],
       coupons: [],
       couponCount: 0,
       isClickCouponDetail: false,
@@ -100,8 +97,7 @@ export default {
     try {
       const response = await this.$axios({
         method: 'get',
-        // url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
-        url: `https://www.tbbt.com.tw/shop/coupon/list?studentCard=${studentCard}&from=line@`
+        url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
       })
       const coupons = response.data
       this.couponCount = Object.keys(coupons).length
@@ -136,8 +132,7 @@ export default {
 
   methods: {
     queryProfiles() {
-      const vueModel = this
-      vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
+      this.$router.push(`/profile/${this.lineUserId}/#`)
     },
 
     isDeadLine: dateDisable => {
