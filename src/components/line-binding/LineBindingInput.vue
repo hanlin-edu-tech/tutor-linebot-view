@@ -14,7 +14,7 @@
       <mu-dialog width="360" :open.sync="isDialogOpen">
         <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage">
           <mu-carousel-item v-for="image in carouselImages">
-            <img src="image">
+            <img :src="image">
           </mu-carousel-item>
           <div class="button-in-dialog">
             <mu-button @click="closeDialog" color="lightBlue">取消</mu-button>
