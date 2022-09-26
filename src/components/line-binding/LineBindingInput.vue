@@ -96,11 +96,7 @@ export default {
 
     // 最後一張圖片時，下一步Button變成查看學號Button，點擊後前往登入頁面
     goLoginPage() {
-      if (this.host === 'localhost') {
-        window.open('https://www.tbbt.com.tw/app/member-center/login.html', '_blank')
-      } else {
-        window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
-      }
+      window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
     },
 
     // 當輪播圖片切換，像是點擊圓點時

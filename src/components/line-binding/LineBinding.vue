@@ -93,7 +93,6 @@
         const response = await vueModel.$axios({
           method: 'get',
           url: `/linebot/profile/${vueModel.lineUserId}`,
-          // url: `https://www.tbbt.com.tw/linebot/profile/${vueModel.lineUserId}`,
         })
         const jsonData = response.data
         const lineBindingStudentCards = jsonData.content

@@ -88,7 +88,6 @@ export default {
         this.$axios(
             {
               method: 'get',
-              // url: `https://www.tbbt.com.tw/linebot/lineBinding/user?mobile=${this.student.mobile}`,
               url: `/linebot/lineBinding/students-by-mobile?mobile=${this.student.mobile}`,
             }
         ).then(
