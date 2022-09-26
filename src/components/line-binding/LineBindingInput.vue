@@ -1,12 +1,12 @@
 <template xmlns:v="http://www.w3.org/1999/html">
   <article id="line-binding-input">
-    <mu-select label="選擇學號或手機" v-model="choice" full-width>
+    <mu-select label="選擇學號或手機" v-model="choice" full-width @change="changeSelectField">
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
-                     @keyup="emitGivenStudentCard" full-width max-length="8"></mu-text-field>
+                     @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'">
         <div id="student-card-query" class="student-card-query" style="display: none;"></div>
       </a>
@@ -69,17 +69,14 @@ export default {
     },
 
     emitGivenMobile() {
-      const vueModel = this
-      if (isNaN(vueModel.mobile)) {
-        vueModel.errorText = '請輸入手機 10 碼數字'
+      const mobileRegex = /^09[0-9]{8}$/
+      const result = mobileRegex.test(this.mobile)
+      if (result) {
+        this.errorText = ''
+        this.$emit('given-mobile', this.mobile)
       } else {
-        vueModel.$emit('given-mobile', vueModel.mobile)
+        this.errorText = '請輸入正確的手機號碼'
       }
-    },
-
-    unfoldStudentCardQuery(event) {
-      event.currentTarget.style.display = 'none'
-      document.getElementById('student-card-query').style.display = ''
     },
 
     // 點擊如何獲得學號
@@ -99,13 +96,27 @@ export default {
 
     // 最後一張圖片時，下一步Button變成查看學號Button，點擊後前往登入頁面
     goLoginPage() {
-      // window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
-      window.open('https://www.tbbt.com.tw/app/member-center/login.html', '_blank')
+      if (this.host === 'localhost') {
+        window.open('https://www.tbbt.com.tw/app/member-center/login.html', '_blank')
+      } else {
+        window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
+      }
     },
 
     // 當輪播圖片切換，像是點擊圓點時
     changeActiveImage(index) {
       this.active = index
+    },
+
+    changeSelectField() {
+      // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
+      if (this.choice === 'studentCard') {
+        this.$emit('given-student-card','')
+      }
+      // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
+      if (this.choice === 'mobile') {
+        this.$emit('given-mobile',this.mobile)
+      }
     }
   }
 }
