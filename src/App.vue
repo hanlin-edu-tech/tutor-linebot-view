@@ -1,5 +1,5 @@
 <template>
-  <div id="line-bot" @click="student.role = ''">
+  <div id="line-bot">
     <header>
       <mu-appbar style="width: 100%;" color="lightBlue900" text-color="#fbfbfb">
         <mu-menu slot="left">

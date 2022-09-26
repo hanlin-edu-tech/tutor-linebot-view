@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="student.role = ''">
     <div id="title-area">
       <p class="title">請選擇你的身份!</p>
       <small>- 會員升級綁定 -</small>
