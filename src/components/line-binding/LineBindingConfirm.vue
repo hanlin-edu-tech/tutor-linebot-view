@@ -2,16 +2,11 @@
   <article id="line-binding-confirm" class="font-secondary-info">
     <mu-container>
       <mu-row v-if="isLineUserBoundTwice()">
-        <mu-col span="12">
-          <span class="verify-result font-important-info">您已綁定過此帳號囉，請至帳號查詢頁面查看詳情！</span>
-        </mu-col>
+        <LineUserBoundTwice :line-user-id="lineUserId"></LineUserBoundTwice>
       </mu-row>
       <div v-else>
         <mu-row v-if="isBoundStudentTwice === true">
-          <mu-col span="12">
-            <span
-                class="verify-result font-important-info">一個雲端學院帳號僅能提供一位學生綁定，請回上一步重新輸入</span>
-          </mu-col>
+          <BoundStudentTwice></BoundStudentTwice>
         </mu-row>
         <div v-else>
           <div v-show="student.email && student.studentCard && student.email !== 'empty'">
@@ -36,30 +31,17 @@
               </mu-row>
 
               <div class="button-div">
-                <mu-button @click="inputToPrevious" color="lightBlue" round class="color-primary">上一步</mu-button>
+                <mu-button @click="goToPreviousStep" color="lightBlue" round class="color-primary">上一步</mu-button>
                 <mu-button @click="bindingCompleted" color="orange" round v-if="isCompleted">完成</mu-button>
-                <mu-button @click="queryProfiles" color="orange" round v-if="isExistStudentCard">帳號查詢</mu-button>
               </div>
             </div>
 
             <div v-show="student.email && !student.studentCard && student.email !== 'empty'">
-              <mu-row>
-                <mu-col span="12">
-                <span class="verify-result font-important-info">
-                  您尚未取得學號，請至翰林雲端學院，若仍無法登入，請洽雲端客服。
-                </span>
-                </mu-col>
-              </mu-row>
+              <NotGetStudentNumber></NotGetStudentNumber>
             </div>
             <!-- 查無 email -->
-            <div v-show="student.email && student.email === 'empty'">
-              <mu-row>
-                <mu-col span="12">
-                <span class="verify-result font-important-info">
-                  您的學號可能輸入錯誤，或是手機尚未認證，請至翰林雲端學院登入確認後再次嘗試，若仍無法登入，請洽雲端客服。
-                </span>
-                </mu-col>
-              </mu-row>
+            <div v-if="student.email && student.email === 'empty'">
+              <EmailNotExist></EmailNotExist>
             </div>
             <div class="app-center" v-show="!student.email">
               <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
@@ -73,10 +55,14 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
+import LineUserBoundTwice from "@/components/line-binding/failure-situation/LineUserBoundTwice";
+import BoundStudentTwice from "@/components/line-binding/failure-situation/BoundStudentTwice";
+import EmailNotExist from "@/components/line-binding/failure-situation/EmailNotExist";
+import NotGetStudentNumber from "@/components/line-binding/failure-situation/NotGetStudentNumber";
 
 export default {
   name: 'LineBindingConfirm',
-
+  components: {NotGetStudentNumber, EmailNotExist, BoundStudentTwice, LineUserBoundTwice},
   props: {
     lineUserId: String
   },
@@ -91,6 +77,7 @@ export default {
 
   methods: {
     isLineUserBoundTwice() {
+      // LineBinding created時 就會先取得該line id 下的所有學號
       if (this.student.studentCards.length > 0) {
         for (let i = 0; i < this.student.studentCards.length; i++) {
           /*
@@ -109,8 +96,7 @@ export default {
       this.$axios(
           {
             method: 'get',
-            // url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
-            url: `https://www.tbbt.com.tw/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
+            url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
           }
       ).then(
           response => {
@@ -143,7 +129,9 @@ export default {
       })
     },
 
-    inputToPrevious() {
+    goToPreviousStep() {
+      this.student.studentCard = ''
+      this.student.mobile = ''
       this.handlePrevious()
     },
 
