@@ -31,8 +31,7 @@
         const response = await this.$axios(
           {
             method: 'post',
-            // url: `/linebot/lineBinding`,
-            url: `https://www.tbbt.com.tw/linebot/lineBinding`,
+            url: `/linebot/lineBinding`,
             data: this.lineBindingStudentCard
           }
         )
@@ -40,8 +39,6 @@
         const message = jsonData.message
         if (message.indexOf('success') > 0) {
           status = 'success'
-        } else if (message.indexOf('limited') > 0) {
-          status = 'reachedLimited'
         } else {
           status = 'failure'
         }
