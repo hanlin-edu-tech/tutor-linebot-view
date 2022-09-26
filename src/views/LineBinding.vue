@@ -63,8 +63,7 @@ export default {
       // await 後端回傳data，不然這裡取不到資料
       const response = await this.$axios({
         method: 'get',
-        // url: `/linebot/profile/${this.lineUserId}`,
-        url: `https://www.tbbt.com.tw/linebot/profile/U8a08e7bb7a2896d06dfb2907c896dfe4`,
+        url: `/linebot/profile/${this.lineUserId}`,
       })
       const jsonData = response.data
       const lineBindingStudentCards = jsonData.content
@@ -92,18 +91,6 @@ export default {
   },
 
   methods: {
-    resetConnectorLineColor(color) {
-      const connectorLineList = document.querySelectorAll('span[class="mu-step-connector-line"]')
-      connectorLineList.forEach(connectorLine => {
-        connectorLine.style.borderColor = color
-      })
-    },
-
-    bindingAgain() {
-      this.resetStepAction()
-      this.resetConnectorLineColor('#bdbdbd')
-    },
-
     setBindingResult(result) {
       this.bindingResult = result
     },
