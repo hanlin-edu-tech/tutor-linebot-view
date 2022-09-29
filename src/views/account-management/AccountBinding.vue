@@ -17,7 +17,7 @@
     <br>
     <br>
     <br>
-    <mu-button @click="$router.push(`/lineBinding/${lineUserId}`)"
+    <mu-button @click="goToLineBindingPage"
                v-if=""
                color="orange"
                round
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: "AccountBinding",
@@ -54,7 +54,14 @@ export default {
       if (student.coupons) {
         return student.coupons.length
       }
-    }
+    },
+
+    goToLineBindingPage() {
+      // 0 的原因是 line binding的create階段 若有綁定過會進行下一步的動作，因此回到0 即可
+      this.resetStepAction()
+      this.$router.replace(`/lineBinding/${this.lineUserId}`)
+    },
+    ...mapActions('step', ['resetStepAction'])
   },
 
   computed: {
