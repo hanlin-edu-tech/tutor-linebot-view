@@ -121,11 +121,7 @@ export default {
 
   },
 
-  computed: {
-    ...mapState('binding', {
-      student: state => state.student
-    })
-  }
+  computed: mapState('binding', ['student'])
 }
 </script>
 
