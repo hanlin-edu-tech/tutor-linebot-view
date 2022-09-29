@@ -11,7 +11,7 @@
       </h1>
       <h1 v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </h1>
     </div>
-    <h1> 折扣: {{ coupon.discount }}折 </h1>
+    <h1> 折扣: {{ formatDiscount(coupon.discount) }}折 </h1>
     <h1> 日期: {{ coupon.expireDate }} </h1>
     <h1> 狀態: {{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }} </h1>
     <h1> 剩餘日期: {{ computeRemainingDate }}天 </h1>
@@ -62,13 +62,28 @@ export default {
       setTimeout(function() {
         this.isCopyToClipboard = false
       }.bind(this),1000)
-
     },
+
+    formatDiscount(discount) {
+      const len = discount.toString().split('.')[1].length
+
+      switch (len) {
+        case 1:
+          return discount * 10
+        case 2:
+          return discount * 100
+        case 3:
+          return discount * 1000
+        default:
+          return discount
+      }
+    }
   },
 
   computed: {
     computeRemainingDate() {
-      return dayjs(this.coupon.expireDate).diff(dayjs(), 'days')
+      const now = dayjs().locale('zh-tw')
+      return dayjs(this.coupon.date.disable).diff(now, 'days')
     }
   }
 }
