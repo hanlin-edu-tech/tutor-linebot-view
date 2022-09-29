@@ -20,8 +20,8 @@
       <mu-row v-if="couponCount !== 0">
         <mu-col span="12" class="coupon">
           <span>您已獲得{{ couponCount }}張綁定優惠券：</span>
-          <div class="app-center" v-for="coupon in coupons" :key="coupon['id']">
-            <div class="coupon-card" @click="passIdToCouponDetail(coupon['id'])">
+          <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
+            <div class="coupon-card" @click="passIdToCouponDetail(coupon['_id'])">
               <span class="coupon-discount-block">
                 <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
               </span>
@@ -55,6 +55,7 @@
         <img :src="image" @click="goCoursePage">
       </mu-carousel-item>
     </mu-carousel>
+
     <div class="app-center" v-if="!isClickCouponDetail">
       <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
     </div>
@@ -66,7 +67,6 @@
 import {mapState} from 'vuex'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
-import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
 import CouponDetail from "@/components/profile/CouponDetail"
 import courseImage1 from "../../../static/img/course1.png"
 import courseImage2 from "../../../static/img/course2.png"
@@ -85,12 +85,8 @@ export default {
   },
 
   components: {
-    DetermineUnsuccessfulStatus,
     CouponDetail
   },
-
-  /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
-  computed: mapState('binding', ['lineBindingStudentCard']),
 
   async created() {
     const studentCard = this.lineBindingStudentCard.studentCard
@@ -133,7 +129,7 @@ export default {
 
   methods: {
     queryProfiles() {
-      this.$router.push(`/profile/${this.lineUserId}`)
+      this.$router.push(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
     },
 
     isDeadLine: dateDisable => {
@@ -150,10 +146,12 @@ export default {
 
     passIdToCouponDetail(id) {
       this.isClickCouponDetail = true
-      const couponObj = this.coupons.find(coupon => coupon.id === id)
+      const couponObj = this.coupons.find(coupon => coupon._id === id)
       this.clickedCoupon = couponObj
     }
-  }
+  },
+
+  computed: mapState('binding', ['lineBindingStudentCard'])
 }
 </script>
 
