@@ -1,7 +1,7 @@
 <template>
   <section id="profile">
 
-    <AccountBinding v-if="currentTab === 'accountBinding'"></AccountBinding>
+    <AccountBinding v-if="currentTab === 'accountBinding' && students[0].authentications[0].role"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
