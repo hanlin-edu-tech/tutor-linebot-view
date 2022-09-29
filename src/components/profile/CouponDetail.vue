@@ -22,6 +22,12 @@
     <br>
     <br>
 
+    <mu-carousel hide-indicators interval="9999999">
+      <mu-carousel-item v-for="image in courseImages">
+        <img :src="image" @click="goCoursePage">
+      </mu-carousel-item>
+    </mu-carousel>
+
     <h1> 優惠卷名稱: {{ coupon.name }} </h1>
 
     <h3> 使用規則 </h3>
@@ -38,7 +44,9 @@
 </template>
 
 <script>
-import dayjs from "dayjs";
+import dayjs from "dayjs"
+import courseImage1 from "../../static/img/course1.png"
+import courseImage2 from "../../static/img/course2.png"
 
 export default {
   name: "CouponDetail",
@@ -51,7 +59,8 @@ export default {
 
   data() {
     return {
-      isCopyToClipboard: false
+      isCopyToClipboard: false,
+      courseImages: [courseImage1, courseImage2]
     };
   },
 
@@ -59,12 +68,16 @@ export default {
     copyToClipboard() {
       navigator.clipboard.writeText(this.$refs.couponCode.textContent)
       this.isCopyToClipboard = true
-      setTimeout(function() {
+      setTimeout(function () {
         this.isCopyToClipboard = false
-      }.bind(this),1000)
+      }.bind(this), 1000)
     },
 
     formatDiscount(discount) {
+      if (Number.isInteger(discount)) {
+        return discount
+      }
+
       const len = discount.toString().split('.')[1].length
 
       switch (len) {
@@ -77,13 +90,23 @@ export default {
         default:
           return discount
       }
-    }
+    },
+
+    goCoursePage() {
+      window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
+    },
   },
 
   computed: {
     computeRemainingDate() {
       const now = dayjs().locale('zh-tw')
-      return dayjs(this.coupon.date.disable).diff(now, 'days')
+      // 優惠卷的截止日期 會有兩種存法
+      if (this.coupon.expireDate) {
+        return dayjs(this.coupon.expireDate).diff(now, 'days')
+      }
+      if (this.coupon.date.disable) {
+        return dayjs(this.coupon.date.disable).diff(now, 'days')
+      }
     }
   }
 }
