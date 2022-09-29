@@ -10,7 +10,7 @@
 
     <BindingProcedure
         v-if="bindingStep === 1"
-        :is-already-binding="isAlreadyBinding"></BindingProcedure>
+        :is-already-binding="isAlreadyBinding = true"></BindingProcedure>
     <LineBindingConfirm
         v-if="bindingStep === 2"
         :line-user-id="lineUserId"
