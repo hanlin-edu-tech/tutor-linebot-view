@@ -17,7 +17,7 @@
           <br/>
         </mu-col>
       </mu-row>
-      <mu-row>
+      <mu-row v-if="couponCount !== 0">
         <mu-col span="12" class="coupon">
           <span>您已獲得{{ couponCount }}張綁定優惠券：</span>
           <div class="app-center" v-for="coupon in coupons" :key="coupon['id']">
@@ -35,15 +35,16 @@
                 </mu-paper>
               </span>
               <mu-button color="orange">查看詳情</mu-button>
-
             </div>
           </div>
           熱門活動：
         </mu-col>
       </mu-row>
-      <DetermineUnsuccessfulStatus v-if="coupons.length === 0">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
+      <mu-row v-else>
+        <h1> 目前沒有優惠卷 </h1>
+      </mu-row>
     </article>
-    
+
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
                   :coupon="clickedCoupon">
@@ -132,7 +133,7 @@ export default {
 
   methods: {
     queryProfiles() {
-      this.$router.push(`/profile/${this.lineUserId}/#`)
+      this.$router.push(`/profile/${this.lineUserId}`)
     },
 
     isDeadLine: dateDisable => {
