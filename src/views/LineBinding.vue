@@ -125,4 +125,29 @@ div[class~="connector-line"] + div > span[class="mu-step-connector-line"] {
   border-top-width: 3px;
   border-color: orange;
 }
+
+/* 步驟樣式 */
+.mu-stepper{
+  position: relative;
+  width: 50%;
+  max-width: 320px;
+  margin: auto;
+  margin-top: 16px;
+}
+  .mu-step{
+    z-index: 1;
+  }
+  .mu-step-label{
+    height: unset;
+    padding: unset;
+  }
+  .mu-step-label.active{
+
+  }
+    .mu-step-label-icon-container{
+      margin: 0;
+      width: unset;
+    }
+
+
 </style>

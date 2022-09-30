@@ -14,6 +14,12 @@ module.exports = {
         pathRewrite: { '^/shop': '' },
         changeOrigin: true,
         ws: true
+      },
+      '/user-bg': {
+        target: 'https://www.tbbt.com.tw/user-bg/',
+        pathRewrite: { '^/user-bg': '' },
+        changeOrigin: true,
+        ws: true
       }
     }
   }

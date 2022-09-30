@@ -1,14 +1,17 @@
 <template>
   <div>
+    <!-- 標題 -->
     <div id="title-area">
-      <p class="title">請輸入欲綁定的學號：</p>
-      <small>- 會員升級綁定 -</small>
+      <p class="title">請輸入欲綁定的學號!</p>
+      <span>會員升級綁定</span>
     </div>
 
     <p>
       <LineBindingInput @given-student-card="givenStudentCard"
                         @given-mobile="givenMobile"></LineBindingInput>
     </p>
+
+    <!-- 按鈕區塊 -->
 
     <mu-select v-if="isQueryMultipleStudent"
                @change="checkSelected"
@@ -23,8 +26,8 @@
     </mu-select>
 
     <div class="button-div">
-      <mu-button @click="goToPreviousStep" color="lightBlue" round class="color-primary" v-if="!isAlreadyBinding">上一步</mu-button>
-      <mu-button @click="nextStep" color="lightBlue900" round v-if="isShowNextToConfirmBtn">下一步</mu-button>
+      <mu-button @click="goToPreviousStep" class="color-primary btn_style back" v-if="!isAlreadyBinding">上一步</mu-button>
+      <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
   </div>
 </template>
@@ -141,5 +144,7 @@ export default {
 .title {
   color: #01579b;
 }
+
+
 
 </style>
