@@ -1,7 +1,7 @@
 <template>
   <section id="profile">
 
-    <AccountBinding v-if="currentTab === 'accountBinding' && students[0].authentications[0].role"></AccountBinding>
+    <AccountBinding v-if="currentTab === 'accountBinding' && isParent"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
@@ -40,7 +40,8 @@ export default {
     return {
       currentTab: 'coupons',
       lineUserId: this.$route.params.specificLineUser,
-      currentStudentCard: this.$route.params.studentCard
+      currentStudentCard: this.$route.params.studentCard,
+      isParent: false
     }
   },
 
@@ -54,6 +55,7 @@ export default {
       const students = response.data.content
       if (students.length !== 0) {
         this.assignStudents(students)
+        this.isParent = students[0].authentications[0].role.toLowerCase() === 'parent'
       }
     } catch (error) {
       console.error(error)
