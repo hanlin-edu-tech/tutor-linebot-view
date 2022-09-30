@@ -6,6 +6,7 @@
     <h1>e幣: {{ currentStudent.coins }}</h1>
     <h1>寶石: {{ currentStudent.gems }}</h1>
     <h1>Email: {{ currentStudent.email }}</h1>
+    <h1>學號: {{ currentStudent.studentCard }}</h1>
     <h1>身份: {{ currentStudent.role === 'parent' ? '家長' : '學生' }}</h1>
     <h1>等級: {{ currentStudent.rank }}</h1>
     <h1>年級: {{ currentStudent.grade }}</h1>
