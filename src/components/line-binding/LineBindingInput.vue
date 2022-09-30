@@ -16,8 +16,12 @@
       <!-- popup -->
       <mu-dialog width="360" :open.sync="isDialogOpen">
         <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage">
-          <mu-carousel-item v-for="image in carouselImages">
-            <img :src="image">
+          <mu-carousel-item ref="imageHeight"
+                            class="carousel_img"
+                            v-for="image in carouselImages">
+            <div class="carousel_img_in">
+              <img src="../../asset/demo.png">
+            </div>
           </mu-carousel-item>
           <!-- 按鈕 -->
           <div class="button-in-dialog" :style="popupheight">
@@ -81,10 +85,11 @@ export default {
       }
     },
   },
+
   updated(){
     if (this.$refs.imageHeight){
-      this.width = this.$refs.imageHeight[0].$el.clientWidth
-      this.height = this.$refs.imageHeight[0].$el.clientHeight
+      this.width = this.$refs.imageHeight[0].clientWidth
+      this.height = this.$refs.imageHeight[0].clientHeight
 
       this.marginCaculate()
     }
