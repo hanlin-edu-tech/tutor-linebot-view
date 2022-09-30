@@ -35,7 +35,7 @@
 
               <div class="button-div">
                 <mu-button @click="goToPreviousStep" class="btn_style back color-primary">上一步</mu-button>
-                <mu-button @click="bindingCompleted" class="btn_style back color-primary" v-if="isCompleted">完成</mu-button>
+                <mu-button @click="bindingCompleted" class="btn_style next color-primary" v-if="isCompleted">完成</mu-button>
               </div>
             </div>
 
@@ -48,7 +48,7 @@
             </div>
             <div class="app-center" v-show="!student.email">
               <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-            </div> -->
+            </div>
            </div>
          </div>
        </div>
