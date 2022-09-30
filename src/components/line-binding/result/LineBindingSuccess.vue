@@ -37,7 +37,12 @@
               <mu-button color="orange">查看詳情</mu-button>
             </div>
           </div>
-          熱門活動：
+          熱門活動： <br><br>
+          <mu-carousel hide-indicators interval="9999999">
+            <mu-carousel-item v-for="image in courseImages">
+              <img :src="image" @click="goCoursePage">
+            </mu-carousel-item>
+          </mu-carousel>
         </mu-col>
       </mu-row>
       <mu-row v-else>
@@ -49,12 +54,6 @@
                   @go-back="isClickCouponDetail = false"
                   :coupon="clickedCoupon">
     </CouponDetail>
-
-    <mu-carousel hide-indicators interval="9999999">
-      <mu-carousel-item v-for="image in courseImages">
-        <img :src="image" @click="goCoursePage">
-      </mu-carousel-item>
-    </mu-carousel>
 
     <div class="app-center" v-if="!isClickCouponDetail">
       <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
@@ -68,8 +67,8 @@ import {mapState} from 'vuex'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import CouponDetail from "@/components/profile/CouponDetail"
-import courseImage1 from "../../../static/img/course1.png"
-import courseImage2 from "../../../static/img/course2.png"
+import courseImage1 from "../../../asset/course1.png"
+import courseImage2 from "../../../asset/course2.png"
 
 export default {
   name: 'LineBindingSuccess',
@@ -140,8 +139,7 @@ export default {
     },
 
     goCoursePage() {
-      // window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
-      window.open('https://www.tbbt.com.tw/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
     },
 
     passIdToCouponDetail(id) {
