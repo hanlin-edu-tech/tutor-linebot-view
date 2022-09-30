@@ -1,7 +1,7 @@
 <template>
   <section id="profile">
 
-    <AccountBinding v-if="currentTab === 'accountBinding' && isParent"></AccountBinding>
+    <AccountBinding v-if="currentTab === 'accountBinding'"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
@@ -11,7 +11,8 @@
 
     <mu-button
         @click="currentTab = 'accountBinding'"
-        :class="{selected: currentTab === 'accountBinding'}">帳號綁定
+        :class="{selected: currentTab === 'accountBinding'}"
+        v-if="isParent">帳號綁定
     </mu-button>
 
     <mu-button
