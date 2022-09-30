@@ -45,8 +45,8 @@
 
 <script>
 import dayjs from "dayjs"
-import courseImage1 from "../../static/img/course1.png"
-import courseImage2 from "../../static/img/course2.png"
+import courseImage1 from "../../asset/course1.png"
+import courseImage2 from "../../asset/course2.png"
 
 export default {
   name: "CouponDetail",
@@ -93,7 +93,7 @@ export default {
     },
 
     goCoursePage() {
-      window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
+      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
     },
   },
 
