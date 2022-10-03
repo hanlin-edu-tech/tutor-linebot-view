@@ -11,22 +11,24 @@
                         @given-mobile="givenMobile"></LineBindingInput>
     </p>
 
-    <!-- 按鈕區塊 -->
-
-    <mu-select v-if="isQueryMultipleStudent"
-               @change="checkSelected"
-               v-model="selected"
-               :error-text="errorText">
-
-      <mu-option disabled value="" label="請選擇帳號"></mu-option>
-      <mu-option v-for="student in students"
-                 :key="student.studentCard"
-                 :value="student.studentCard"
-                 :label="student.email"></mu-option>
-    </mu-select>
-
+    <!-- 輸入手機號碼但查詢不到學號 -->
+    <h1 v-if="isStudentCardNotExists"> 該手機號碼查無任何學號，請重新再試 </h1>
+    <div v-else>
+      <mu-select v-if="isQueryMultipleStudent"
+                 @change="checkSelected"
+                 v-model="selected"
+                 :error-text="errorText">
+        <mu-option disabled value="" label="請選擇帳號"></mu-option>
+        <mu-option v-for="student in students"
+                   :key="student.studentCard"
+                   :value="student.studentCard"
+                   :label="student.email"></mu-option>
+      </mu-select>
+    </div>
     <div class="button-div">
-      <mu-button @click="goToPreviousStep" class="color-primary btn_style back" v-if="!isAlreadyBinding">上一步</mu-button>
+      <mu-button @click="goToPreviousStep" class="color-primary btn_style back" v-if="!isAlreadyBinding">
+        上一步
+      </mu-button>
       <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
   </div>
@@ -42,12 +44,13 @@ export default {
     LineBindingInput
   },
 
-  props:['isAlreadyBinding'],
+  props: ['isAlreadyBinding'],
 
   data() {
     return {
       isShowNextToConfirmBtn: false,
       isQueryMultipleStudent: false,
+      isStudentCardNotExists: false,
       students: [],
       selected: '',
       errorText: ''
@@ -63,7 +66,12 @@ export default {
     },
 
     givenMobile(mobile) {
-      this.isShowNextToConfirmBtn = !!mobile;
+      // 若手機不符合格式，移除下一步的Button
+      this.isShowNextToConfirmBtn = !!mobile
+      // 輸入手機號碼時，學號選單不應該存在
+      this.isQueryMultipleStudent = false
+      // 在輸入手機號碼時，隱藏學號找不到的訊息
+      this.isStudentCardNotExists = false
       this.student.studentCard = ''
       this.student.mobile = mobile
     },
@@ -77,15 +85,15 @@ export default {
     },
 
     nextStep() {
-      this.checkStudentsCountWithMobile()
-
+      this.checkStudentsCardWithMobile()
+      
       // 有選擇學號後 進行下一步，例如手機查詢到多位學生，確保select選單有選擇帳號
       if (this.student.studentCard) {
         this.handleNext()
       }
     },
 
-    checkStudentsCountWithMobile() {
+    checkStudentsCardWithMobile() {
       // 還沒選擇學號 且 有輸入手機號碼，用手機號碼查詢學生是否有多位的情況
       if (!this.student.studentCard && this.student.mobile) {
         this.$axios(
@@ -95,17 +103,23 @@ export default {
             }
         ).then(
             response => {
-              this.students = response.data.content
-              if (this.students.length > 1) {
-                // 跳出select 選單
-                this.isQueryMultipleStudent = true
-                // reset select選單為 default
-                this.selected = ''
-                this.errorText = '請選擇欲綁定的一位學生帳號'
+              if (response.data.content) {
+                this.students = response.data.content
+                if (this.students.length > 1) {
+                  // 跳出select 選單
+                  this.isQueryMultipleStudent = true
+                  // reset select選單為 default
+                  this.selected = ''
+                  this.errorText = '請選擇欲綁定的一位學生帳號'
+                  this.isStudentCardNotExists = false
+                }
+              } else {
+                this.isStudentCardNotExists = true
               }
             }
         ).catch(error => {
           console.error(error)
+          this.isStudentCardNotExists = true
         })
       }
     },
@@ -144,7 +158,6 @@ export default {
 .title {
   color: #01579b;
 }
-
 
 
 </style>
