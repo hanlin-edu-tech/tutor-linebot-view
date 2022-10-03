@@ -113,6 +113,8 @@ export default {
         this.$emit('given-mobile', this.mobile)
       } else {
         this.errorText = '請輸入正確的手機號碼'
+        // binding procedure中 下一步button出現後，若重新輸入要再將該button移除
+        this.$emit('given-mobile', '')
       }
     },
 
@@ -341,7 +343,7 @@ div[class*="mu-carousel-indicators"] {
 .mu-carousel {
   // overflow: unset;
   position: relative;
-  height: unset;
+  //height: unset;
 }
 
 // 輪播圖
