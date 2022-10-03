@@ -7,7 +7,7 @@
     <h1>寶石: {{ currentStudent.gems }}</h1>
     <h1>Email: {{ currentStudent.email }}</h1>
     <h1>學號: {{ currentStudent.studentCard }}</h1>
-    <h1>身份: {{ currentStudent.role === 'parent' ? '家長' : '學生' }}</h1>
+    <h1>身份: 學生</h1>
     <h1>等級: {{ currentStudent.rank }}</h1>
     <h1>年級: {{ currentStudent.grade }}</h1>
   </div>
@@ -28,7 +28,6 @@ export default {
     getCurrentStudentCard() {
       return this.$route.params.studentCard
     },
-    // 用get開頭命名會造成無窮迴圈
     findCurrentStudent() {
       this.students.find(student => {
         if (student.studentCard === this.getCurrentStudentCard) {
