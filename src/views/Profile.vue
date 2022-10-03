@@ -50,7 +50,7 @@ export default {
     try {
       const response = await this.$axios({
         method: 'get',
-        url: `linebot/profile/${this.lineUserId}`
+        url: `/linebot/profile/${this.lineUserId}`
       })
 
       const students = response.data.content
