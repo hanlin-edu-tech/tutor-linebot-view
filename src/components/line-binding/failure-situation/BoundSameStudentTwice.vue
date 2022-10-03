@@ -1,24 +1,27 @@
 <template>
   <mu-col span="12">
-    <span class="verify-result font-important-info">一個雲端學院帳號僅能提供一位學生綁定，請回上一步重新輸入</span>
-    <mu-button @click="goToPreviousStep" color="lightBlue" round class="color-primary">上一步</mu-button>
+    <span class="verify-result font-important-info">該學生帳號已經綁定過，請前去確認</span>
+    <br>
+    <mu-button @click="queryProfiles" color="lightBlue" round class="color-primary">查看帳號</mu-button>
   </mu-col>
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapState} from "vuex";
 
 export default {
-  name: "BoundStudentTwice",
+  name: "BoundSameStudentTwice",
+
+  props: ['lineUserId'],
+
   methods: {
-    goToPreviousStep() {
-      this.student.studentCard = ''
-      this.student.mobile = ''
-      this.handlePrevious()
-    },
-    ...mapActions('step', {
-      handlePrevious: 'backwardStepAction'
-    })
+    queryProfiles() {
+      this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCard}`)
+    }
+  },
+
+  computed: {
+    ...mapState('binding', ['student'])
   }
 }
 </script>
