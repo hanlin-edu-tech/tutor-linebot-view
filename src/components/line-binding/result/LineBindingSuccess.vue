@@ -128,7 +128,7 @@ export default {
 
   methods: {
     queryProfiles() {
-      this.$router.push(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
+      this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
     },
 
     isDeadLine: dateDisable => {
