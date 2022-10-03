@@ -59,9 +59,11 @@ export default {
     goToLineBindingPage() {
       // 0 的原因是 line binding的create階段 若有綁定過會進行下一步的動作，因此回到0 即可
       this.resetStepAction()
+      this.assignContinueBindingAction(true)
       this.$router.replace(`/lineBinding/${this.lineUserId}`)
     },
-    ...mapActions('step', ['resetStepAction'])
+    ...mapActions('step', ['resetStepAction']),
+    ...mapActions('binding', ['assignContinueBindingAction'])
   },
 
   computed: {
