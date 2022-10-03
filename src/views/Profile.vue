@@ -54,9 +54,11 @@ export default {
       })
 
       const students = response.data.content
-      if (students.length !== 0) {
+      if (students.length > 0) {
         this.assignStudents(students)
         this.isParent = students[0].authentications[0].role.toLowerCase() === 'parent'
+      } else {
+        await this.$router.replace(`/lineBinding/${this.lineUserId}`)
       }
     } catch (error) {
       console.error(error)
