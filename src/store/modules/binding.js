@@ -3,6 +3,7 @@ export default {
   state: {
     lineBindingStudentCard: Object,
     studentCards: Object,
+    continueBinding: false,
     student: {
       role: '',
       mobile: '',
@@ -20,6 +21,10 @@ export default {
     assignStudentCardsAction ({commit}, studentCards) {
       commit('assignStudentCards', studentCards)
     },
+    
+    assignContinueBindingAction ({commit}, continueBinding) {
+      commit('setContinueBinding', continueBinding)
+    }
   },
 
   mutations: {
@@ -30,5 +35,9 @@ export default {
     assignStudentCards (state, studentCards) {
       state.studentCards = studentCards
     },
+    
+    setContinueBinding (state, continueBinding) {
+      state.continueBinding = continueBinding
+    }
   }
 }
