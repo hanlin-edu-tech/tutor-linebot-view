@@ -1,34 +1,6 @@
 <template>
   <div id="line-bot">
-    <!-- 版頭 -->
     <header>
-      <!-- 舊樣式 -->
-      <!-- <mu-appbar style="width: 100%;" color="lightBlue900" text-color="#fbfbfb">
-        <mu-menu slot="left">
-          <mu-button icon style="margin-top: 6px;" color="#fbfbfb" @click="isOpen = (!isOpen)">
-            <mu-icon value="menu" size="35"></mu-icon>
-          </mu-button>
-        </mu-menu>
-        翰林雲端學院
-      </mu-appbar>
-      <mu-drawer :open.sync="isOpen" :docked="false" :right="false" width="210" :z-depth="24">
-        <mu-list>
-          <mu-list-item button @click="binding">
-            <mu-list-item-action>
-              <mu-icon value="loupe"></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item-title>綁定帳號</mu-list-item-title>
-          </mu-list-item>
-          <mu-list-item button @click="queryProfiles">
-            <mu-list-item-action>
-              <mu-icon value="account_circle"></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item-title>帳號查詢</mu-list-item-title>
-          </mu-list-item>
-        </mu-list>
-      </mu-drawer> -->
-
-      <!-- 新樣式 -->
       <div class="header_bar">
         <div class="logo">
           <img src="../src/asset/ehanlin_logo 1.svg" alt="logo">
@@ -52,7 +24,6 @@
   export default {
     name: 'app',
     data () {
-      const vueModel = this
       return {
         isAlive: true,
         isOpen: false,
