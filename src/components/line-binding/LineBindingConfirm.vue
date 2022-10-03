@@ -111,6 +111,7 @@ export default {
               this.student.studentCard = specificUser.studentCard
               this.student.mobile = specificUser.mobile
               this.student.name = specificUser.name
+              this.isCompleted = true
             }
           }
       ).catch(error => {
