@@ -12,7 +12,7 @@
       <h1 v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </h1>
     </div>
     <h1> 折扣: {{ formatDiscount(coupon.discount) }}折 </h1>
-    <h1> 日期: {{ coupon.expireDate }} </h1>
+    <h1> 期限: {{ coupon.date.disable }} </h1>
     <h1> 狀態: {{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }} </h1>
     <h1> 剩餘日期: {{ computeRemainingDate }}天 </h1>
     <h1> 試用產品: {{ coupon.description.applicable }} </h1><br><br>
@@ -100,12 +100,8 @@ export default {
   computed: {
     computeRemainingDate() {
       const now = dayjs().locale('zh-tw')
-      // 優惠卷的截止日期 會有兩種存法
-      if (this.coupon.expireDate) {
-        return dayjs(this.coupon.expireDate).diff(now, 'days')
-      }
       if (this.coupon.date.disable) {
-        return dayjs(this.coupon.date.disable).diff(now, 'days')
+        return dayjs(this.coupon.date.disable).diff(now, 'day')
       }
     }
   }
