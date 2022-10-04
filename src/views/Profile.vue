@@ -32,6 +32,7 @@ import AccountBinding from "@/views/account-management/AccountBinding"
 import Coupons from "./account-management/Coupons"
 import PersonalProfile from "@/views/account-management/PersonalProfile"
 import {mapActions, mapState} from "vuex";
+import dayjs from "dayjs";
 
 export default {
   name: 'Profile',
@@ -56,7 +57,10 @@ export default {
       const students = response.data.content
       if (students.length > 0) {
         this.assignStudents(students)
-        this.isParent = students[0].authentications[0].role.toLowerCase() === 'parent'
+        // 按照 createTime 排序，確保取的是一開始綁定的身份
+        const sortedStudents = students
+            .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime),'second'))
+        this.isParent = sortedStudents[0].authentications[0].role.toLowerCase() === 'parent'
       } else {
         await this.$router.replace(`/lineBinding/${this.lineUserId}`)
       }
