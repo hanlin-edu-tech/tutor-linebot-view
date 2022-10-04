@@ -9,7 +9,7 @@
           Email: {{ student.email }} <br>
           學號: {{ student.studentCard }} <br>
           優惠卷數量: {{ calculateCouponsCount(student) }}
-        <br><br><br>
+          <br><br><br>
         </router-link>
       </div>
     </div>
@@ -18,16 +18,17 @@
     <br>
     <br>
     <mu-button @click="goToLineBindingPage"
-               v-if=""
                color="orange"
                round
-               large> 綁定更多帳號</mu-button>
+               large> 綁定更多帳號
+    </mu-button>
   </div>
 
 </template>
 
 <script>
 import {mapActions, mapState} from "vuex";
+import dayjs from "dayjs";
 
 export default {
   name: "AccountBinding",
@@ -51,9 +52,18 @@ export default {
 
   methods: {
     calculateCouponsCount(student) {
+      let count = 0
       if (student.coupons) {
-        return student.coupons.length
+        const now = dayjs()
+        for (let coupon of student.coupons) {
+          if (coupon.date.disable) {
+            if (dayjs(coupon.date.disable).isAfter(now)) {
+              count++
+            }
+          }
+        }
       }
+      return count
     },
 
     goToLineBindingPage() {
