@@ -17,18 +17,18 @@
           <br/>
         </mu-col>
       </mu-row>
-      <mu-row v-if="couponCount !== 0">
+      <mu-row v-if="coupons.length > 0">
         <mu-col span="12" class="coupon">
-          <span>您已獲得{{ couponCount }}張綁定優惠券：</span>
+          <span>您已獲得{{ coupons.length }}張綁定優惠券：</span>
           <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
             <div class="coupon-card" @click="passIdToCouponDetail(coupon['_id'])">
               <span class="coupon-discount-block">
-                <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
+                <mu-paper class="coupon-discount"> {{ coupon.discount }} 折</mu-paper>
               </span>
               <span class="coupon-card-block">
                 <mu-paper>
                   <h1> 新手綁定優惠方案 </h1> <br>
-                  日期:{{ coupon.expireDate }} <br>
+                  日期:{{ coupon.date.disable }} <br>
 
                   優惠折扣碼 <br>
                   {{ coupon.code }} <br>
@@ -99,26 +99,27 @@ export default {
       this.couponCount = Object.keys(coupons).length
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
-        if (coupon && coupon.code) {
-          if (!this.isDeadLine(coupon.date.disable)) {
-            const discountRegularExp = /^\d\.\d{2}/
-            const illustrate = {
-              'rules': coupon.description.rules,
-              'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
-            }
-            const showCoupon = {
-              id: coupon._id,
-              name: coupon.name,
-              code: coupon.code,
-              discount:
-                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-              expireDate:
-                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-              description: illustrate
-            }
-
-            this.coupons.push(showCoupon)
+        if (coupon && coupon.code && !this.isDeadLine(coupon.date.disable)) {
+          const discountRegularExp = /^\d\.\d{2}/
+          const illustrate = {
+            'rules': coupon.description.rules,
+            'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
           }
+
+          const showCoupon = {
+            id: coupon._id,
+            name: coupon.name,
+            code: coupon.code,
+            discount:
+                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
+            date: {
+              disable:
+                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+            },
+            description: illustrate
+          }
+
+          this.coupons.push(showCoupon)
         }
       }
     } catch (error) {
@@ -133,7 +134,7 @@ export default {
 
     isDeadLine: dateDisable => {
       if (dateDisable) {
-        return dayjs(dateDisable).diff(dayjs(), 'days') <= 0
+        return dayjs(dateDisable).diff(dayjs(), 'day') < 0
       }
       return false
     },
