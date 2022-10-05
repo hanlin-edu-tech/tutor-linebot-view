@@ -8,7 +8,7 @@
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'">
-        <div id="student-card-query" class="student-card-query" style="display: none;"></div>
+        <div style="display: none;"></div>
       </a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
@@ -216,13 +216,6 @@ export default {
       // font-size: 12px;
       display: none;
     }
-  }
-
-  .student-card-query {
-    height: 700px;
-    width: 240px;
-    background-image: url('~@/static/img/student-card-query.png');
-    background-size: cover;
   }
 
   .how-to-get-student-card {
