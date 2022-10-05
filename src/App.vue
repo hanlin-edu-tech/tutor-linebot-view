@@ -107,7 +107,7 @@
 
   #line-bot {
     font-family: Roboto, monospace;
-    background-color: #f5f5f5;
+    // background-color: #f5f5f5;
     // 版頭
     header{
       .header_bar{
@@ -137,8 +137,9 @@
         width: 90%;
         max-width:1000px;
         margin: auto;
+        // overflow: scroll;
         // border: 1px #333 solid;
-        touch-action: none;
+        // touch-action: none;
       }
     }
     @media (max-width: 425px) {
@@ -224,6 +225,7 @@
     // 按扭區塊樣式
     .button-div{
       margin-top: 50px;
+      // padding-bottom: 50px;
     }
       // 按鈕大小
       .button-div .mu-raised-button{
@@ -261,6 +263,28 @@
           background-color: #01579b;
           border:2px #DAEEFF solid;
         }
+    // 控制input
+    .mu-input{
+      width: 100%;
+    }
+      .mu-select {
+        background-color: #fff;
+        border-radius: 5px;
+      }
+      .mu-select-input{
+        padding: 0px 8px;
+        font-size: 16px;
+        color: #01579b;
+      }
+      .mu-select-action{
+        color: #01579b!important;
+      }
+      .mu-input__error{
+        // color: #fff;
+      }
+      .mu-input-help{
+        bottom: -24px;
+      }
   }
 </style>
 

@@ -48,7 +48,7 @@
             </div>
             <div class="app-center" v-show="!student.email">
               <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-            </div> -->
+            </div>
            </div>
          </div>
        </div>

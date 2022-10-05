@@ -1,6 +1,6 @@
 <template>
   <section id="line-binding">
-    <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
+    <!-- <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
       <mu-step v-for="num in 3" :class="{'connector-line': bindingStep >= num}">
         <mu-step-label></mu-step-label>
       </mu-step>
@@ -23,8 +23,9 @@
 
     <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
 
-    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
-
+    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure> -->
+    <!-- 流程更改0930 -->
+    <LineBindingSuccess></LineBindingSuccess>
   </section>
 </template>
 
