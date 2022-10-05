@@ -7,9 +7,7 @@
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
-      <a :href="'https://'+host+'/app/member-center/login.html'">
-        <div id="student-card-query" class="student-card-query" style="display: none;"></div>
-      </a>
+      <a :href="'https://'+host+'/app/member-center/login.html'"></a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
@@ -165,23 +163,19 @@ export default {
     font-weight: 500;
     color: #A8A8A8;
   }
-
-  .mu-input {
+  .mu-input{
     padding: 4px 0px;
     min-height: unset;
     border-bottom: 1px #DBDBDB solid;
     margin-bottom: 12px;
   }
-
   .mu-input.has-label {
     padding: 36px 0px 12px;
   }
-
-  .mu-input.full-width.has-label {
-    border: unset;
+  .mu-input.full-width.has-label{
+    border:unset;
   }
-
-  .mu-select {
+  .mu-select{
     background-color: #fff;
     border-radius: 5px;
   }
@@ -191,12 +185,13 @@ export default {
     font-size: 16px;
     color: #01579b;
   }
-
-  .mu-input-line {
+  .mu-select-action{
+    color: #01579b!important;
+  }
+  .mu-input-line{
     display: none;
   }
-
-  .mu-input-focus-line.focus {
+  .mu-input-focus-line.focus{
     display: none;
   }
 
@@ -219,13 +214,6 @@ export default {
       // font-size: 12px;
       display: none;
     }
-  }
-
-  .student-card-query {
-    height: 700px;
-    width: 240px;
-    background-image: url('~@/asset/student-card-query.png');
-    background-size: cover;
   }
 
   .how-to-get-student-card {
@@ -292,153 +280,167 @@ div[class*="mu-carousel-indicators"] {
 
 // dialog 的 圖片
 .mu-carousel-item {
-  height: 250px;
+  // height: 250px;
+  height: 300px;
 }
 
-.mu-popover {
+.mu-popover{
   border-radius: 5px;
   margin-top: 40px;
 }
-
-.mu-list {
-  padding: 0;
-  border-radius: 5px;
-}
-
-.mu-option {
-}
-
-.mu-item-title {
-  font-size: 16px !important;
-}
+  .mu-list {
+    padding: 0;
+    border-radius: 5px;
+  }
+    .mu-option{
+    }
+    .mu-item-title{
+      font-size: 16px!important;
+    }
 
 // 填寫區塊
-.write_area {
+.write_area{
   margin: 12px 0px;
 }
-
 // 小標
-.subtitle {
+.subtitle{
   font-size: 15px;
   font-weight: 500;
   color: #A8A8A8;
 }
-
-.mu-text-field-input {
+.mu-text-field-input{
   font-size: 16px;
 }
+  //
+  .mu-dialog{
+    width: 90%!important;
+    max-width:600px;
+    border-radius: 5px;
+  }
+    .mu-dialog-body{
 
-//
-.mu-dialog {
-  width: 90% !important;
-  max-width: 600px;
-  border-radius: 5px;
-}
+    }
+      .mu-carousel{
+        // overflow: unset;
+        position: relative;
+        // height: unset;
+      }
+      .mu-carousel.teachstep{
+        height: unset;
+      }
+      // 輪播圖
+      .mu-carousel-item.carousel_img{
+        position: relative;
+        position: absolute;
+      }
+      .carousel_img{
+        width: unset;
+        height: unset;
+        overflow: unset;
+      }
+        .carousel_img_in{
+          display: block;
+          padding-top:60%;
+          position: relative;
+        }
+        .carousel_img_in > img{
+          width: 100%!important;
+          height: 100%!important;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          object-fit: cover;
+        }
+          // 輪播點
+          .mu-carousel-indicators{
+            margin: 0!important;
+            display: flex!important;
+            justify-content: center!important;
+            left: 50%!important;
+            top: unset!important;
+            bottom: calc(0px + 44px)!important;
+            width: unset!important;
+            height: 36px!important;
+            transform:translateX(-50%)
+            // width: unset!important;
+            // height: unset!important;
+            // position: absolute;
+            // bottom: 0;
+          }
+            .mu-carousel-indicator-button{
+              width: 10px;
+              height: 10px;
+            }
+            .mu-button-wrapper .mu-carousel-indicator-icon {
+              background-color: darkgray;
+            }
+            // active
+            .mu-carousel-indicator-button__active .mu-carousel-indicator-icon{
+              background-color: #ededed;
+            }
+          // 按鈕
+          .button-in-dialog{
+            width: 100%;
+            margin: unset;
+            margin-top: 20px;
+            margin-top: var(--height);
+            // margin-top: 360px;
+            // position: absolute;
+            // bottom: 0;
+            display: flex;
+            justify-content: space-between;
+          }
+            .button-in-dialog > button.mu-raised-button{
+              margin: unset;
+              box-shadow: unset;
+              border-radius: 2px;
+              font-weight: 500;
+              width: calc(50% - 5px);
+            }
+            .button-in-dialog > button:first-of-type{
+              background-color: #0D6CBE!important;
+            }
+              .button-in-dialog > button:first-of-type:active{
+                background-color: #065DA7!important;
+              }
+            .button-in-dialog > button:last-of-type{
+              background-color: #FD9841!important;
+            }
+              .button-in-dialog > button:last-of-type:active{
+                background-color: #F28121!important;
+              }
 
-.mu-dialog-body {
-
-}
-
-.mu-carousel {
-  // overflow: unset;
-  position: relative;
-  //height: unset;
-}
-
-// 輪播圖
-.mu-carousel-item.carousel_img {
-  position: relative;
-  position: absolute;
-}
-
-.carousel_img {
-  width: unset;
-  height: unset;
+// 大尺寸輪播圖樣式(附加.big-carousel)
+.mu-carousel.big-carousel{
   overflow: unset;
+  margin-top: 15px;
+  border-radius: 10px;
+  // 修正位置-上方
+  .mu-carousel-button.mu-icon-button{
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+    font-size: 60px;
+  }
+  // 修正位置-左方
+    .mu-carousel-button.mu-icon-button.mu-carousel-button__left{
+    left: 0px;
+    transform: translate(-50%,0%);
+  }
+  // 修正位置-右方
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__right{
+    right: 0px;
+    transform: translate(50%,0%);
+  }
+  // 輪播箭頭樣式
+  .mu-button-wrapper{
+    position: relative;
+  }
+  .mu-ripple-wrapper{
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
+  }
 }
 
-.carousel_img_in {
-  display: block;
-  padding-top: 60%;
-  position: relative;
-}
-
-.carousel_img_in > img {
-  width: 100% !important;
-  height: 100% !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  object-fit: cover;
-}
-
-// 輪播點
-.mu-carousel-indicators {
-  margin: 0 !important;
-  display: flex !important;
-  justify-content: center !important;
-  left: 50% !important;
-  top: unset !important;
-  bottom: calc(0px + 44px) !important;
-  width: unset !important;
-  height: 36px !important;
-  transform: translateX(-50%)
-  // width: unset!important;
-  // height: unset!important;
-  // position: absolute;
-  // bottom: 0;
-}
-
-.mu-carousel-indicator-button {
-  width: 10px;
-  height: 10px;
-}
-
-.mu-button-wrapper .mu-carousel-indicator-icon {
-  background-color: darkgray;
-}
-
-// active
-.mu-carousel-indicator-button__active .mu-carousel-indicator-icon {
-  background-color: #ededed;
-}
-
-// 按鈕
-.button-in-dialog {
-  width: 100%;
-  margin: unset;
-  margin-top: 20px;
-  margin-top: var(--height);
-  // margin-top: 360px;
-  // position: absolute;
-  // bottom: 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.button-in-dialog > button.mu-raised-button {
-  margin: unset;
-  box-shadow: unset;
-  border-radius: 2px;
-  font-weight: 500;
-  width: calc(50% - 5px);
-}
-
-.button-in-dialog > button:first-of-type {
-  background-color: #0D6CBE !important;
-}
-
-.button-in-dialog > button:first-of-type:active {
-  background-color: #065DA7 !important;
-}
-
-.button-in-dialog > button:last-of-type {
-  background-color: #FD9841 !important;
-}
-
-.button-in-dialog > button:last-of-type:active {
-  background-color: #F28121 !important;
-}
 </style>

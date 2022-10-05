@@ -67,46 +67,41 @@ export default {
   display: flex;
   justify-content: center;
 }
-
-.role_in {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.student, .parents {
-  width: calc(50% - 5px);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  justify-content: center;
-  padding: 16px 8px;
-  background-color: #fff;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-}
-
-/* 被點擊時 */
-.selected {
-  border: 1px solid orange;
-}
-
-.student > img, .parents > img {
-  width: 75%;
-  height: auto;
-  max-width: 100%;
-  margin: auto;
-}
-
-/* 小標 */
-.student > span, .parents > span {
-  text-align: center;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #0D6CBE;
-}
+  .role_in{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+    .student,.parents{
+      width: calc(50% - 5px);
+      border-radius: 5px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      justify-content: center;
+      padding: 16px 8px;
+      background-color: #fff;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+      /* 被點擊時 */
+      .selected {
+      border: 1px solid orange;
+      }
+      .student > img,.parents > img{
+        width: 75%;
+        height: auto;
+        max-width: 100%;
+        margin: auto;
+      }
+      /* 小標 */
+      .student > span,.parents > span{
+        text-align: center;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0D6CBE;
+      }
 
 /* 按鈕區塊 */
 .button-div {

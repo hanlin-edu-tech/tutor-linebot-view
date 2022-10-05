@@ -9,34 +9,32 @@
       </mu-row>
       <mu-row v-else>
         <div>
-          <div>
-            <div id="title-area">
-              <p class="title">資料確認!</p>
-              <span>會員升級綁定</span>
-            </div>
-            <mu-row>
-              <mu-col class="textarea" span="12">
-                以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
-              </mu-col>
-            </mu-row>
-            <mu-row>
-              <mu-col class="personal-list" span="12">
-                <div class="personal-list-in">
-                  <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                  學號：<span class="font-important-info"> {{ student.studentCard }} </span>
-                </div>
-                <div class="personal-list-in">
-                  <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                  帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
-                </div>
-              </mu-col>
-            </mu-row>
+          <div id="title-area">
+            <p class="title">資料確認!</p>
+            <span>會員升級綁定</span>
+          </div>
+          <mu-row>
+            <mu-col class="textarea" span="12">
+              以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
+            </mu-col>
+          </mu-row>
+          <mu-row>
+            <mu-col class="personal-list" span="12">
+              <div class="personal-list-in">
+                <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                學號：<span class="font-important-info"> {{ student.studentCard }} </span>
+              </div>
+              <div class="personal-list-in">
+                <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
+              </div>
+            </mu-col>
+          </mu-row>
 
-            <div class="button-div">
-              <mu-button @click="goToPreviousStep" class="btn_style back color-primary">上一步</mu-button>
-              <mu-button @click="bindingCompleted" class="btn_style next color-primary" v-if="isCompleted">完成
-              </mu-button>
-            </div>
+          <div class="button-div">
+            <mu-button @click="goToPreviousStep" class="btn_style back color-primary">上一步</mu-button>
+            <mu-button @click="bindingCompleted" class="btn_style next color-primary" v-if="isCompleted">完成
+            </mu-button>
           </div>
         </div>
       </mu-row>

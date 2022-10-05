@@ -86,7 +86,7 @@ export default {
 
     nextStep() {
       this.checkStudentsCardWithMobile()
-      
+
       // 有選擇學號後 進行下一步，例如手機查詢到多位學生，確保select選單有選擇帳號
       if (this.student.studentCard) {
         this.handleNext()
@@ -158,6 +158,7 @@ export default {
 .title {
   color: #01579b;
 }
+
 
 
 </style>
