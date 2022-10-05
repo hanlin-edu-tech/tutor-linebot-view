@@ -1,4 +1,4 @@
-<template xmlns:v="http://www.w3.org/1999/html">
+<template>
   <article id="line-binding-input">
     <mu-select label="選擇學號或手機" v-model="choice" full-width @change="changeSelectField">
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
@@ -93,8 +93,9 @@ export default {
         let height = 0
         height = this.$refs.imageHeight[0].$el.clientHeight
         this.marginHeight = height
-      } catch (err) {
+      } catch (error) {
         // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
+        console.error(error)
       }
     })
 
@@ -148,9 +149,7 @@ export default {
       // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
       if (this.choice === 'studentCard') {
         this.$emit('given-student-card', '')
-      }
-      // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
-      if (this.choice === 'mobile') {
+      } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
         this.$emit('given-mobile', this.mobile)
       }
     }
