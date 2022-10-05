@@ -40,7 +40,7 @@
           熱門活動： <br><br>
           <mu-carousel hide-indicators interval="9999999">
             <mu-carousel-item v-for="image in courseImages">
-              <img :src="image" @click="goCoursePage">
+              <img :src="image.imgUrl" @click="goPage(image.href)">
             </mu-carousel-item>
           </mu-carousel>
         </mu-col>
@@ -130,8 +130,8 @@ export default {
         url: `/ads/indexBanners?category=line-popular-activity`
       })
 
-      for (let data of res.data) {
-        this.courseImages.push(data.imgUrl)
+      for (let image of res.data) {
+        this.courseImages.push(image)
       }
 
     } catch (error) {
@@ -151,8 +151,8 @@ export default {
       return false
     },
 
-    goCoursePage() {
-      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+    goPage(url) {
+      window.open(url, '_blank')
     },
 
     passIdToCouponDetail(id) {
