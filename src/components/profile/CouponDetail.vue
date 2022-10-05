@@ -11,7 +11,7 @@
       </h1>
       <h1 v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </h1>
     </div>
-    <h1> 折扣: {{ formatDiscount(coupon.discount) }}折 </h1>
+    <h1> 折扣: {{ formatDiscount(coupon.discount) }} </h1>
     <h1> 期限: {{ coupon.date.disable }} </h1>
     <h1> 狀態: {{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }} </h1>
     <h1> 剩餘日期: {{ computeRemainingDate }}天 </h1>
@@ -75,23 +75,26 @@ export default {
 
     formatDiscount(discount) {
       if (Number.isInteger(discount)) {
-        return discount
+        return discount + '元'
       }
 
       const len = discount.toString().split('.')[1].length
 
       switch (len) {
         case 1:
-          return discount * 10
+          discount *= 10
+          break
         case 2:
-          return discount * 100
+          discount *= 100
+          break
         case 3:
-          return discount * 1000
-        default:
-          return discount
+          discount *= 1000
+          break
       }
+      return discount + '折'
     },
 
+    // 待確定還會再更改
     goCoursePage() {
       window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
     },
