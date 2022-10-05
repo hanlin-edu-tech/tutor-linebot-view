@@ -40,30 +40,30 @@
                 </div>
                 <!-- 右側折數 -->
                 <div class="coupon-card-right">
-                      <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
-                        <mu-paper>
-                          <!-- 優惠標題 -->
-                          <div class="coupon_tit">
-                            <p> 新手綁定優惠方案 </p>
-                            <!-- 日期 -->
-                            <div class="coupon_date">
-                              <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                              <p>~</p>{{ formatDate(coupon.date.disable) }}
-                            </div>
-                          </div>
-                          <!-- 折扣碼區塊 -->
-                          <div class="coupon_code">
-                            優惠折扣碼
-                            <div class="coupon-code-in">
-                              <div class="code">
-                                {{ coupon.code }}
-                              </div>
-                              <mu-button class="btn" color="orange">查看詳情</mu-button>
-                            </div>
-                          </div>
-                        </mu-paper>
+                  <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
+                    <mu-paper>
+                      <!-- 優惠標題 -->
+                      <div class="coupon_tit">
+                        <p> 新手綁定優惠方案 </p>
+                        <!-- 日期 -->
+                        <div class="coupon_date">
+                          <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                          <p>~</p>{{ formatDate(coupon.date.disable) }}
+                        </div>
                       </div>
-                    </div>
+                      <!-- 折扣碼區塊 -->
+                      <div class="coupon_code">
+                        優惠折扣碼
+                        <div class="coupon-code-in">
+                          <div class="code">
+                            {{ coupon.code }}
+                          </div>
+                          <mu-button class="btn" color="orange">查看詳情</mu-button>
+                        </div>
+                      </div>
+                    </mu-paper>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -88,30 +88,30 @@
                 </div>
                 <!-- 右側折數 -->
                 <div class="coupon-card-right">
-                      <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
-                        <mu-paper>
-                          <!-- 優惠標題 -->
-                          <div class="coupon_tit">
-                            <p> 新手綁定優惠方案 </p>
-                            <!-- 日期 -->
-                            <div class="coupon_date">
-                              <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                              <p>~</p>{{ formatDate(coupon.date.disable) }}
-                            </div>
-                          </div>
-                          <!-- 折扣碼區塊 -->
-                          <div class="coupon_code">
-                            優惠折扣碼
-                            <div class="coupon-code-in">
-                              <div class="code">
-                                {{ coupon.code }}
-                              </div>
-                              <mu-button class="btn" color="orange">查看詳情</mu-button>
-                            </div>
-                          </div>
-                        </mu-paper>
+                  <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
+                    <mu-paper>
+                      <!-- 優惠標題 -->
+                      <div class="coupon_tit">
+                        <p> 新手綁定優惠方案 </p>
+                        <!-- 日期 -->
+                        <div class="coupon_date">
+                          <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                          <p>~</p>{{ formatDate(coupon.date.disable) }}
+                        </div>
                       </div>
-                    </div>
+                      <!-- 折扣碼區塊 -->
+                      <div class="coupon_code">
+                        優惠折扣碼
+                        <div class="coupon-code-in">
+                          <div class="code">
+                            {{ coupon.code }}
+                          </div>
+                          <mu-button class="btn" color="orange">查看詳情</mu-button>
+                        </div>
+                      </div>
+                    </mu-paper>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
