@@ -18,8 +18,8 @@
         <div v-for="coupon in greatThanEqualZeroDay" :key="coupon['_id']">
           <div :class="{'close-deadline': coupon.diffDay <= 10}"
                @click="passIdToCouponDetail(coupon['_id'])">
-            <h1> {{ formatDiscount(coupon.discount) }} 折 </h1>
-            <h1> 新手綁定優惠方案 </h1> <br>
+            <h1> 折扣: {{ formatDiscount(coupon.discount) }} </h1>
+            <h1> 新手綁定優惠方案: </h1> <br>
             <h1> 開始日期: {{ formatDate(coupon.date.enable) }} </h1>
             <h1> 結束日期: {{ formatDate(coupon.date.disable) }} </h1>
 
@@ -33,7 +33,7 @@
       <div v-else-if="select === 'invalid'">
         <div v-for="coupon in invalidCoupon" :key="coupon['_id']">
           <div>
-            <h1> {{ formatDiscount(coupon.discount) }} 折 </h1>
+            <h1>折扣: {{ formatDiscount(coupon.discount) }} </h1>
             <span>
                 <h1> 新手綁定優惠方案 </h1> <br>
               <h1> 開始日期: {{ formatDate(coupon.date.enable) }} </h1>
@@ -122,18 +122,24 @@ export default {
     },
 
     formatDiscount(discount) {
+      if (Number.isInteger(discount)) {
+        return discount + '元'
+      }
+
       const len = discount.toString().split('.')[1].length
 
       switch (len) {
         case 1:
-          return discount * 10
+          discount *= 10
+          break
         case 2:
-          return discount * 100
+          discount *= 100
+          break
         case 3:
-          return discount * 1000
-        default:
-          return discount
+          discount *= 1000
+          break
       }
+      return discount + '折'
     },
 
     formatDate(day) {
