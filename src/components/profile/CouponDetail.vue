@@ -32,7 +32,7 @@
       <!-- 狀態 -->
       <li>
         <span>狀態:</span>
-        <p>{{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }}</p>
+        <p>{{ getCouponStatus() }}</p>
       </li>
       <!-- 剩餘日期 -->
       <li>
@@ -118,6 +118,25 @@ export default {
     goCoursePage() {
       window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
     },
+
+    getCouponStatus() {
+      const diffDay = this.coupon.diffDay
+      let couponStatus
+
+      switch (true) {
+        case (diffDay > 10):
+          couponStatus = '可使用'
+          break
+        case (diffDay <= 10):
+          couponStatus = '即將失效'
+          break
+        default:
+          couponStatus = '未知'
+          break
+      }
+      
+      return couponStatus
+    }
   },
 
   computed: {
