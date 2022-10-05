@@ -20,6 +20,12 @@ module.exports = {
         pathRewrite: { '^/user-bg': '' },
         changeOrigin: true,
         ws: true
+      },
+      '/ads': {
+        target: 'https://www.tbbt.com.tw/ads/',
+        pathRewrite: { '^/ads': '' },
+        changeOrigin: true,
+        ws: true
       }
     }
   }
