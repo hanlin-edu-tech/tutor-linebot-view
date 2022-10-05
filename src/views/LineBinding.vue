@@ -6,23 +6,25 @@
       </mu-step>
     </mu-stepper>
 
-    <ChooseRole v-if="bindingStep === 0 && !isAlreadyBinding"></ChooseRole>
+    <template v-if="isInitial">
+      <ChooseRole v-if="bindingStep === 0 && !isAlreadyBinding"></ChooseRole>
 
-    <BindingProcedure v-if="bindingStep === 1" :is-already-binding="isAlreadyBinding"></BindingProcedure>
+      <BindingProcedure v-if="bindingStep === 1" :is-already-binding="isAlreadyBinding"></BindingProcedure>
 
-    <LineBindingConfirm
-        v-if="bindingStep === 2"
-        :line-user-id="lineUserId"
-        @binding-completed="isBindingCompleted = true"></LineBindingConfirm>
+      <LineBindingConfirm
+          v-if="bindingStep === 2"
+          :line-user-id="lineUserId"
+          @binding-completed="isBindingCompleted = true"></LineBindingConfirm>
 
-    <LineBindingResult
-        v-if="bindingStep === 3"
-        @binding-result="setBindingResult"
-        :line-user-id="lineUserId"></LineBindingResult>
+      <LineBindingResult
+          v-if="bindingStep === 3"
+          @binding-result="setBindingResult"
+          :line-user-id="lineUserId"></LineBindingResult>
 
-    <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
+      <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
 
-    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
+      <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
+    </template>
 
   </section>
 </template>
@@ -53,6 +55,7 @@ export default {
       isBindingCompleted: false,
       isBindingAgain: false,
       isAlreadyBinding: false,
+      isInitial: false,
       bindingResult: ''
     }
   },
@@ -82,6 +85,7 @@ export default {
         this.student.studentCards = studentCards
         this.isAlreadyBinding = true
         this.handleNext()
+        // 當綁定過身份後 導到profile，若在profile那點擊帳號綁定，則不跳轉
         if (!this.continueBinding) {
           await this.$router.replace(`/profile/${this.lineUserId}/${lineBindingStudentCards[0].studentCard}`)
         }
@@ -90,6 +94,9 @@ export default {
       console.error(error)
       this.isAlreadyBinding = false
     }
+    // created流程跑完後 才讓上面的template顯示
+    // 不在選擇身份階段時，不該閃過選擇身份的component的畫面
+    this.isInitial = true
   },
 
   methods: {

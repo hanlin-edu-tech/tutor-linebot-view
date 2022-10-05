@@ -32,7 +32,7 @@
       <!-- 狀態 -->
       <li>
         <span>狀態:</span>
-        <p>{{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }}</p>
+        <p>{{ coupon.diffDay > 10 ? '可使用' : '即將失效'  }}</p>
       </li>
       <!-- 剩餘日期 -->
       <li>
@@ -117,7 +117,8 @@ export default {
     // 待確定還會再更改
     goCoursePage() {
       window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
-    },
+    }
+    
   },
 
   computed: {
