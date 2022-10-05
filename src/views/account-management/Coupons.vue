@@ -118,10 +118,6 @@
         </div>
       </div>
     </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> main
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
                   :coupon="clickedCoupon">
