@@ -78,7 +78,7 @@ export default {
       coupons: [],
       couponCount: 0,
       isClickCouponDetail: false,
-      courseImages: [courseImage1, courseImage2],
+      courseImages: [],
       clickedCoupon: {}
     }
   },
@@ -91,6 +91,7 @@ export default {
     const studentCard = this.lineBindingStudentCard.studentCard
 
     try {
+      // 處理優惠券
       const response = await this.$axios({
         method: 'get',
         url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
@@ -122,6 +123,17 @@ export default {
           this.coupons.push(showCoupon)
         }
       }
+
+      // 撈輪播圖圖片
+      const res = await this.$axios({
+        method: 'get',
+        url: `/ads/indexBanners?category=line-popular-activity`
+      })
+
+      for (let data of res.data) {
+        this.courseImages.push(data.imgUrl)
+      }
+
     } catch (error) {
       console.error(error)
     }
