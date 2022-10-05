@@ -67,7 +67,7 @@
           <div class="coupon_in">
             <span>熱門活動：</span>
             <!-- 輪播樣式 -->
-            <mu-carousel hide-indicators interval="9999999">
+            <mu-carousel class="big-carousel" hide-indicators interval="9999999">
               <mu-carousel-item v-for="image in courseImages">
                 <img :src="image.imgUrl" @click="goPage(image.href)">
               </mu-carousel-item>
@@ -85,8 +85,8 @@
                   :coupon="clickedCoupon">
     </CouponDetail>
 
-    <div class="app-center" v-if="!isClickCouponDetail">
-      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
+    <div class="app-center button-div" v-if="!isClickCouponDetail">
+      <mu-button @click="queryProfiles" class="btn-primary btn_style next">查看帳號</mu-button>
     </div>
   </div>
 
