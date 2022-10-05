@@ -7,9 +7,7 @@
     <div v-show="choice === 'studentCard'">
       <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
-      <a :href="'https://'+host+'/app/member-center/login.html'">
-        <div style="display: none;"></div>
-      </a>
+      <a :href="'https://'+host+'/app/member-center/login.html'"></a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
