@@ -1,0 +1,115 @@
+<template>
+  <div>
+    <mu-icon value="arrow_back" size="36" @click="$emit('go-back')"></mu-icon>
+    <h1> 新手綁定優惠方案 </h1>
+    <br>
+
+    <h1> 優惠卷: </h1>
+    <div>
+      <h1 @click="copyToClipboard"> 折扣碼: <span ref="couponCode"> {{ coupon.code }} </span>
+        <mu-icon size="30" value="description"></mu-icon>
+      </h1>
+      <h1 v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </h1>
+    </div>
+    <h1> 折扣: {{ formatDiscount(coupon.discount) }} </h1>
+    <h1> 期限: {{ coupon.date.disable }} </h1>
+    <h1> 狀態: {{ coupon.isAvailable == 'undefined' ? this.coupon.isAvailable : "不可使用" }} </h1>
+    <h1> 剩餘日期: {{ computeRemainingDate }}天 </h1>
+    <h1> 試用產品: {{ coupon.description.applicable }} </h1><br><br>
+    <h1> 推薦課程: </h1>
+
+    <br>
+    <br>
+    <br>
+
+    <mu-carousel hide-indicators interval="9999999">
+      <mu-carousel-item v-for="image in courseImages">
+        <img :src="image" @click="goCoursePage">
+      </mu-carousel-item>
+    </mu-carousel>
+
+    <h1> 優惠卷名稱: {{ coupon.name }} </h1>
+
+    <h3> 使用規則 </h3>
+    <div>
+      <p v-for="rule in this.coupon.description.rules.split('<br>')">
+        {{ rule }}
+      </p>
+    </div>
+    <br>
+    <br>
+    <br>
+  </div>
+
+</template>
+
+<script>
+import dayjs from "dayjs"
+import courseImage1 from "../../asset/course1.png"
+import courseImage2 from "../../asset/course2.png"
+
+export default {
+  name: "CouponDetail",
+  props: {
+    coupon: {
+      type: Object,
+      required: true
+    }
+  },
+
+  data() {
+    return {
+      isCopyToClipboard: false,
+      courseImages: [courseImage1, courseImage2]
+    };
+  },
+
+  methods: {
+    copyToClipboard() {
+      navigator.clipboard.writeText(this.$refs.couponCode.textContent)
+      this.isCopyToClipboard = true
+      setTimeout(function () {
+        this.isCopyToClipboard = false
+      }.bind(this), 1000)
+    },
+
+    formatDiscount(discount) {
+      if (Number.isInteger(discount)) {
+        return discount + '元'
+      }
+
+      const len = discount.toString().split('.')[1].length
+
+      switch (len) {
+        case 1:
+          discount *= 10
+          break
+        case 2:
+          discount *= 100
+          break
+        case 3:
+          discount *= 1000
+          break
+      }
+      return discount + '折'
+    },
+
+    // 待確定還會再更改
+    goCoursePage() {
+      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+    },
+  },
+
+  computed: {
+    computeRemainingDate() {
+      const now = dayjs().locale('zh-tw')
+      if (this.coupon.date.disable) {
+        return dayjs(this.coupon.date.disable).diff(now, 'day')
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+</style>

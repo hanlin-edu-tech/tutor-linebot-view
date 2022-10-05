@@ -1,308 +1,156 @@
 <template>
   <section id="line-binding">
-    <mu-stepper :active-step="bindingStep" orientation="vertical">
-      <mu-step v-if="!isParentBound">
-        <mu-step-label>
-          請選擇你的身份
-        </mu-step-label>
-        <mu-step-content>
-          <p>
-            <LineBindingAuthentication @given-role="givenRole"></LineBindingAuthentication>
-          </p>
-          <mu-button @click="handleNext" color="lightBlue900" v-show="isShowNextToInputBtn">下一步</mu-button>
-        </mu-step-content>
-      </mu-step>
-      <mu-step>
-        <mu-step-label>
-          請輸入欲綁定的學號：
-        </mu-step-label>
-        <mu-step-content>
-          <p>
-            <LineBindingInput @given-student-card="givenStudentCard"
-                              @given-mobile="givenMobile"></LineBindingInput>
-          </p>
-          <mu-button @click="handleNext" color="lightBlue900" v-show="isShowNextToConfirmBtn">下一步</mu-button>
-          <mu-button flat class="color-primary" v-if="!isParentBound" @click="inputToPrevious">上一步</mu-button>
-        </mu-step-content>
-      </mu-step>
-      <mu-step>
-        <mu-step-label>
-          資料確認
-        </mu-step-label>
-        <mu-step-content>
-          <p>
-            <LineBindingConfirm :role="role" :student-card="studentCard" :mobile="mobile" :line-user-id="lineUserId"
-                                @given-email="givenEmail"
-                                @binding-same-student-card="bindingSameStudentCard"></LineBindingConfirm>
-          </p>
-          <mu-button color="lightBlue900" @click="completedLineBinding" v-show="isShowCompletedBtn">完成</mu-button>
-          <mu-button flat class="color-primary" @click="confirmToPrevious">上一步</mu-button>
-          <mu-button color="lightBlue900" @click="queryProfiles" v-show="isShowQueryProfilesBtn">帳號查詢</mu-button>
-        </mu-step-content>
+    <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
+      <mu-step v-for="num in 3" :class="{'connector-line': bindingStep >= num}">
+        <mu-step-label></mu-step-label>
       </mu-step>
     </mu-stepper>
-    <p v-if="isCompleted">
-      <LineBindingResult></LineBindingResult>
-    </p>
+
+    <ChooseRole v-if="bindingStep === 0 && !isAlreadyBinding"></ChooseRole>
+
+    <BindingProcedure v-if="bindingStep === 1" :is-already-binding="isAlreadyBinding"></BindingProcedure>
+
+    <LineBindingConfirm
+        v-if="bindingStep === 2"
+        :line-user-id="lineUserId"
+        @binding-completed="isBindingCompleted = true"></LineBindingConfirm>
+
+    <LineBindingResult
+        v-if="bindingStep === 3"
+        @binding-result="setBindingResult"
+        :line-user-id="lineUserId"></LineBindingResult>
+
+    <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
+
+    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
+
   </section>
 </template>
 
 <script>
-  import LineBindingAuthentication from '@/components/line-binding/LineBindingAuthentication'
-  import LineBindingInput from '@/components/line-binding/LineBindingInput'
-  import LineBindingConfirm from '@/components/line-binding/LineBindingConfirm'
-  import LineBindingResult from '@/components/line-binding/LineBindingResult'
-  import store from '@/store/store'
-  import { mapState, mapActions } from 'vuex'
+import ChooseRole from '@/components/line-binding/ChooseRole'
+import BindingProcedure from "@/components/line-binding/BindingProcedure"
+import LineBindingConfirm from "@/components/line-binding/LineBindingConfirm"
+import LineBindingResult from "@/components/line-binding/LineBindingResult"
+import store from '@/store/store'
+import {mapActions} from 'vuex'
+import LineBindingSuccess from "@/components/line-binding/result/LineBindingSuccess";
+import LineBindingFailure from "@/components/line-binding/result/LineBindingFailure";
 
-  export default {
-    store,
-    name: 'LineBinding',
-    components: {
-      LineBindingAuthentication,
-      LineBindingInput,
-      LineBindingConfirm,
-      LineBindingResult
-    },
+export default {
+  name: 'LineBinding',
+  components: {
+    LineBindingFailure,
+    LineBindingSuccess,
+    ChooseRole,
+    BindingProcedure,
+    LineBindingConfirm,
+    LineBindingResult
+  },
+  data() {
+    return {
+      lineUserId: this.$route.params['specificLineUser'],
+      isBindingCompleted: false,
+      isBindingAgain: false,
+      isAlreadyBinding: false,
+      bindingResult: ''
+    }
+  },
 
-    data () {
-      const vueModel = this
-      return {
-        role: '',
-        studentCard: '',
-        mobile: '',
-        email: '',
-        name: '',
-        messageResult: '',
-        /* 成功取得 role，才顯示通往輸入學號的下一步 button */
-        isShowNextToInputBtn: false,
-        isShowNextToConfirmBtn: false,
-        /* 如果成功取得 email，才顯示完成的 button */
-        isShowCompletedBtn: false,
-        /* 如果家長綁定了同一個學號，才顯示帳號查詢之 button */
-        isShowQueryProfilesBtn: false,
-        lineUserId: vueModel.$route.params['specificLineUser'],
-        isParentBound: Boolean
-      }
-    },
+  async created() {
+    try {
+      // await 後端回傳data，不然這裡取不到資料
+      const response = await this.$axios({
+        method: 'get',
+        url: `/linebot/profile/${this.lineUserId}`,
+      })
+      const jsonData = response.data
+      const lineBindingStudentCards = jsonData.content
 
-    async created () {
-      const vueModel = this
-      vueModel.resetStepAction()
-
-      try {
-        const response = await vueModel.$axios({
-          method: 'get',
-          url: `/linebot/profile/${vueModel.lineUserId}`,
-        })
-        const jsonData = response.data
-        const lineBindingStudentCards = jsonData.content
-        vueModel.isParentBound = false
-        if (lineBindingStudentCards.length > 0) {
-          const studentCards = []
-          lineBindingStudentCards.forEach(lineBindingStudentCard => {
-            studentCards.push(lineBindingStudentCard.studentCard)
-            lineBindingStudentCard.authentications.forEach(authentication => {
-              if (authentication.role === 'parent') {
-                vueModel.isParentBound = true
-                vueModel.givenRole('parent')
-              }
-            })
-          })
-          vueModel.assignStudentCardsAction(studentCards)
-        }
-      } catch (error) {
-        console.error(error)
-        vueModel.isParentBound = false
-      }
-    },
-
-    mounted () {
-      document.querySelector('#line-binding .mu-stepper').style.height = `${window.innerHeight * 0.45}px`
-    },
-
-    computed: Object.assign(
-      {
-        isCompleted () {
-          const vueModel = this
-          let isNotBound = vueModel.bindingStep > 2
-          let isParentBound = (vueModel.isParentBound && vueModel.bindingStep > 1)
-          return isNotBound || isParentBound
-        }
-      },
-      mapState('step', ['bindingStep'])
-    ),
-
-    methods: Object.assign(
-      {
-        givenRole (role) {
-          const vueModel = this
-          if (role) {
-            vueModel.role = role
-            vueModel.isShowNextToInputBtn = true
-          }
-        },
-
-        givenStudentCard (studentCard) {
-          const vueModel = this
-          if (studentCard) {
-            vueModel.studentCard = studentCard
-            vueModel.isShowNextToConfirmBtn = true
-          } else {
-            vueModel.isShowNextToConfirmBtn = false
-          }
-        },
-
-        givenMobile (mobile) {
-          const vueModel = this
-          if (mobile) {
-            vueModel.mobile = mobile
-            vueModel.isShowNextToConfirmBtn = true
-          } else {
-            vueModel.isShowNextToConfirmBtn = false
-          }
-        },
-
-        givenEmail (specificUser) {
-          const vueModel = this
-          if (specificUser && specificUser.email) {
-            vueModel.email = specificUser.email
-            vueModel.studentCard = specificUser.studentCard
-            vueModel.mobile = specificUser.mobile
-            vueModel.name = specificUser.name
-            vueModel.isShowCompletedBtn = true
-          } else {
-            vueModel.isShowCompletedBtn = false
-          }
-        },
-
-        bindingSameStudentCard () {
-          const vueModel = this
-          vueModel.isShowQueryProfilesBtn = true
-        },
-
-        completedLineBinding () {
-          const vueModel = this
-          const lineBindingStudentCard = {
-            studentCard: vueModel.studentCard,
-            email: vueModel.email,
-            name: vueModel.name,
-            mobile: vueModel.mobile,
-          }
-
-
-          lineBindingStudentCard.authentications = [
-            {
-              lineUserId: vueModel.lineUserId,
-              role: vueModel.role
+      if (lineBindingStudentCards.length > 0) {
+        const studentCards = []
+        lineBindingStudentCards.forEach(lineBindingStudentCard => {
+          studentCards.push(lineBindingStudentCard.studentCard)
+          lineBindingStudentCard.authentications.forEach(authentication => {
+            if (authentication.role === 'parent') {
+              this.student.role = 'parent'
+            } else {
+              this.student.role = 'student'
             }
-          ]
-
-
-          vueModel.assignBindingAction(lineBindingStudentCard)
-          vueModel.handleNext()
-        },
-
-        queryProfiles () {
-          const vueModel = this
-          vueModel.$router.push(`/profile/${vueModel.lineUserId}`)
-        },
-
-        inputToPrevious () {
-          const vueModel = this
-          vueModel.role = ''
-          vueModel.isShowNextToInputBtn = false
-          vueModel.handlePrevious()
-        },
-
-        confirmToPrevious () {
-          const vueModel = this
-          vueModel.studentCard = ''
-          vueModel.mobile = ''
-          vueModel.isShowNextToConfirmBtn = false
-          vueModel.isShowQueryProfilesBtn = false
-          vueModel.handlePrevious()
+          })
+        })
+        this.student.studentCards = studentCards
+        this.isAlreadyBinding = true
+        this.handleNext()
+        if (!this.continueBinding) {
+          await this.$router.replace(`/profile/${this.lineUserId}/${lineBindingStudentCards[0].studentCard}`)
         }
-      },
+      }
+    } catch (error) {
+      console.error(error)
+      this.isAlreadyBinding = false
+    }
+  },
 
-      mapActions('step', {
-        handleNext: 'forwardStepAction',
-        handlePrevious: 'backwardStepAction',
-        resetStepAction: 'resetStepAction'
-      }),
+  methods: {
+    setBindingResult(result) {
+      this.bindingResult = result
+    },
 
-      mapActions('binding', ['assignBindingAction', 'assignStudentCardsAction'])
-    )
-  }
+    ...mapActions('step', {
+      resetStepAction: 'resetStepAction',
+      handleNext: 'forwardStepAction'
+    }),
+
+  },
+
+  computed: {
+    bindingStep: () => store.state.step.bindingStep,
+    student: () => store.state.binding.student,
+    continueBinding: () => store.state.binding.continueBinding
+  },
+}
 </script>
 
-<style lang="less">
-  @titleFont: 22px;
-  @containerWidth: 29px;
-  @stepLabelCircleSquare: 25px;
-  @stepLabelCircleFont: 22px;
+<style>
+.mu-step-label.active .mu-step-label-circle, .mu-step-label.completed .mu-step-label-circle {
+  background-color: orange;
+}
 
-  #line-binding .mu-stepper {
-    .mu-step-label.active {
-      font-size: @titleFont;
+.mu-step-label.active .mu-step-label-icon, .mu-step-label.completed .mu-step-label-icon {
+  color: orange;
+}
 
-      .mu-step-label-icon-container {
-        width: 35px;
-        margin-right: 3px;
+.mu-step-connector-line {
+}
 
-        .mu-step-label-circle {
-          background-color: #01579b;
-          width: @stepLabelCircleSquare;
-          height: @stepLabelCircleSquare;
-          font-size: @stepLabelCircleFont;
-          line-height: 23px;
-        }
-      }
-    }
+div[class~="connector-line"] + div > span[class="mu-step-connector-line"] {
+  border-top-width: 3px;
+  border-color: orange;
+}
 
-    .mu-step-label.completed {
-      font-size: @titleFont;
-      color: #535051;
-      height: 60px;
-
-      .mu-step-label-icon-container {
-        width: @containerWidth;
-
-        .mu-step-label-icon {
-          margin-left: -2px;
-          width: 30px;
-          height: 30px;
-        }
-      }
-    }
-
-    .mu-step-label.disabled {
-      font-size: @titleFont;
-      height: 50px;
-
-      .mu-step-label-icon-container {
-        width: @containerWidth;
-
-        .mu-step-label-circle {
-          width: @stepLabelCircleSquare;
-          height: @stepLabelCircleSquare;
-          font-size: @stepLabelCircleFont;
-          line-height: 23px;
-        }
-      }
-    }
-
-    .mu-step-content {
-      .mu-button {
-        width: 28vw;
-        height: 40px;
-        font-size: @titleFont - 0.1;
-        font-weight: 500;
-
-        .mu-button-wrapper {
-          padding: 2px;
-        }
-      }
-    }
+/* 步驟樣式 */
+.mu-stepper{
+  position: relative;
+  width: 50%;
+  max-width: 320px;
+  margin: auto;
+  margin-top: 16px;
+}
+  .mu-step{
+    z-index: 1;
   }
+  .mu-step-label{
+    height: unset;
+    padding: unset;
+  }
+  .mu-step-label.active{
+
+  }
+    .mu-step-label-icon-container{
+      margin: 0;
+      width: unset;
+    }
+
+
 </style>

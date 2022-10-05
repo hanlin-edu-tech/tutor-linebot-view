@@ -2,7 +2,15 @@ export default {
   namespaced: true,
   state: {
     lineBindingStudentCard: Object,
-    studentCards: Object
+    studentCards: Object,
+    continueBinding: false,
+    student: {
+      role: '',
+      mobile: '',
+      email:'',
+      studentCard: '',
+      studentCards: []
+    }
   },
 
   actions: {
@@ -12,6 +20,10 @@ export default {
 
     assignStudentCardsAction ({commit}, studentCards) {
       commit('assignStudentCards', studentCards)
+    },
+    
+    assignContinueBindingAction ({commit}, continueBinding) {
+      commit('setContinueBinding', continueBinding)
     }
   },
 
@@ -22,6 +34,10 @@ export default {
 
     assignStudentCards (state, studentCards) {
       state.studentCards = studentCards
+    },
+    
+    setContinueBinding (state, continueBinding) {
+      state.continueBinding = continueBinding
     }
   }
 }

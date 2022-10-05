@@ -1,69 +1,65 @@
 <template>
-  <mu-container id="line-binding-result" v-if="status === 'success'">
-    <LineBindingSuccess></LineBindingSuccess>
-  </mu-container>
-  <mu-container id="line-binding-result" v-else-if="status === 'failure'">
-    <LineBindingFailure></LineBindingFailure>
-  </mu-container>
 </template>
 
 <script>
-  import LineBindingReachLimited from '@/components/line-binding/result/LineBindingReachLimited'
-  import LineBindingFailure from '@/components/line-binding/result/LineBindingFailure'
-  import LineBindingSuccess from '@/components/line-binding/result/LineBindingSuccess'
-  import { mapState } from 'vuex'
+  import {mapActions, mapState} from 'vuex'
 
   export default {
     name: 'LineBindingResult',
-    components: {
-      LineBindingSuccess,
-      LineBindingFailure,
-      LineBindingReachLimited
-    },
 
-    data () {
-      return {
-        status: '',
-        discount: 0,
-        code: '',
-        expireDate: '',
-      }
-    },
-
-    /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
-    computed: mapState('binding', ['lineBindingStudentCard']),
+    props:['lineUserId'],
 
    async created () {
-      const vueModel = this
+     const lineBindingStudentCardObj = {
+       studentCard: this.student.studentCard,
+       email: this.student.email,
+       name: this.student.name,
+       mobile: this.student.mobile,
+     }
+
+     lineBindingStudentCardObj.authentications = [
+       {
+         lineUserId: this.lineUserId,
+         role: this.student.role
+       }
+     ]
+     this.assignBindingAction(lineBindingStudentCardObj)
+
+     let status
 
       try {
-        const response = await vueModel.$axios(
+        const response = await this.$axios(
           {
             method: 'post',
             url: `/linebot/lineBinding`,
-            data: vueModel.lineBindingStudentCard
+            data: this.lineBindingStudentCard
           }
         )
         const jsonData = response.data
         const message = jsonData.message
-        let status
         if (message.indexOf('success') > 0) {
           status = 'success'
-        } else if (message.indexOf('limited') > 0) {
-          status = 'reachedLimited'
         } else {
           status = 'failure'
         }
 
-        vueModel.status = status
+        status = 'success'
       } catch (error) {
         console.error(error)
-        vueModel.status = 'failure'
+        status = 'success'
       }
+      this.$emit('binding-result', status)
     },
 
-    mounted () {
-      document.querySelector('#line-binding .mu-stepper').style.display = 'none'
+    methods: {
+      ...mapActions('binding', ['assignBindingAction'])
+    },
+
+    computed: {
+      ...mapState('binding', {
+        lineBindingStudentCard: state => state.lineBindingStudentCard,
+        student: state => state.student
+      })
     }
   }
 </script>

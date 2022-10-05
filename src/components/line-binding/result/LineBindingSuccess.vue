@@ -1,212 +1,239 @@
 <template>
-  <article id="line-binding-success">
-    <mu-row>
-      <mu-col span="11">
-        <div class="app-center result result-success">
-          <mu-icon left value="check_circle" class="icon-global"></mu-icon>
-          綁定成功
-        </div>
-      </mu-col>
-    </mu-row>
-    <mu-row>
-      <mu-col span="12">
-        <div class="result-detail">您已成功綁定翰林雲端學院帳號，未來我們將透過 Line 生活圈發布更多優惠及即時訊息，請一定要密切關注喔！</div>
-        <br />
-      </mu-col>
-    </mu-row>
-    <mu-row v-show="status === 'success'">
-      <mu-col span="12" class="coupon">
-        <span>您已獲得 {{ couponCount }} 張綁定優惠券：</span>
-        <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
-          <br /><span>{{ coupon.name }}</span>
-          <br /><span class="coupon-code">{{ coupon.code }}</span>
-          <br />使用期限：<span>{{ coupon.expireDate }}</span>
-          <p></p>
-          <div class="app-left attention" v-html="coupon.description">
-            {{ coupon.description }}
+  <div>
+    <article id="line-binding-success" v-if="!isClickCouponDetail">
+      <mu-row>
+        <mu-col span="11">
+          <div class="app-center result result-success">
+            <mu-icon left value="check_circle" class="icon-global bind-success-icon"></mu-icon>
+            綁定成功!
           </div>
-          <span class="collapse color-primary" v-if="!coupon.isShowDescription"
-                @click="unfold($event, coupon)">查閱</span>
-          <span class="collapse color-primary" v-else
-                @click="fold($event, coupon)">收合</span>
-        </div>
-        <br />
-        <div class="app-left how-to-use-coupon">
-          ※ 【如何使用優惠碼】：
-          <div class="ellipsis">
-            <br />1. 至翰林雲端學院官網 → 課程購買 → 選購上學期課程。
-            <br />2. 點選「加入購物車」→「立即結帳」至 Step1 確認課程頁面。
-            <br />3. 於粉紅色區塊輸入以上優惠碼即可享有優惠。
-            <br />4. 點選下一步並將相關資訊填寫完整後，即完成訂單。
+        </mu-col>
+      </mu-row>
+      <mu-row>
+        <mu-col span="12">
+          <div class="result-detail">您已成功綁定翰林雲端學院帳號，未來我們將透過 Line
+            生活圈發布更多優惠及即時訊息，請一定要密切關注喔！
           </div>
-        </div>
-      </mu-col>
-    </mu-row>
-    <DetermineUnsuccessfulStatus :status="status">目前沒有優惠券，敬請期待！</DetermineUnsuccessfulStatus>
-    <div class="app-center">
-      <mu-button color="lightBlue900" class="btn-primary" @click="queryProfiles">查詢帳號</mu-button>
+          <br/>
+        </mu-col>
+      </mu-row>
+      <mu-row v-if="coupons.length > 0">
+        <mu-col span="12" class="coupon">
+          <span>您已獲得{{ coupons.length }}張綁定優惠券：</span>
+          <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
+            <div class="coupon-card" @click="passIdToCouponDetail(coupon['_id'])">
+              <span class="coupon-discount-block">
+                <mu-paper class="coupon-discount"> {{ coupon.discount }} 折</mu-paper>
+              </span>
+              <span class="coupon-card-block">
+                <mu-paper>
+                  <h1> 新手綁定優惠方案 </h1> <br>
+                  日期:{{ coupon.date.disable }} <br>
+
+                  優惠折扣碼 <br>
+                  {{ coupon.code }} <br>
+                </mu-paper>
+              </span>
+              <mu-button color="orange">查看詳情</mu-button>
+            </div>
+          </div>
+          熱門活動： <br><br>
+          <mu-carousel hide-indicators interval="9999999">
+            <mu-carousel-item v-for="image in courseImages">
+              <img :src="image.imgUrl" @click="goPage(image.href)">
+            </mu-carousel-item>
+          </mu-carousel>
+        </mu-col>
+      </mu-row>
+      <mu-row v-else>
+        <h1> 目前沒有優惠卷 </h1>
+      </mu-row>
+    </article>
+
+    <CouponDetail v-if="isClickCouponDetail"
+                  @go-back="isClickCouponDetail = false"
+                  :coupon="clickedCoupon">
+    </CouponDetail>
+
+    <div class="app-center" v-if="!isClickCouponDetail">
+      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
     </div>
-  </article>
+  </div>
+
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import dayjs from 'dayjs'
-  import 'dayjs/locale/zh-tw'
-  import DetermineUnsuccessfulStatus from '@/components/layout/DetermineUnsuccessfulStatus'
+import {mapState} from 'vuex'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-tw'
+import CouponDetail from "@/components/profile/CouponDetail"
+import courseImage1 from "../../../asset/course1.png"
+import courseImage2 from "../../../asset/course2.png"
 
-  export default {
-    name: 'LineBindingSuccess',
-    data () {
-      const vueModel = this
-      return {
-        lineUserId: vueModel.$route.params['specificLineUser'],
-        status: '',
-        coupons: [],
-        couponCount: 0
-      }
-    },
-
-    components: {
-      DetermineUnsuccessfulStatus
-    },
-
-    /* 使用 store module 的命名空間：binding，來取得此 module 儲存的 lineBindingStudentCard 物件 */
-    computed: mapState('binding', ['lineBindingStudentCard']),
-
-    async created () {
-      const vueModel = this
-      const studentCard = vueModel.lineBindingStudentCard.studentCard
-
-      try {
-        const response = await vueModel.$axios({
-          method: 'get',
-          url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
-        })
-        const coupons = response.data
-        vueModel.status = 'empty'
-        vueModel.couponCount = Object.keys(coupons).length
-        for (let i = 0; i < vueModel.couponCount; i++) {
-          const coupon = coupons[i]
-          if (coupon && coupon.code) {
-            if (!vueModel.isDeadLine(coupon.date.disable)) {
-              const discountRegularExp = /^\d\.\d{2}/
-              const showCoupon = {
-                name: coupon.name,
-                code: coupon.code,
-                discount:
-                  discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-                expireDate:
-                  coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-                isShowDescription: false
-              }
-              showCoupon['description'] =
-                vueModel.composeDescriptionContent(coupon.description.rules, coupon.description.applicable)
-
-              vueModel.coupons.push(showCoupon)
-              vueModel.status = 'success'              
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error)
-        vueModel.status = 'failure'
-      }
-    },
-
-    methods: {
-      queryProfiles () {
-        const vueModel = this
-        vueModel.$router.push(`/profile/${vueModel.lineUserId}/#`)
-      },
-
-      composeDescriptionContent (rules, applicable) {
-        let content = '【適用產品】<br/>'
-        content += '<div name="description" class="ellipsis app-left">'
-
-        if (applicable) {
-          content += applicable
-        } else {
-          content += '全'
-        }
-
-        if (rules) {
-          let rulesDetail = ''
-          let rulesList = rules.split('<br>')
-
-          content += '<br /><br />'
-          content += '※ 優惠券使用注意事項：<br />'
-          if (rulesList.length > 0) {
-            rulesDetail += `${rulesList[0]}<br/>`
-            rulesDetail += '<span name="detail" style="display: none; font-size: 16px;">'
-            for (let i = 1; i < rulesList.length; i++) {
-              rulesDetail += `${rulesList[i]}<br/>`
-            }
-            content += rulesDetail
-          }
-        }
-
-        content += '</span>'
-        content += '</div>'
-        return content
-      },
-
-      unfold (event, coupon) {
-        const parentNode = event.currentTarget.parentNode
-        const unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
-        parentNode.querySelectorAll('span[name=detail]')[0].style.display = ''
-        unfoldTarget.style.overflow = 'visible'
-        unfoldTarget.style.whiteSpace = 'normal'
-        unfoldTarget.style.display = 'block'
-        unfoldTarget.style.width = '90vw'
-        coupon.isShowDescription = true
-      },
-
-      fold (event, coupon) {
-        const parentNode = event.currentTarget.parentNode
-        const unfoldTarget = parentNode.querySelectorAll('div[name=description]')[0]
-        parentNode.querySelectorAll('span[name=detail]')[0].style.display = 'none'
-        unfoldTarget.removeAttribute('style')
-        coupon.isShowDescription = false
-      },
-
-      isDeadLine: dateDisable => {
-        if (dateDisable) {
-          return dayjs(dateDisable).diff(dayjs(), 'days') <= 0
-        }
-        return false
-      }
+export default {
+  name: 'LineBindingSuccess',
+  data() {
+    return {
+      lineUserId: this.$route.params['specificLineUser'],
+      coupons: [],
+      couponCount: 0,
+      isClickCouponDetail: false,
+      courseImages: [],
+      clickedCoupon: {}
     }
-  }
+  },
+
+  components: {
+    CouponDetail
+  },
+
+  async created() {
+    const studentCard = this.lineBindingStudentCard.studentCard
+
+    try {
+      // 處理優惠券
+      const response = await this.$axios({
+        method: 'get',
+        url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
+      })
+      const coupons = response.data
+      this.couponCount = Object.keys(coupons).length
+      for (let i = 0; i < this.couponCount; i++) {
+        const coupon = coupons[i]
+        if (coupon && coupon.code && !this.isDeadLine(coupon.date.disable)) {
+          const discountRegularExp = /^\d\.\d{2}/
+          const illustrate = {
+            'rules': coupon.description.rules,
+            'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
+          }
+
+          const showCoupon = {
+            id: coupon._id,
+            name: coupon.name,
+            code: coupon.code,
+            discount:
+                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
+            date: {
+              disable:
+                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+            },
+            description: illustrate
+          }
+
+          this.coupons.push(showCoupon)
+        }
+      }
+
+      // 撈輪播圖圖片
+      const res = await this.$axios({
+        method: 'get',
+        url: `/ads/indexBanners?category=line-popular-activity`
+      })
+
+      for (let image of res.data) {
+        this.courseImages.push(image)
+      }
+
+    } catch (error) {
+      console.error(error)
+    }
+  },
+
+  methods: {
+    queryProfiles() {
+      this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
+    },
+
+    isDeadLine(dateDisable) {
+      if (dateDisable) {
+        return dayjs(dateDisable).diff(dayjs(), 'day') < 0
+      }
+      return false
+    },
+
+    goPage(url) {
+      window.open(url, '_blank')
+    },
+
+    passIdToCouponDetail(id) {
+      this.isClickCouponDetail = true
+      const couponObj = this.coupons.find(coupon => coupon._id === id)
+      this.clickedCoupon = couponObj
+    }
+  },
+
+  computed: mapState('binding', ['lineBindingStudentCard'])
+}
 </script>
 
 <style lang="less">
-  #line-binding-success {
-    .coupon {
-      color: #7f393b;
+#line-binding-success {
+  .coupon {
+    color: #01579b;
+    font-size: 19px;
+    font-weight: 500;
+
+    span {
       font-size: 19px;
-      font-weight: 500;
-
-      span {
-        font-size: 19px;
-      }
-
-      span.coupon-code {
-        display: inline-block;
-        width: 100%;
-        background-color: #f9f6c0;
-        padding: 2px 7px;
-      }
     }
 
-    .attention {
-      font-size: 18px;
-    }
-
-    .how-to-use-coupon {
-      color: black;
-      font-weight: 500;
-      font-size: 18px;
+    span.coupon-code {
+      display: inline-block;
+      width: 100%;
+      background-color: #f9f6c0;
+      padding: 2px 7px;
     }
   }
+
+  .attention {
+    font-size: 18px;
+  }
+
+  .how-to-use-coupon {
+    color: black;
+    font-weight: 500;
+    font-size: 18px;
+  }
+
+  .bind-success-icon {
+    color: orange;
+  }
+
+  .coupon-card {
+    margin-top: 10px;
+    border: 3px solid red;
+  }
+
+  .coupon-discount {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 30px;
+    background-color: #2196f3;
+    width: 150px;
+  }
+
+  .discount-word {
+    font-size: 10px;
+  }
+
+  .coupon-discount-block {
+    display: flex;
+    justify-content: left;
+    height: 100%;
+    width: 100%;
+  }
+
+  .coupon-card-block {
+    display: flex;
+    justify-content: right;
+
+  }
+
+  .img {
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>
