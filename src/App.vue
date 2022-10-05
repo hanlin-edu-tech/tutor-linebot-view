@@ -79,6 +79,10 @@
   #line-bot {
     font-family: Roboto, monospace;
     // background-color: #f5f5f5;
+    //修正樣式
+    .justify-content-start{
+      justify-content: center!important;
+    }
     // 版頭
     header{
       .header_bar{
