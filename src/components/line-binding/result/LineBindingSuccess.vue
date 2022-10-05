@@ -144,7 +144,7 @@ export default {
       this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
     },
 
-    isDeadLine: dateDisable => {
+    isDeadLine(dateDisable) {
       if (dateDisable) {
         return dayjs(dateDisable).diff(dayjs(), 'day') < 0
       }
