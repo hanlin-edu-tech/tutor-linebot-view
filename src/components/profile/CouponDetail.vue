@@ -12,11 +12,8 @@
         <p>
           <!-- 折扣碼:  -->
           <span ref="couponCode"> {{ coupon.code }} </span>
-          <!-- <mu-icon size="30" value="description"></mu-icon> -->
         </p>
         <img src="../../asset/icon/copy.svg" alt="icon">
-        <!-- 提示 -->
-        <!-- <span class="notice" v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </span> -->
       </div>
     </div>
 
@@ -25,12 +22,12 @@
       <!-- 折扣 -->
       <li>
         <span>折扣:</span>
-        <p>{{ formatDiscount(coupon.discount) }}折</p>
+        <p>{{ formatDiscount(coupon.discount) }}</p>
       </li>
       <!-- 日期 -->
       <li>
         <span>日期:</span>
-        <p>{{ coupon.expireDate }}</p>
+        <p>{{ coupon.date.disable }}</p>
       </li>
       <!-- 狀態 -->
       <li>
@@ -51,7 +48,7 @@
 
     <!-- 推薦課程輪播 -->
     <span class="carouselarea"> 推薦課程: </span>
-    <mu-carousel class="big-carousel big-carousel" hide-indicators interval="9999999">
+    <mu-carousel class="big-carousel" hide-indicators interval="9999999">
       <mu-carousel-item v-for="image in courseImages">
         <img :src="image" @click="goCoursePage">
       </mu-carousel-item>
@@ -62,13 +59,6 @@
       <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿(示範用) </span>
     </div>
 
-    <!-- <h1> 優惠卷名稱: {{ coupon.name }} </h1>
-    <h3> 使用規則 </h3>
-    <div>
-      <p v-for="rule in this.coupon.description.rules.split('<br>')">
-        {{ rule }}
-      </p>
-    </div> -->
   </div>
 
 </template>
