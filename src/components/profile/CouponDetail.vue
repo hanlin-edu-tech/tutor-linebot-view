@@ -9,7 +9,7 @@
     <div class="couponarea">
       <span> 優惠卷: </span>
       <div class="coupon_code" @click="copyToClipboard">
-        <p> 
+        <p>
           <!-- 折扣碼:  -->
           <span ref="couponCode"> {{ coupon.code }} </span>
           <!-- <mu-icon size="30" value="description"></mu-icon> -->
@@ -19,7 +19,7 @@
         <!-- <span class="notice" v-if="isCopyToClipboard" style="color: orange"> 已複製到剪貼簿(示範用) </span> -->
       </div>
     </div>
-    
+
     <!-- 資訊欄 -->
     <ul class="discount_detail">
       <!-- 折扣 -->
@@ -75,8 +75,8 @@
 
 <script>
 import dayjs from "dayjs"
-import courseImage1 from "../../static/img/course1.png"
-import courseImage2 from "../../static/img/course2.png"
+import courseImage1 from "../../asset/course1.png"
+import courseImage2 from "../../asset/course2.png"
 
 export default {
   name: "CouponDetail",
@@ -105,37 +105,36 @@ export default {
 
     formatDiscount(discount) {
       if (Number.isInteger(discount)) {
-        return discount
+        return discount + '元'
       }
 
       const len = discount.toString().split('.')[1].length
 
       switch (len) {
         case 1:
-          return discount * 10
+          discount *= 10
+          break
         case 2:
-          return discount * 100
+          discount *= 100
+          break
         case 3:
-          return discount * 1000
-        default:
-          return discount
+          discount *= 1000
+          break
       }
+      return discount + '折'
     },
 
+    // 待確定還會再更改
     goCoursePage() {
-      window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
+      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
     },
   },
 
   computed: {
     computeRemainingDate() {
       const now = dayjs().locale('zh-tw')
-      // 優惠卷的截止日期 會有兩種存法
-      if (this.coupon.expireDate) {
-        return dayjs(this.coupon.expireDate).diff(now, 'days')
-      }
       if (this.coupon.date.disable) {
-        return dayjs(this.coupon.date.disable).diff(now, 'days')
+        return dayjs(this.coupon.date.disable).diff(now, 'day')
       }
     }
   }

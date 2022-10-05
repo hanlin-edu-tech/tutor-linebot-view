@@ -1,13 +1,9 @@
 <template>
   <section id="profile">
 
-    <AccountBinding v-if="currentTab === 'accountBinding' && isParent"></AccountBinding>
+    <AccountBinding v-if="currentTab === 'accountBinding'"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
-
-    <!-- <br>
-    <br>
-    <br> -->
 
     <!-- navbar -->
     <div class="navbar">
@@ -27,7 +23,7 @@
           </mu-button>
         </div>
         <div class="item">
-          <mu-button class="item_button" 
+          <mu-button class="item_button"
             @click="currentTab = 'personalProfile'"
             :class="{selected: currentTab === 'personalProfile'}">
             個人資料
@@ -45,6 +41,7 @@ import AccountBinding from "@/views/account-management/AccountBinding"
 import Coupons from "./account-management/Coupons"
 import PersonalProfile from "@/views/account-management/PersonalProfile"
 import {mapActions, mapState} from "vuex";
+import dayjs from "dayjs";
 
 export default {
   name: 'Profile',
@@ -63,13 +60,18 @@ export default {
     try {
       const response = await this.$axios({
         method: 'get',
-        url: `linebot/profile/${this.lineUserId}`
+        url: `/linebot/profile/${this.lineUserId}`
       })
 
       const students = response.data.content
-      if (students.length !== 0) {
+      if (students.length > 0) {
         this.assignStudents(students)
-        this.isParent = students[0].authentications[0].role.toLowerCase() === 'parent'
+        // 按照 createTime 排序，確保取的是一開始綁定的身份
+        const sortedStudents = students
+            .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime),'second'))
+        this.isParent = sortedStudents[0].authentications[0].role.toLowerCase() === 'parent'
+      } else {
+        await this.$router.replace(`/lineBinding/${this.lineUserId}`)
       }
     } catch (error) {
       console.error(error)
@@ -101,7 +103,7 @@ export default {
   .navbar_in{
     display: flex;
     width: 100%;
-  } 
+  }
     .item{
       width: 33.3%;
       padding: 10px 0px;

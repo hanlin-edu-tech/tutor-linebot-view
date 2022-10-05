@@ -58,7 +58,7 @@
             </div>
             <!-- content -->
             <div class="content">
-              <span>學號:</span>demo
+              <span>學號:</span>{{ currentStudent.studentCard }}
             </div>
           </li>
           <li>
@@ -68,7 +68,7 @@
             </div>
             <!-- content -->
             <div class="content">
-              <span>身份:</span>{{ currentStudent.role === 'parent' ? '家長' : '學生' }}
+              <span>身份:</span>學生
             </div>
           </li>
           <li>
@@ -94,18 +94,6 @@
         </ul>
       </div>
     </div>
-
-
-
-    <!-- {{ findCurrentStudent }} -->
-    <!-- <h1> 歡迎來到翰林雲端學院! </h1> -->
-    <!-- 大頭照: <img :src="currentStudent.defPic"> -->
-    <!-- <h1>e幣: {{ currentStudent.coins }}</h1> -->
-    <!-- <h1>寶石: {{ currentStudent.gems }}</h1> -->
-    <!-- <h1>Email: {{ currentStudent.email }}</h1>
-    <h1>身份: {{ currentStudent.role === 'parent' ? '家長' : '學生' }}</h1>
-    <h1>等級: {{ currentStudent.rank }}</h1>
-    <h1>年級: {{ currentStudent.grade }}</h1> -->
   </div>
 </template>
 
@@ -124,7 +112,6 @@ export default {
     getCurrentStudentCard() {
       return this.$route.params.studentCard
     },
-    // 用get開頭命名會造成無窮迴圈
     findCurrentStudent() {
       this.students.find(student => {
         if (student.studentCard === this.getCurrentStudentCard) {

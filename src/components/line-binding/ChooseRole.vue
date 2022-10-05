@@ -7,15 +7,26 @@
 
     <!-- 選擇身份 -->
     <div class="role">
-      <img id="studentImage"
-           src="../../static/img/student.png"
-           @click.stop="student.role = student.role === 'student' ? '' : 'student'"
-           v-bind:class="{selected: student.role === 'student'}">
-
-      <img id="parentImage"
-           src="../../static/img/parents.png"
-           @click.stop="student.role = student.role === 'parent' ? '' : 'parent'"
-           v-bind:class="{selected: student.role === 'parent'}">
+      <div class="role_in">
+        <!-- 學生 -->
+        <div id="studentImage"
+             class="student"
+             @click.stop="student.role = student.role === 'student' ? '' : 'student'"
+             v-bind:class="{selected: student.role === 'student'}">
+          <img src="../../asset/student.svg">
+          <!-- 小標 -->
+          <span>我是學生</span>
+        </div>
+        <!-- 家長 -->
+        <div id="parentImage"
+             class="parents"
+             @click.stop="student.role = student.role === 'parent' ? '' : 'parent'"
+             v-bind:class="{selected: student.role === 'parent'}">
+          <img src="../../asset/parents.svg">
+          <!-- 小標 -->
+          <span>我是家長</span>
+        </div>
+      </div>
     </div>
 
     <!-- 按鈕區塊 -->

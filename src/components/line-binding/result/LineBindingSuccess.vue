@@ -17,11 +17,11 @@
           <br/>
         </mu-col>
       </mu-row>
-      <mu-row v-if="couponCount !== 0">
+      <mu-row v-if="coupons.length > 0">
         <mu-col span="12" class="coupon">
           <div class="coupon_in">
             <!-- 小標題 -->
-            <span>您已獲得{{ couponCount }}張綁定優惠券：</span>
+            <span>您已獲得{{ coupons.length }}張綁定優惠券：</span>
             <!-- 優惠券清單 -->
             <div class="coupon-list">
               <div class="app-center" v-for="coupon in coupons" :key="coupon['_id']">
@@ -44,7 +44,7 @@
                           <div class="coupon_tit">
                             <p> 新手綁定優惠方案 </p>
                             <!-- 日期 -->
-                            日期:{{ coupon.expireDate }}
+                            日期:{{ coupon.date.disable }}
                           </div>
                           <!-- 折扣碼區塊 -->
                           <div class="coupon_code">
@@ -67,9 +67,9 @@
           <div class="coupon_in">
             <span>熱門活動：</span>
             <!-- 輪播樣式 -->
-            <mu-carousel class="big-carousel" hide-indicators interval="9999999">
+            <mu-carousel hide-indicators interval="9999999">
               <mu-carousel-item v-for="image in courseImages">
-                <img :src="image" @click="goCoursePage">
+                <img :src="image.imgUrl" @click="goPage(image.href)">
               </mu-carousel-item>
             </mu-carousel>
           </div>
@@ -85,8 +85,8 @@
                   :coupon="clickedCoupon">
     </CouponDetail>
 
-    <div class="app-center button-div" v-if="!isClickCouponDetail">
-      <mu-button @click="queryProfiles" color="orange" class="btn-primary btn_style next" round>查看帳號</mu-button>
+    <div class="app-center" v-if="!isClickCouponDetail">
+      <mu-button @click="queryProfiles" color="orange" class="btn-primary" round>查看帳號</mu-button>
     </div>
   </div>
 
@@ -97,8 +97,6 @@ import {mapState} from 'vuex'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
 import CouponDetail from "@/components/profile/CouponDetail"
-import courseImage1 from "../../../static/img/course1.png"
-import courseImage2 from "../../../static/img/course2.png"
 
 export default {
   name: 'LineBindingSuccess',
@@ -108,7 +106,7 @@ export default {
       coupons: [],
       couponCount: 0,
       isClickCouponDetail: false,
-      courseImages: [courseImage1, courseImage2],
+      courseImages: [],
       clickedCoupon: {}
     }
   },
@@ -118,10 +116,10 @@ export default {
   },
 
   async created() {
-    // 身份更改0930
-    // const studentCard = this.lineBindingStudentCard.studentCard
-    const studentCard = "22S35ZY"
+    const studentCard = this.lineBindingStudentCard.studentCard
+
     try {
+      // 處理優惠券
       const response = await this.$axios({
         method: 'get',
         url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
@@ -130,28 +128,40 @@ export default {
       this.couponCount = Object.keys(coupons).length
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
-        if (coupon && coupon.code) {
-          if (!this.isDeadLine(coupon.date.disable)) {
-            const discountRegularExp = /^\d\.\d{2}/
-            const illustrate = {
-              'rules': coupon.description.rules,
-              'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
-            }
-            const showCoupon = {
-              id: coupon._id,
-              name: coupon.name,
-              code: coupon.code,
-              discount:
-                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-              expireDate:
-                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期',
-              description: illustrate
-            }
-
-            this.coupons.push(showCoupon)
+        if (coupon && coupon.code && !this.isDeadLine(coupon.date.disable)) {
+          const discountRegularExp = /^\d\.\d{2}/
+          const illustrate = {
+            'rules': coupon.description.rules,
+            'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
           }
+
+          const showCoupon = {
+            id: coupon._id,
+            name: coupon.name,
+            code: coupon.code,
+            discount:
+                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
+            date: {
+              disable:
+                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
+            },
+            description: illustrate
+          }
+
+          this.coupons.push(showCoupon)
         }
       }
+
+      // 撈輪播圖圖片
+      const res = await this.$axios({
+        method: 'get',
+        url: `/ads/indexBanners?category=line-popular-activity`
+      })
+
+      for (let image of res.data) {
+        this.courseImages.push(image)
+      }
+
     } catch (error) {
       console.error(error)
     }
@@ -159,19 +169,18 @@ export default {
 
   methods: {
     queryProfiles() {
-      this.$router.push(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
+      this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
     },
 
-    isDeadLine: dateDisable => {
+    isDeadLine(dateDisable) {
       if (dateDisable) {
-        return dayjs(dateDisable).diff(dayjs(), 'days') <= 0
+        return dayjs(dateDisable).diff(dayjs(), 'day') < 0
       }
       return false
     },
 
-    goCoursePage() {
-      // window.open('https://' + this.host + '/app/member-center/login.html', '_blank')
-      window.open('https://www.tbbt.com.tw/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+    goPage(url) {
+      window.open(url, '_blank')
     },
 
     passIdToCouponDetail(id) {

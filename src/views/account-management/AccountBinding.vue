@@ -10,8 +10,8 @@
     <div class="account_list">
       <div class="account_list_in">
         <!-- 帳號 -->
-        <div class="account_item" 
-              v-for="student in students" 
+        <div class="account_item"
+              v-for="student in students"
               :class="{'login-student': getCurrentStudentCard === student.studentCard}">
           <router-link
               :to="`/profile/${lineUserId}/${student.studentCard}`">
@@ -44,7 +44,7 @@
     <div class="button-div">
       <mu-button @click="goToLineBindingPage"
                 v-if=""
-                class="btn_style next"> 
+                class="btn_style next">
         綁定更多帳號
       </mu-button>
     </div>
@@ -54,6 +54,7 @@
 
 <script>
 import {mapActions, mapState} from "vuex";
+import dayjs from "dayjs";
 
 export default {
   name: "AccountBinding",
@@ -77,17 +78,28 @@ export default {
 
   methods: {
     calculateCouponsCount(student) {
+      let count = 0
       if (student.coupons) {
-        return student.coupons.length
+        const now = dayjs()
+        for (let coupon of student.coupons) {
+          if (coupon.date.disable) {
+            if (dayjs(coupon.date.disable).isAfter(now)) {
+              count++
+            }
+          }
+        }
       }
+      return count
     },
 
     goToLineBindingPage() {
       // 0 的原因是 line binding的create階段 若有綁定過會進行下一步的動作，因此回到0 即可
       this.resetStepAction()
+      this.assignContinueBindingAction(true)
       this.$router.replace(`/lineBinding/${this.lineUserId}`)
     },
-    ...mapActions('step', ['resetStepAction'])
+    ...mapActions('step', ['resetStepAction']),
+    ...mapActions('binding', ['assignContinueBindingAction'])
   },
 
   computed: {

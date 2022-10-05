@@ -1,6 +1,6 @@
 <template>
   <section id="line-binding">
-    <!-- <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
+    <mu-stepper :active-step="bindingStep" v-if="bindingStep < 3">
       <mu-step v-for="num in 3" :class="{'connector-line': bindingStep >= num}">
         <mu-step-label></mu-step-label>
       </mu-step>
@@ -8,9 +8,8 @@
 
     <ChooseRole v-if="bindingStep === 0 && !isAlreadyBinding"></ChooseRole>
 
-    <BindingProcedure
-        v-if="bindingStep === 1"
-        :is-already-binding="isAlreadyBinding = true"></BindingProcedure>
+    <BindingProcedure v-if="bindingStep === 1" :is-already-binding="isAlreadyBinding"></BindingProcedure>
+
     <LineBindingConfirm
         v-if="bindingStep === 2"
         :line-user-id="lineUserId"
@@ -23,9 +22,8 @@
 
     <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
 
-    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure> -->
-    <!-- 流程更改0930 -->
-    <LineBindingSuccess></LineBindingSuccess>
+    <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
+
   </section>
 </template>
 
@@ -81,9 +79,12 @@ export default {
             }
           })
         })
-        this.handleNext()
-        this.isAlreadyBinding = true
         this.student.studentCards = studentCards
+        this.isAlreadyBinding = true
+        this.handleNext()
+        if (!this.continueBinding) {
+          await this.$router.replace(`/profile/${this.lineUserId}/${lineBindingStudentCards[0].studentCard}`)
+        }
       }
     } catch (error) {
       console.error(error)
@@ -105,7 +106,8 @@ export default {
 
   computed: {
     bindingStep: () => store.state.step.bindingStep,
-    student: () => store.state.binding.student
+    student: () => store.state.binding.student,
+    continueBinding: () => store.state.binding.continueBinding
   },
 }
 </script>

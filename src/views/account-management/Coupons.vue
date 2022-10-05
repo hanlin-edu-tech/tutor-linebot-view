@@ -48,7 +48,7 @@
                             <!-- 日期 -->
                             <div class="coupon_date">
                               <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                              <p>~</p>{{ formatDate(coupon.date.disable) }} 
+                              <p>~</p>{{ formatDate(coupon.date.disable) }}
                             </div>
                           </div>
                           <!-- 折扣碼區塊 -->
@@ -96,7 +96,7 @@
                             <!-- 日期 -->
                             <div class="coupon_date">
                               <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                              <p>~</p>{{ formatDate(coupon.date.disable) }} 
+                              <p>~</p>{{ formatDate(coupon.date.disable) }}
                             </div>
                           </div>
                           <!-- 折扣碼區塊 -->
@@ -118,6 +118,10 @@
         </div>
       </div>
     </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
                   :coupon="clickedCoupon">
@@ -192,18 +196,24 @@ export default {
     },
 
     formatDiscount(discount) {
+      if (Number.isInteger(discount)) {
+        return discount + '元'
+      }
+
       const len = discount.toString().split('.')[1].length
 
       switch (len) {
         case 1:
-          return discount * 10
+          discount *= 10
+          break
         case 2:
-          return discount * 100
+          discount *= 100
+          break
         case 3:
-          return discount * 1000
-        default:
-          return discount
+          discount *= 1000
+          break
       }
+      return discount + '折'
     },
 
     formatDate(day) {
@@ -394,7 +404,7 @@ export default {
         }
         // 即將過期
         .close-deadline {
-          // border: 3px solid red; 
+          // border: 3px solid red;
           position: relative;
         }
         .close-deadline::after {

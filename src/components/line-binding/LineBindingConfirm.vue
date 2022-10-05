@@ -1,71 +1,57 @@
 <template>
   <article id="line-binding-confirm" class="font-secondary-info">
     <mu-container>
-      <mu-row v-if="isLineUserBoundTwice()">
-        <LineUserBoundTwice :line-user-id="lineUserId"></LineUserBoundTwice>
+      <mu-row v-if="isStudentCardNotExist">
+        <StudentCardNotExist></StudentCardNotExist>
       </mu-row>
-      <div v-else>
-        <mu-row v-if="isBoundStudentTwice === true">
-          <BoundStudentTwice></BoundStudentTwice>
-        </mu-row>
-        <div v-else>
-          <div v-show="student.email && student.studentCard && student.email !== 'empty'">
-            <div>
-              <div id="title-area">
-                <p class="title">資料確認!</p>
-                <span>會員升級綁定</span>
-              </div>
-              <mu-row>
-                <mu-col class="textarea" span="12">
-                  以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
-                </mu-col>
-              </mu-row>
-              <mu-row>
-                <mu-col class="personal-list" span="12">
-                  <div class="personal-list-in">
-                    <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                    學號：<span class="font-important-info"> {{ student.studentCard }} </span>
-                  </div>
-                  <div class="personal-list-in">
-                    <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                    帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
-                  </div>
-                </mu-col>
-              </mu-row>
+      <mu-row v-else-if="isBoundSameStudentTwice()">
+        <BoundSameStudentTwice :line-user-id="lineUserId"></BoundSameStudentTwice>
+      </mu-row>
+      <mu-row v-else>
+        <div>
+          <div>
+            <div id="title-area">
+              <p class="title">資料確認!</p>
+              <span>會員升級綁定</span>
+            </div>
+            <mu-row>
+              <mu-col class="textarea" span="12">
+                以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
+              </mu-col>
+            </mu-row>
+            <mu-row>
+              <mu-col class="personal-list" span="12">
+                <div class="personal-list-in">
+                  <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                  學號：<span class="font-important-info"> {{ student.studentCard }} </span>
+                </div>
+                <div class="personal-list-in">
+                  <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                  帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
+                </div>
+              </mu-col>
+            </mu-row>
 
-              <div class="button-div">
-                <mu-button @click="goToPreviousStep" class="btn_style back color-primary">上一步</mu-button>
-                <mu-button @click="bindingCompleted" class="btn_style back color-primary" v-if="isCompleted">完成</mu-button>
-              </div>
+            <div class="button-div">
+              <mu-button @click="goToPreviousStep" class="btn_style back color-primary">上一步</mu-button>
+              <mu-button @click="bindingCompleted" class="btn_style next color-primary" v-if="isCompleted">完成
+              </mu-button>
             </div>
-
-            <div v-show="student.email && !student.studentCard && student.email !== 'empty'">
-              <NotGetStudentNumber></NotGetStudentNumber>
-            </div>
-            <!-- 查無 email -->
-            <div v-if="student.email && student.email === 'empty'">
-              <EmailNotExist></EmailNotExist>
-            </div>
-            <div class="app-center" v-show="!student.email">
-              <mu-circular-progress :stroke-width="5" :size="36"></mu-circular-progress>
-            </div>
-           </div>
-         </div>
-       </div>
+          </div>
+        </div>
+      </mu-row>
     </mu-container>
   </article>
 </template>
 
 <script>
 import {mapActions, mapState} from 'vuex'
-import LineUserBoundTwice from "@/components/line-binding/failure-situation/LineUserBoundTwice";
-import BoundStudentTwice from "@/components/line-binding/failure-situation/BoundStudentTwice";
-import EmailNotExist from "@/components/line-binding/failure-situation/EmailNotExist";
-import NotGetStudentNumber from "@/components/line-binding/failure-situation/NotGetStudentNumber";
+import BoundSameStudentTwice from "@/components/line-binding/failure-situation/BoundSameStudentTwice";
+import StudentCardNotExist from "@/components/line-binding/failure-situation/StudentCardNotExist";
 
 export default {
   name: 'LineBindingConfirm',
-  components: {NotGetStudentNumber, EmailNotExist, BoundStudentTwice, LineUserBoundTwice},
+  components: {StudentCardNotExist, BoundSameStudentTwice},
   props: {
     lineUserId: String
   },
@@ -73,26 +59,40 @@ export default {
   data() {
     return {
       isBoundStudentTwice: false,
-      isExistStudentCard: false,
-      isCompleted: false
+      isCompleted: false,
+      isStudentCardNotExist: false
+    }
+  },
+
+  async created() {
+    // 檢查該學號是否存在
+    try {
+      const response = await this.$axios({
+        method: 'get',
+        url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}`
+      })
+
+      this.isStudentCardNotExist = response.data.message.indexOf('failure') > 0
+    } catch (error) {
+      console.error(error)
+      this.isStudentCardNotExist = true
     }
   },
 
   methods: {
-    isLineUserBoundTwice() {
+    isBoundSameStudentTwice() {
       // LineBinding created時 就會先取得該line id 下的所有學號
       if (this.student.studentCards.length > 0) {
         for (let i = 0; i < this.student.studentCards.length; i++) {
           /*
-           * 同一位 line user 不能綁定同學號兩次
+           * 綁定同學號兩次
            */
           if (this.student.studentCards[i] === this.student.studentCard) {
-            this.isExistStudentCard = true
             return true
           }
         }
-        return false
       }
+      return false
     },
 
     retrieveEmail() {
@@ -105,30 +105,17 @@ export default {
           response => {
             const jsonData = response.data
 
-            // 查詢成功，jsonData.content 即 email
             if (jsonData.message.indexOf('success') > 0) {
               const specificUser = jsonData.content
               this.student.email = specificUser.email
               this.student.studentCard = specificUser.studentCard
               this.student.mobile = specificUser.mobile
               this.student.name = specificUser.name
-
-              // 學生是否綁定兩次
-              this.isBoundStudentTwice = (specificUser.isBoundStudent === true && this.student.role === 'student')
-              if (this.isBoundStudentTwice === true) {
-                this.$emit('given-email', '')
-              } else if (!specificUser.studentCard) {
-                this.student.email = 'empty'
-              } else {
-                this.isCompleted = true
-              }
-            } else {
-              this.student.email = 'empty'
+              this.isCompleted = true
             }
           }
       ).catch(error => {
         console.error(error)
-        this.student.email = 'empty'
       })
     },
 
@@ -139,7 +126,6 @@ export default {
     },
 
     bindingCompleted() {
-      // this.$emit('binding-completed')
       // step +1 改變LineBinding的步驟
       this.handleNext()
     },

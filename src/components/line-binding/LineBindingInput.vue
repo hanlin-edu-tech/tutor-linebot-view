@@ -1,11 +1,11 @@
-<template xmlns:v="http://www.w3.org/1999/html">
+<template>
   <article id="line-binding-input">
     <mu-select label="選擇學號或手機" v-model="choice" full-width @change="changeSelectField">
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
     <div v-show="choice === 'studentCard'">
-      <mu-text-field v-model="studentCard" type="text" placeholder="" action-icon="edit"
+      <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'">
         <div id="student-card-query" class="student-card-query" style="display: none;"></div>
@@ -14,13 +14,13 @@
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
       <!-- popup -->
-      <mu-dialog width="360" :open.sync="isDialogOpen">
-        <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage" class="teachstep">
+      <mu-dialog width="360" :open="isDialogOpen">
+        <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage">
           <mu-carousel-item ref="imageHeight"
                             class="carousel_img"
                             v-for="image in carouselImages">
             <div class="carousel_img_in">
-              <img src="../../asset/demo.png">
+              <img :src=image>
             </div>
           </mu-carousel-item>
           <!-- 按鈕 -->
@@ -54,9 +54,9 @@
   </article>
 </template>
 
-<script scoped>
-import carouselImage1 from '../../static/img/memberLogin.png'
-import carouselImage2 from '../../static/img/notice.png'
+<script>
+import carouselImage1 from '../../asset/memberLogin.png'
+import carouselImage2 from '../../asset/notice.png'
 
 export default {
   name: 'LineBindingInput',
@@ -74,25 +74,30 @@ export default {
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      marginHeight:0,
+      marginHeight: 0,
     }
   },
-  computed:{
-    popupheight(){
+  computed: {
+    popupheight() {
       console.log(this.marginHeight, "end")
       return {
-        '--height':  this.marginHeight + 12 + 'px'
+        '--height': this.marginHeight + 12 + 'px'
       }
     },
   },
 
-  updated(){
-    if (this.$refs.imageHeight){
-      this.width = this.$refs.imageHeight[0].clientWidth
-      this.height = this.$refs.imageHeight[0].clientHeight
-
-      this.marginCaculate()
-    }
+  updated() {
+    this.$nextTick(() => {
+      try {
+        // 按鈕margin高度運算
+        let height = 0
+        height = this.$refs.imageHeight[0].$el.clientHeight
+        this.marginHeight = height
+      } catch (error) {
+        // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
+        console.error(error)
+      }
+    })
 
   },
   methods: {
@@ -109,11 +114,14 @@ export default {
         this.$emit('given-mobile', this.mobile)
       } else {
         this.errorText = '請輸入正確的手機號碼'
+        // binding procedure中 下一步button出現後，若重新輸入要再將該button移除
+        this.$emit('given-mobile', '')
       }
     },
 
     // 點擊如何獲得學號
     openDialog() {
+      this.active = 0
       this.isDialogOpen = true
     },
 
@@ -140,21 +148,10 @@ export default {
     changeSelectField() {
       // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
       if (this.choice === 'studentCard') {
-        this.$emit('given-student-card','')
+        this.$emit('given-student-card', '')
+      } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
+        this.$emit('given-mobile', this.mobile)
       }
-      // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
-      if (this.choice === 'mobile') {
-        this.$emit('given-mobile',this.mobile)
-      }
-    },
-
-    // 按鈕margin高度運算
-    marginCaculate(){
-      let height = 0
-      if(this.$refs.imageHeight){
-        height = this.$refs.imageHeight[0].$el.clientHeight
-      }
-      this.marginHeight = height
     }
   }
 }
