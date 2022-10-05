@@ -32,7 +32,7 @@
       <!-- 狀態 -->
       <li>
         <span>狀態:</span>
-        <p>{{ getCouponStatus() }}</p>
+        <p>{{ coupon.diffDay > 10 ? '可使用' : '即將失效'  }}</p>
       </li>
       <!-- 剩餘日期 -->
       <li>
@@ -117,26 +117,8 @@ export default {
     // 待確定還會再更改
     goCoursePage() {
       window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
-    },
-
-    getCouponStatus() {
-      const diffDay = this.coupon.diffDay
-      let couponStatus
-
-      switch (true) {
-        case (diffDay > 10):
-          couponStatus = '可使用'
-          break
-        case (diffDay <= 10):
-          couponStatus = '即將失效'
-          break
-        default:
-          couponStatus = '未知'
-          break
-      }
-      
-      return couponStatus
     }
+    
   },
 
   computed: {
