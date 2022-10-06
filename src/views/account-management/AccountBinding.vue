@@ -138,7 +138,8 @@ export default {
     .account_list_in{
       display: flex;
       flex-direction: column;
-      margin: -8px 0px;
+      margin: -8px auto;
+      max-width: 600px;
     }
       // 帳號
       .account_item{

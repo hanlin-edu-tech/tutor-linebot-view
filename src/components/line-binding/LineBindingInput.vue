@@ -4,24 +4,31 @@
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
-    <div v-show="choice === 'studentCard'">
-      <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
+    
+    <!-- 學號輸入框 -->
+    <div class="write_area" v-show="choice === 'studentCard'">
+      <!-- 小標 -->
+      <div class="subtitle">
+        <span>請輸入學號</span>
+      </div>
+      <mu-text-field v-model="studentCard" type="text" placeholder="點擊以輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'"></a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
       <!-- popup -->
-      <mu-dialog width="360" :open="isDialogOpen">
-        <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage">
-          <mu-carousel-item ref="imageHeight"
-                            class="carousel_img"
+      <mu-dialog :open="isDialogOpen">
+        <!-- muse-ui輪播(學號取得教學)-->
+        <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage" :style="popupheight">
+          <mu-carousel-item class="carousel_img"
+                            ref="imageHeight"
                             v-for="image in carouselImages">
             <div class="carousel_img_in">
               <img :src=image>
             </div>
           </mu-carousel-item>
-          <!-- 按鈕 -->
+          <!-- 按鈕區塊 -->
           <div class="button-in-dialog" :style="popupheight">
             <mu-button @click="closeDialog" color="lightBlue">取消</mu-button>
             <mu-button @click="nextActiveImage"
@@ -39,13 +46,14 @@
         </mu-carousel>
       </mu-dialog>
     </div>
-    <!-- 請輸入手機 -->
+
+    <!-- 手機輸入框 -->
     <div class="write_area" v-show="choice === 'mobile'">
       <!-- 小標 -->
       <div class="subtitle">
         <span>請輸入手機</span>
       </div>
-      <mu-text-field v-model="mobile" type="text" placeholder="" action-icon="edit"
+      <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
                      @keyup="emitGivenMobile" :error-text="errorText" full-width max-length="10">
       </mu-text-field>
     </div>
@@ -72,14 +80,14 @@ export default {
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      marginHeight: 0,
+      imgHeight: 0,
     }
   },
   computed: {
     popupheight() {
-      console.log(this.marginHeight, "end")
+      console.log(this.imgHeight, "end")
       return {
-        '--height': this.marginHeight + 12 + 'px'
+        '--height': this.imgHeight + 'px'
       }
     },
   },
@@ -87,16 +95,15 @@ export default {
   updated() {
     this.$nextTick(() => {
       try {
-        // 按鈕margin高度運算
+        // 抓取圖片高度
         let height = 0
         height = this.$refs.imageHeight[0].$el.clientHeight
-        this.marginHeight = height
+        this.imgHeight = height
       } catch (error) {
         // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
         console.error(error)
       }
     })
-
   },
   methods: {
     emitGivenStudentCard() {
@@ -164,7 +171,7 @@ export default {
     color: #A8A8A8;
   }
   .mu-input{
-    padding: 4px 0px;
+    padding: 2px 0px;
     min-height: unset;
     border-bottom: 1px #DBDBDB solid;
     margin-bottom: 12px;
@@ -243,7 +250,7 @@ export default {
     font-size: 18px;
   }
 }
-
+//------------------------------------------------------------------//
 // Dialog的 下一步Button
 .next-step-in-dialog {
   margin-left: 120px;
@@ -254,35 +261,35 @@ div[class*="mu-dialog"] img {
   height: 270px;
 }
 
-.button-in-dialog {
-  display: flex;
-  justify-content: center;
-  margin-top: 260px;
-}
+// .button-in-dialog {
+//   display: flex;
+//   justify-content: center;
+//   margin-top: 260px;
+// }
 
-.mu-carousel {
-  height: 300px;
-}
+// .mu-carousel {
+//   height: 300px;
+// }
 
-div[class*="mu-carousel-indicators"] {
-  height: 50px;
-  width: 100px;
-  display: flex;
-  justify-content: space-between;
-  left: 110px;
-  top: 250px;
-}
+// div[class*="mu-carousel-indicators"] {
+//   height: 50px;
+//   width: 100px;
+//   display: flex;
+//   justify-content: space-between;
+//   left: 110px;
+//   top: 250px;
+// }
 
-// dialog 下的 圓點
-.mu-button-wrapper .mu-carousel-indicator-icon {
-  background-color: darkgray;
-}
+  // dialog 下的 圓點
+  // .mu-button-wrapper .mu-carousel-indicator-icon {
+  //   background-color: darkgray;
+  // }
 
 // dialog 的 圖片
-.mu-carousel-item {
-  // height: 250px;
-  height: 300px;
-}
+// .mu-carousel-item {
+//   height: 250px;
+//   height: 300px;
+// }
 
 .mu-popover{
   border-radius: 5px;
@@ -311,26 +318,65 @@ div[class*="mu-carousel-indicators"] {
 .mu-text-field-input{
   font-size: 16px;
 }
-  //
+input::placeholder {
+  transform: scale(0.8);
+  transform-origin: center left;
+  color: #DBDBDB;
+}
+.mu-input__focus {
+    // color: #fafafa;
+}
+
+  //輪播區塊
   .mu-dialog{
     width: 90%!important;
     max-width:600px;
     border-radius: 5px;
   }
     .mu-dialog-body{
-
+      padding: 20px 18px;
     }
       .mu-carousel{
-        // overflow: unset;
         position: relative;
-        // height: unset;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
       }
-      .mu-carousel.teachstep{
+      .mu-carousel.student-id{
         height: unset;
       }
+        // 輪播點-位置
+        .mu-carousel-indicators{
+          width: unset;
+          height: unset;
+          margin: 0;
+          position: absolute;
+          left: 50%;
+          right: unset;
+          top: unset;
+          bottom: calc(8px + 56px);
+          display: flex;
+          justify-content: center;
+          transform:translateX(-50%)
+        }
+          // 輪播點-大小
+          .mu-icon-button{
+            width: 10px;
+            height: 10px;
+            padding: 0px;
+            margin: 0px 10px;
+          }
+          // 輪播點-顏色
+          .mu-button-wrapper .mu-carousel-indicator-icon {
+            background-color: #DBDBDB;
+          }
+          // 輪播點-顏色active
+          .mu-carousel-indicator-button__active .mu-carousel-indicator-icon{
+            background-color: #FD9841;
+          }
+
       // 輪播圖
       .mu-carousel-item.carousel_img{
-        position: relative;
         position: absolute;
       }
       .carousel_img{
@@ -353,42 +399,11 @@ div[class*="mu-carousel-indicators"] {
           right: 0;
           object-fit: cover;
         }
-          // 輪播點
-          .mu-carousel-indicators{
-            margin: 0!important;
-            display: flex!important;
-            justify-content: center!important;
-            left: 50%!important;
-            top: unset!important;
-            bottom: calc(0px + 44px)!important;
-            width: unset!important;
-            height: 36px!important;
-            transform:translateX(-50%)
-            // width: unset!important;
-            // height: unset!important;
-            // position: absolute;
-            // bottom: 0;
-          }
-            .mu-carousel-indicator-button{
-              width: 10px;
-              height: 10px;
-            }
-            .mu-button-wrapper .mu-carousel-indicator-icon {
-              background-color: darkgray;
-            }
-            // active
-            .mu-carousel-indicator-button__active .mu-carousel-indicator-icon{
-              background-color: #ededed;
-            }
           // 按鈕
           .button-in-dialog{
             width: 100%;
             margin: unset;
-            margin-top: 20px;
-            margin-top: var(--height);
-            // margin-top: 360px;
-            // position: absolute;
-            // bottom: 0;
+            margin-top: calc(var(--height) + 20px);
             display: flex;
             justify-content: space-between;
           }
@@ -417,6 +432,8 @@ div[class*="mu-carousel-indicators"] {
   overflow: unset;
   margin-top: 15px;
   border-radius: 10px;
+  height: unset;
+  padding-top: 55%;
   // 修正位置-上方
   .mu-carousel-button.mu-icon-button{
     transform: translateY(-50%);
@@ -425,15 +442,45 @@ div[class*="mu-carousel-indicators"] {
     font-size: 60px;
   }
   // 修正位置-左方
-    .mu-carousel-button.mu-icon-button.mu-carousel-button__left{
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__left{
     left: 0px;
     transform: translate(-50%,0%);
   }
+    .mu-carousel-button__left::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 修正位置-右方
   .mu-carousel-button.mu-icon-button.mu-carousel-button__right{
     right: 0px;
     transform: translate(50%,0%);
   }
+    .mu-carousel-button__right::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%) rotate(180deg);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 輪播箭頭樣式
   .mu-button-wrapper{
     position: relative;
@@ -442,5 +489,25 @@ div[class*="mu-carousel-indicators"] {
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
   }
 }
-
+// 新增輪播樣式
+.mu-carousel-item{
+  img{
+    width: 100%;
+    height: auto;
+  }
+}
+// 大尺寸輪播(附加.big-carousel)
+.mu-carousel.big-carousel .mu-carousel-item{
+  border-radius: 10px;
+  display: block;
+  text-decoration: none;
+  // padding-top: 45%;
+  position: absolute;
+  top: 0;
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
 </style>

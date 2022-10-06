@@ -269,7 +269,8 @@ export default {
 
 // 優惠券清單
 .coupon-list{
-  margin: 10px 0px;
+  margin: 10px auto;
+  max-width: 600px;
 }
   // 優惠券
   .coupon-card {
@@ -297,6 +298,7 @@ export default {
     left: 50%;
     transform: translate(-50%,-50%);
     z-index: 5;
+    min-width: 144px;
   }
   .coupon-card.disable::after{
     content:"";
@@ -371,9 +373,12 @@ export default {
               color: #fff;
               width: 150px;
               background-color: unset;
+              span{
+                font-size: 1rem;
+              }
             }
             .coupon-discount::after{
-              content: "折";
+              // content: "折";
               display: block;
               margin:0px 0px 8px 4px;
               font-size: 1rem;

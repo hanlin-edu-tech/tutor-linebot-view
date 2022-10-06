@@ -93,9 +93,10 @@ export default {
 .navbar{
   width: 100%;
   // max-width: 1000px;
-  margin-left: -5%;
+  // margin-left: -5%;
   position:fixed;
   bottom: 0;
+  left: 0;
   background-color: #fff;
   box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.1);
   z-index: 999;
@@ -103,6 +104,7 @@ export default {
   .navbar_in{
     display: flex;
     width: 100%;
+    padding: 0px 12px;
   }
     .item{
       width: 33.3%;
@@ -165,9 +167,15 @@ export default {
         .item:nth-of-type(3) .item_button.selected::before{
           background-image: url(../asset/icon/account_active.svg);
         }
+@media screen and(max-width: 640px){
+  .navbar{
+    margin-left: -5%;
+    left: unset;
+  }
+}
 @media screen and(max-width: 425px){
   .navbar{
-  margin-left: -7.5%;
+    margin-left: -7.5%;
   }
 }
 

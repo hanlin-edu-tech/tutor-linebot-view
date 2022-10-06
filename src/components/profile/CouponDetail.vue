@@ -80,7 +80,8 @@ export default {
   data() {
     return {
       isCopyToClipboard: false,
-      courseImages: [courseImage1, courseImage2]
+      courseImages: [courseImage1, courseImage2],
+      imgHeight: 0,
     };
   },
 
@@ -127,8 +128,8 @@ export default {
       if (this.coupon.date.disable) {
         return dayjs(this.coupon.date.disable).diff(now, 'day')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -137,6 +138,8 @@ export default {
 .coupon-in-page{
   position: relative;
   height: 100vh;
+  max-width: 600px;
+  margin: auto;
 }
 // 標題區
 .titarea{
@@ -234,7 +237,7 @@ export default {
 ul.discount_detail{
   list-style: none;
   padding: 0;
-  margin: 6px 0px;
+  margin: 6px 0px 32px;
 }
   ul.discount_detail > li{
     display: flex;
@@ -271,11 +274,12 @@ ul.discount_detail{
     content: unset;
   }
     ul.discount_detail > li span{
+      min-width: 32px;
     }
     ul.discount_detail > li p{
       margin: 0;
       font-weight: bold;
-      margin-left: 4px;
+      margin-left: 8px;
     }
 // 推薦課程輪播標題
 span.carouselarea{
@@ -283,4 +287,5 @@ span.carouselarea{
   font-weight: 500;
   color: var(--deepGreyColor);
 }
+
 </style>
