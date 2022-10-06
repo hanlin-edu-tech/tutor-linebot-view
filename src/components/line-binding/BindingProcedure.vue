@@ -13,8 +13,7 @@
 
     <div v-if="isQueryMultipleStudent">
       <mu-select @change="checkSelected"
-                 v-model="selected"
-                 :error-text="errorText">
+                 v-model="selected">
         <mu-option disabled value="" label="請選擇帳號"></mu-option>
         <mu-option v-for="student in students"
                    :key="student.studentCard"
@@ -54,8 +53,6 @@ export default {
       isQueryMultipleStudent: false,
       students: [],
       selected: '',
-      // select選單下的錯誤提示
-      errorText: '',
       // 帳號不存在或重複綁定的錯誤提示
       errorMsg: '',
       isNextButtonInitial: false
