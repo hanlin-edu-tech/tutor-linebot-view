@@ -32,7 +32,7 @@
                     <div class="coupon-card-left">
                       <div class="coupon-discount-block">
                         <div class="coupon-discount-block-in">
-                          <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
+                          <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
                         </div>
                       </div>
                     </div>
@@ -44,7 +44,10 @@
                           <div class="coupon_tit">
                             <p> 新手綁定優惠方案 </p>
                             <!-- 日期 -->
-                            日期:{{ coupon.date.disable }}
+                            <div class="coupon_date">
+                              <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                              <p>~</p>{{ formatDate(coupon.date.disable) }}
+                            </div>
                           </div>
                           <!-- 折扣碼區塊 -->
                           <div class="coupon_code">
@@ -128,27 +131,8 @@ export default {
       this.couponCount = Object.keys(coupons).length
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
-        if (coupon && coupon.code && !this.isDeadLine(coupon.date.disable)) {
-          const discountRegularExp = /^\d\.\d{2}/
-          const illustrate = {
-            'rules': coupon.description.rules,
-            'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
-          }
-
-          const showCoupon = {
-            id: coupon._id,
-            name: coupon.name,
-            code: coupon.code,
-            discount:
-                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-            date: {
-              disable:
-                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
-            },
-            description: illustrate
-          }
-
-          this.coupons.push(showCoupon)
+        if (!this.isDeadLine(coupon.date.disable)) {
+          this.coupons.push(coupon)
         }
       }
 
@@ -168,6 +152,35 @@ export default {
   },
 
   methods: {
+    formatDiscount(discount) {
+      if (Number.isInteger(discount)) {
+        return discount + '<span>元</span>'
+      }
+
+      const len = discount.toString().split('.')[1].length
+
+      switch (len) {
+        case 1:
+          discount *= 10
+          break
+        case 2:
+          discount *= 100
+          break
+        case 3:
+          discount *= 1000
+          break
+      }
+      return discount + '<span>折</span>'
+    },
+
+    formatDate(day) {
+      if (day) {
+        return dayjs(day).format('YYYY/MM/DD')
+      } else {
+        return '無期限'
+      }
+    },
+
     queryProfiles() {
       this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
     },
@@ -525,6 +538,13 @@ body{
   }
 }
 
+// 優惠日期
+.coupon_date{
+  display: inline-flex;
+  align-items: center;
+}
 
-
+.coupon_date > p{
+  margin: unset;
+}
 </style>
