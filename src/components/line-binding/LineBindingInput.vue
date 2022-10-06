@@ -4,7 +4,7 @@
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
-    
+
     <!-- 學號輸入框 -->
     <div class="write_area" v-show="choice === 'studentCard'">
       <!-- 小標 -->
@@ -54,7 +54,7 @@
         <span>請輸入手機</span>
       </div>
       <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
-                     @keyup="emitGivenMobile" :error-text="errorText" full-width max-length="10">
+                     @keyup="emitGivenMobile" full-width max-length="10">
       </mu-text-field>
     </div>
   </article>
@@ -63,6 +63,7 @@
 <script>
 import carouselImage1 from '../../asset/memberLogin.png'
 import carouselImage2 from '../../asset/notice.png'
+import {mapState} from "vuex";
 
 export default {
   name: 'LineBindingInput',
@@ -76,52 +77,120 @@ export default {
       },
       studentCard: '',
       mobile: '',
-      errorText: '',
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      imgHeight: 0,
+      marginHeight: 0,
     }
-  },
-  computed: {
-    popupheight() {
-      console.log(this.imgHeight, "end")
-      return {
-        '--height': this.imgHeight + 'px'
-      }
-    },
   },
 
   updated() {
     this.$nextTick(() => {
       try {
-        // 抓取圖片高度
+        // 按鈕margin高度運算
         let height = 0
         height = this.$refs.imageHeight[0].$el.clientHeight
-        this.imgHeight = height
+        this.marginHeight = height
       } catch (error) {
         // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
-        console.error(error)
+        // console.error(error)
       }
     })
   },
   methods: {
-    emitGivenStudentCard() {
-      const vueModel = this
-      vueModel.$emit('given-student-card', vueModel.studentCard)
+    async emitGivenStudentCard() {
+      const studentCardRegex = /[0-9A-Z]{7}/
+      const resultObj = {
+        status: ''
+      }
+
+      const result = studentCardRegex.test(this.studentCard)
+      if (result) {
+        const isBoundSameStudentTwice = this.isBoundSameStudentTwice()
+        const isStudentCardExist = await this.isStudentCardExist()
+
+        if (isBoundSameStudentTwice) {
+          resultObj.status = 'BoundSameStudentTwice'
+        } else if (!isStudentCardExist) {
+          resultObj.status = 'StudentCardNotExist'
+        } else {
+          resultObj.status = 'Pass'
+          resultObj.studentCard = this.studentCard
+        }
+      } else {
+        resultObj.status = 'invalid'
+      }
+      this.$emit('given-student-card', resultObj)
     },
 
-    emitGivenMobile() {
+    async emitGivenMobile() {
       const mobileRegex = /^09[0-9]{8}$/
       const result = mobileRegex.test(this.mobile)
+      const resultObj = {}
+
       if (result) {
-        this.errorText = ''
-        this.$emit('given-mobile', this.mobile)
+        const students = await this.getStudentsCardWithMobile()
+        if (students.length > 1) {
+          resultObj.students = students
+          resultObj.status = 'Pass'
+          resultObj.mobile = this.mobile
+        } else {
+          resultObj.status = 'StudentCardNotExist'
+        }
+        this.$emit('given-mobile', resultObj)
       } else {
-        this.errorText = '請輸入正確的手機號碼'
         // binding procedure中 下一步button出現後，若重新輸入要再將該button移除
-        this.$emit('given-mobile', '')
+        resultObj.status = 'invalid'
+        this.$emit('given-mobile', resultObj)
       }
+    },
+
+    async getStudentsCardWithMobile() {
+      let students = []
+      try {
+        const response = await this.$axios(
+            {
+              method: 'get',
+              url: `/linebot/lineBinding/students-by-mobile?mobile=${this.mobile}`,
+            }
+        )
+        // 捷徑運算 若content不存在 則不執行 .length 造成錯誤
+        if (response.data.content && response.data.content.length > 0) {
+          students = response.data.content
+        }
+      } catch (error) {
+        console.error(error)
+      }
+      return students
+    },
+
+    async isStudentCardExist() {
+      // 檢查該學號是否存在
+      try {
+        const response = await this.$axios({
+          method: 'get',
+          url: `/linebot/lineBinding/user?studentCard=${this.studentCard}`
+        })
+
+        return response.data.message.indexOf('failure') < 0
+      } catch (error) {
+        console.error(error)
+        this.isStudentCardNotExist = true
+      }
+      return false
+    },
+
+    isBoundSameStudentTwice() {
+      // LineBinding created時 就會先取得該line id 下的所有學號
+      if (this.student.studentCards.length > 0) {
+        for (let i = 0; i < this.student.studentCards.length; i++) {
+          // 綁定同學號兩次
+          if (this.student.studentCards[i] === this.studentCard) {
+            return true
+          }
+        }
+      }
+      return false
     },
 
     // 點擊如何獲得學號
@@ -156,6 +225,16 @@ export default {
         this.$emit('given-student-card', '')
       } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
         this.$emit('given-mobile', this.mobile)
+      }
+    }
+  },
+
+  computed: {
+    ...mapState('binding', ['student']),
+
+    popupheight() {
+      return {
+        '--height': this.imgHeight + 'px'
       }
     }
   }
@@ -260,36 +339,6 @@ div[class*="mu-dialog"] img {
   width: 320px;
   height: 270px;
 }
-
-// .button-in-dialog {
-//   display: flex;
-//   justify-content: center;
-//   margin-top: 260px;
-// }
-
-// .mu-carousel {
-//   height: 300px;
-// }
-
-// div[class*="mu-carousel-indicators"] {
-//   height: 50px;
-//   width: 100px;
-//   display: flex;
-//   justify-content: space-between;
-//   left: 110px;
-//   top: 250px;
-// }
-
-  // dialog 下的 圓點
-  // .mu-button-wrapper .mu-carousel-indicator-icon {
-  //   background-color: darkgray;
-  // }
-
-// dialog 的 圖片
-// .mu-carousel-item {
-//   height: 250px;
-//   height: 300px;
-// }
 
 .mu-popover{
   border-radius: 5px;
