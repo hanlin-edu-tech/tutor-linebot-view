@@ -4,24 +4,31 @@
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
-    <div v-show="choice === 'studentCard'">
-      <mu-text-field v-model="studentCard" type="text" placeholder="請輸入學號" action-icon="edit"
+
+    <!-- 學號輸入框 -->
+    <div class="write_area" v-show="choice === 'studentCard'">
+      <!-- 小標 -->
+      <div class="subtitle">
+        <span>請輸入學號</span>
+      </div>
+      <mu-text-field v-model="studentCard" type="text" placeholder="點擊以輸入學號" action-icon="edit"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
       <a :href="'https://'+host+'/app/member-center/login.html'"></a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
       <!-- popup -->
-      <mu-dialog width="360" :open="isDialogOpen">
-        <mu-carousel hide-controls interval="9999999" :active="active" @change="changeActiveImage">
-          <mu-carousel-item ref="imageHeight"
-                            class="carousel_img"
+      <mu-dialog :open="isDialogOpen">
+        <!-- muse-ui輪播(學號取得教學)-->
+        <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage" :style="popupheight">
+          <mu-carousel-item class="carousel_img"
+                            ref="imageHeight"
                             v-for="image in carouselImages">
             <div class="carousel_img_in">
               <img :src=image>
             </div>
           </mu-carousel-item>
-          <!-- 按鈕 -->
+          <!-- 按鈕區塊 -->
           <div class="button-in-dialog" :style="popupheight">
             <mu-button @click="closeDialog" color="lightBlue">取消</mu-button>
             <mu-button @click="nextActiveImage"
@@ -39,13 +46,14 @@
         </mu-carousel>
       </mu-dialog>
     </div>
-    <!-- 請輸入手機 -->
+
+    <!-- 手機輸入框 -->
     <div class="write_area" v-show="choice === 'mobile'">
       <!-- 小標 -->
       <div class="subtitle">
         <span>請輸入手機</span>
       </div>
-      <mu-text-field v-model="mobile" type="text" placeholder="" action-icon="edit"
+      <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
                      @keyup="emitGivenMobile" full-width max-length="10">
       </mu-text-field>
     </div>
@@ -225,9 +233,8 @@ export default {
     ...mapState('binding', ['student']),
 
     popupheight() {
-      console.log(this.marginHeight, "end")
       return {
-        '--height': this.marginHeight + 12 + 'px'
+        '--height': this.imgHeight + 'px'
       }
     }
   }
@@ -242,23 +249,19 @@ export default {
     font-weight: 500;
     color: #A8A8A8;
   }
-
-  .mu-input {
-    padding: 4px 0px;
+  .mu-input{
+    padding: 2px 0px;
     min-height: unset;
     border-bottom: 1px #DBDBDB solid;
     margin-bottom: 12px;
   }
-
   .mu-input.has-label {
     padding: 36px 0px 12px;
   }
-
-  .mu-input.full-width.has-label {
-    border: unset;
+  .mu-input.full-width.has-label{
+    border:unset;
   }
-
-  .mu-select {
+  .mu-select{
     background-color: #fff;
     border-radius: 5px;
   }
@@ -268,16 +271,13 @@ export default {
     font-size: 16px;
     color: #01579b;
   }
-
-  .mu-select-action {
-    color: #01579b !important;
+  .mu-select-action{
+    color: #01579b!important;
   }
-
-  .mu-input-line {
+  .mu-input-line{
     display: none;
   }
-
-  .mu-input-focus-line.focus {
+  .mu-input-focus-line.focus{
     display: none;
   }
 
@@ -329,7 +329,7 @@ export default {
     font-size: 18px;
   }
 }
-
+//------------------------------------------------------------------//
 // Dialog的 下一步Button
 .next-step-in-dialog {
   margin-left: 120px;
@@ -340,220 +340,223 @@ div[class*="mu-dialog"] img {
   height: 270px;
 }
 
-.button-in-dialog {
-  display: flex;
-  justify-content: center;
-  margin-top: 260px;
-}
-
-.mu-carousel {
-  height: 300px;
-}
-
-div[class*="mu-carousel-indicators"] {
-  height: 50px;
-  width: 100px;
-  display: flex;
-  justify-content: space-between;
-  left: 110px;
-  top: 250px;
-}
-
-// dialog 下的 圓點
-.mu-button-wrapper .mu-carousel-indicator-icon {
-  background-color: darkgray;
-}
-
-// dialog 的 圖片
-.mu-carousel-item {
-  // height: 250px;
-  height: 300px;
-}
-
-.mu-popover {
+.mu-popover{
   border-radius: 5px;
   margin-top: 40px;
 }
-
-.mu-list {
-  padding: 0;
-  border-radius: 5px;
-}
-
-.mu-option {
-}
-
-.mu-item-title {
-  font-size: 16px !important;
-}
+  .mu-list {
+    padding: 0;
+    border-radius: 5px;
+  }
+    .mu-option{
+    }
+    .mu-item-title{
+      font-size: 16px!important;
+    }
 
 // 填寫區塊
-.write_area {
+.write_area{
   margin: 12px 0px;
 }
-
 // 小標
-.subtitle {
+.subtitle{
   font-size: 15px;
   font-weight: 500;
   color: #A8A8A8;
 }
-
-.mu-text-field-input {
+.mu-text-field-input{
   font-size: 16px;
 }
-
-//
-.mu-dialog {
-  width: 90% !important;
-  max-width: 600px;
-  border-radius: 5px;
+input::placeholder {
+  transform: scale(0.8);
+  transform-origin: center left;
+  color: #DBDBDB;
+}
+.mu-input__focus {
+    // color: #fafafa;
 }
 
-.mu-dialog-body {
+  //輪播區塊
+  .mu-dialog{
+    width: 90%!important;
+    max-width:600px;
+    border-radius: 5px;
+  }
+    .mu-dialog-body{
+      padding: 20px 18px;
+    }
+      .mu-carousel{
+        position: relative;
+        width: 100%;
+        height: 300px;
+        overflow: hidden;
+      }
+      .mu-carousel.student-id{
+        height: unset;
+      }
+        // 輪播點-位置
+        .mu-carousel-indicators{
+          width: unset;
+          height: unset;
+          margin: 0;
+          position: absolute;
+          left: 50%;
+          right: unset;
+          top: unset;
+          bottom: calc(8px + 56px);
+          display: flex;
+          justify-content: center;
+          transform:translateX(-50%)
+        }
+          // 輪播點-大小
+          .mu-icon-button{
+            width: 10px;
+            height: 10px;
+            padding: 0px;
+            margin: 0px 10px;
+          }
+          // 輪播點-顏色
+          .mu-button-wrapper .mu-carousel-indicator-icon {
+            background-color: #DBDBDB;
+          }
+          // 輪播點-顏色active
+          .mu-carousel-indicator-button__active .mu-carousel-indicator-icon{
+            background-color: #FD9841;
+          }
 
-}
-
-.mu-carousel {
-  // overflow: unset;
-  position: relative;
-  // height: unset;
-}
-
-.mu-carousel.teachstep {
-  height: unset;
-}
-
-// 輪播圖
-.mu-carousel-item.carousel_img {
-  position: relative;
-  position: absolute;
-}
-
-.carousel_img {
-  width: unset;
-  height: unset;
-  overflow: unset;
-}
-
-.carousel_img_in {
-  display: block;
-  padding-top: 60%;
-  position: relative;
-}
-
-.carousel_img_in > img {
-  width: 100% !important;
-  height: 100% !important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  object-fit: cover;
-}
-
-// 輪播點
-.mu-carousel-indicators {
-  margin: 0 !important;
-  display: flex !important;
-  justify-content: center !important;
-  left: 50% !important;
-  top: unset !important;
-  bottom: calc(0px + 44px) !important;
-  width: unset !important;
-  height: 36px !important;
-  transform: translateX(-50%)
-  // width: unset!important;
-  // height: unset!important;
-  // position: absolute;
-  // bottom: 0;
-}
-
-.mu-carousel-indicator-button {
-  width: 10px;
-  height: 10px;
-}
-
-.mu-button-wrapper .mu-carousel-indicator-icon {
-  background-color: darkgray;
-}
-
-// active
-.mu-carousel-indicator-button__active .mu-carousel-indicator-icon {
-  background-color: #ededed;
-}
-
-// 按鈕
-.button-in-dialog {
-  width: 100%;
-  margin: unset;
-  margin-top: 20px;
-  margin-top: var(--height);
-  // margin-top: 360px;
-  // position: absolute;
-  // bottom: 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.button-in-dialog > button.mu-raised-button {
-  margin: unset;
-  box-shadow: unset;
-  border-radius: 2px;
-  font-weight: 500;
-  width: calc(50% - 5px);
-}
-
-.button-in-dialog > button:first-of-type {
-  background-color: #0D6CBE !important;
-}
-
-.button-in-dialog > button:first-of-type:active {
-  background-color: #065DA7 !important;
-}
-
-.button-in-dialog > button:last-of-type {
-  background-color: #FD9841 !important;
-}
-
-.button-in-dialog > button:last-of-type:active {
-  background-color: #F28121 !important;
-}
+      // 輪播圖
+      .mu-carousel-item.carousel_img{
+        position: absolute;
+      }
+      .carousel_img{
+        width: unset;
+        height: unset;
+        overflow: unset;
+      }
+        .carousel_img_in{
+          display: block;
+          padding-top:60%;
+          position: relative;
+        }
+        .carousel_img_in > img{
+          width: 100%!important;
+          height: 100%!important;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          object-fit: cover;
+        }
+          // 按鈕
+          .button-in-dialog{
+            width: 100%;
+            margin: unset;
+            margin-top: calc(var(--height) + 20px);
+            display: flex;
+            justify-content: space-between;
+          }
+            .button-in-dialog > button.mu-raised-button{
+              margin: unset;
+              box-shadow: unset;
+              border-radius: 2px;
+              font-weight: 500;
+              width: calc(50% - 5px);
+            }
+            .button-in-dialog > button:first-of-type{
+              background-color: #0D6CBE!important;
+            }
+              .button-in-dialog > button:first-of-type:active{
+                background-color: #065DA7!important;
+              }
+            .button-in-dialog > button:last-of-type{
+              background-color: #FD9841!important;
+            }
+              .button-in-dialog > button:last-of-type:active{
+                background-color: #F28121!important;
+              }
 
 // 大尺寸輪播圖樣式(附加.big-carousel)
-.mu-carousel.big-carousel {
+.mu-carousel.big-carousel{
   overflow: unset;
   margin-top: 15px;
   border-radius: 10px;
+  height: unset;
+  padding-top: 55%;
   // 修正位置-上方
-  .mu-carousel-button.mu-icon-button {
+  .mu-carousel-button.mu-icon-button{
     transform: translateY(-50%);
     width: 60px;
     height: 60px;
     font-size: 60px;
   }
-
   // 修正位置-左方
-  .mu-carousel-button.mu-icon-button.mu-carousel-button__left {
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__left{
     left: 0px;
-    transform: translate(-50%, 0%);
+    transform: translate(-50%,0%);
   }
-
+    .mu-carousel-button__left::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 修正位置-右方
-  .mu-carousel-button.mu-icon-button.mu-carousel-button__right {
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__right{
     right: 0px;
-    transform: translate(50%, 0%);
+    transform: translate(50%,0%);
   }
-
+    .mu-carousel-button__right::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%) rotate(180deg);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 輪播箭頭樣式
-  .mu-button-wrapper {
+  .mu-button-wrapper{
     position: relative;
   }
-
-  .mu-ripple-wrapper {
+  .mu-ripple-wrapper{
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
   }
 }
-
+// 新增輪播樣式
+.mu-carousel-item{
+  img{
+    width: 100%;
+    height: auto;
+  }
+}
+// 大尺寸輪播(附加.big-carousel)
+.mu-carousel.big-carousel .mu-carousel-item{
+  border-radius: 10px;
+  display: block;
+  text-decoration: none;
+  // padding-top: 45%;
+  position: absolute;
+  top: 0;
+  img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
 </style>

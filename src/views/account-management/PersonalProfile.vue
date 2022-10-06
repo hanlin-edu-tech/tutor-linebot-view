@@ -181,7 +181,7 @@ export default {
       transform: translate(-50%,50%);
       display: flex;
       width: 75%;
-      max-width: 750px;
+      max-width: 400px;
       border-radius: 5px;
       background-color: #fff;
       box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);
@@ -233,7 +233,9 @@ export default {
 }
 // 用戶資料區
 .personal_data{
+  margin: 0 auto;
   margin-top: calc(18px + 18px);
+  max-width: 600px;
   // 帳號
   .user{
     background-color: #DBDBDB;
@@ -267,7 +269,7 @@ export default {
       }
       .content{
         font-size: 16px;
-        font-weight: bold;
+        font-weight: 700;
         color: #a8a8a8;
         span{
           font-weight: normal;

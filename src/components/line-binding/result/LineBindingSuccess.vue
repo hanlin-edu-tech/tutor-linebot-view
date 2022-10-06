@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="success-page">
     <article id="line-binding-success" v-if="!isClickCouponDetail">
       <mu-row>
         <mu-col span="11">
@@ -205,6 +205,11 @@ body{
   --whiteColor:#FDFDFD;
   --deepWhiteColor:#F5F5F5;
 }
+.success-page{
+  max-width: 600px;
+  margin: auto;
+}
+
 #line-binding-success {
   .coupon {
     color: #01579b;
@@ -223,6 +228,9 @@ body{
 
   .coupon_in{
     // margin: 0px 0px 20px;
+  }
+  .coupon_in:last-of-type{
+    margin-top: 36px;
   }
     .coupon_in > span{
       color:var(--blueColor);
@@ -268,6 +276,7 @@ body{
 // 優惠券清單
 .coupon-list{
   margin: 10px 0px;
+  margin-top: 15px;
 }
   // 優惠券
   .coupon-card {
@@ -341,7 +350,7 @@ body{
               background-color: unset;
             }
             .coupon-discount::after{
-              content: "折";
+              // content: "折";
               display: block;
               margin:0px 0px 8px 4px;
               font-size: 1rem;

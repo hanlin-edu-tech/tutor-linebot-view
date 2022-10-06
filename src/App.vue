@@ -199,7 +199,7 @@
 
     // 按扭區塊樣式
     .button-div{
-      margin-top: 50px;
+      margin-top: 36px;
       // padding-bottom: 50px;
     }
       // 按鈕大小
@@ -243,19 +243,8 @@
       width: 100%;
     }
       .mu-select {
-        background-color: #fff;
-        border-radius: 5px;
-      }
-      .mu-select-input{
-        padding: 0px 8px;
-        font-size: 16px;
-        color: #01579b;
-      }
-      .mu-select-action{
-        color: #01579b!important;
-      }
-      .mu-input__error{
-        // color: #fff;
+        // background-color: #fff;
+        // border-radius: 5px;
       }
       .mu-input-help{
         bottom: -24px;

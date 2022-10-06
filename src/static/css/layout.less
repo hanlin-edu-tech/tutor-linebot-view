@@ -89,14 +89,15 @@ main{
   font-size: 1.4em;
   font-weight: 400;
 }
-
-
 // 大尺寸輪播圖樣式(附加.big-carousel)
 .mu-carousel.big-carousel{
   overflow: unset;
   margin-top: 15px;
   border-radius: 10px;
-  height: 300px;
+  height: unset;
+  padding-top: 55%;
+  // test
+  padding-top: 55%;
   // 修正位置-上方
   .mu-carousel-button.mu-icon-button{
     transform: translateY(-50%);
@@ -109,11 +110,41 @@ main{
     left: 0px;
     transform: translate(-50%,0%);
   }
+    .mu-carousel-button__left::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 修正位置-右方
   .mu-carousel-button.mu-icon-button.mu-carousel-button__right{
     right: 0px;
     transform: translate(50%,0%);
   }
+    .mu-carousel-button__right::after{
+      content:"";
+      display: block;
+      width: 20px;
+      height: 40px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%) rotate(180deg);
+      background-image: url(../../asset/icon/arrow_shadow.svg);
+      background-size: cover;
+      opacity: 0.25;
+      filter: blur(4px);
+      z-index: -1;
+    }
   // 輪播箭頭樣式
   .mu-button-wrapper{
     position: relative;
@@ -134,7 +165,9 @@ main{
   border-radius: 10px;
   display: block;
   text-decoration: none;
-  padding-top: 30%;
+  // padding-top: 55%;
+  position: absolute;
+  top: 0;
   img{
     width: 100%;
     height: 100%;
