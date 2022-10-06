@@ -214,7 +214,7 @@ export default {
 
     formatDate(day) {
       if (day) {
-        return dayjs(day).format('YYYY-MM-DD')
+        return dayjs(day).format('YYYY/MM/DD')
       } else {
         return '無期限'
       }
