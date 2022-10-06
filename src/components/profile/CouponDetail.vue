@@ -27,7 +27,7 @@
       <!-- 日期 -->
       <li>
         <span>日期:</span>
-        <p>{{ coupon.date.disable }}</p>
+        <p>{{ formatDate(coupon.date.disable) }}</p>
       </li>
       <!-- 狀態 -->
       <li>
@@ -113,6 +113,14 @@ export default {
           break
       }
       return discount + '<span>折</span>'
+    },
+
+    formatDate(day) {
+      if (day) {
+        return dayjs(day).format('YYYY/MM/DD')
+      } else {
+        return '無期限'
+      }
     },
 
     // 待確定還會再更改
