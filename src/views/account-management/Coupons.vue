@@ -34,7 +34,7 @@
                 <div class="coupon-card-left">
                   <div class="coupon-discount-block">
                     <div class="coupon-discount-block-in">
-                      <mu-paper class="coupon-discount"> {{ formatDiscount(coupon.discount) }}  </mu-paper>
+                      <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
                     </div>
                   </div>
                 </div>
@@ -82,7 +82,7 @@
                 <div class="coupon-card-left">
                   <div class="coupon-discount-block">
                     <div class="coupon-discount-block-in">
-                      <mu-paper class="coupon-discount"> {{ formatDiscount(coupon.discount) }}  </mu-paper>
+                      <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
                     </div>
                   </div>
                 </div>
@@ -193,7 +193,7 @@ export default {
 
     formatDiscount(discount) {
       if (Number.isInteger(discount)) {
-        return discount + '元'
+        return discount + '<span>元</span>'
       }
 
       const len = discount.toString().split('.')[1].length
@@ -209,7 +209,7 @@ export default {
           discount *= 1000
           break
       }
-      return discount + '折'
+      return discount + '<span>折</span>'
     },
 
     formatDate(day) {

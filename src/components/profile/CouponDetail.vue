@@ -22,7 +22,7 @@
       <!-- 折扣 -->
       <li>
         <span>折扣:</span>
-        <p>{{ formatDiscount(coupon.discount) }}</p>
+        <p v-html="formatDiscount(coupon.discount)"></p>
       </li>
       <!-- 日期 -->
       <li>
@@ -95,7 +95,7 @@ export default {
 
     formatDiscount(discount) {
       if (Number.isInteger(discount)) {
-        return discount + '元'
+        return discount + '<span>元</span>'
       }
 
       const len = discount.toString().split('.')[1].length
@@ -111,7 +111,7 @@ export default {
           discount *= 1000
           break
       }
-      return discount + '折'
+      return discount + '<span>折</span>'
     },
 
     // 待確定還會再更改

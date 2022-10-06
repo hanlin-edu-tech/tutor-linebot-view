@@ -11,11 +11,8 @@
                         @given-mobile="givenMobile"></LineBindingInput>
     </p>
 
-    <!-- 輸入手機號碼但查詢不到學號 -->
-    <h1 v-if="isStudentCardNotExists"> 該手機號碼查無任何學號，請重新再試 </h1>
-    <div v-else>
-      <mu-select v-if="isQueryMultipleStudent"
-                 @change="checkSelected"
+    <div v-if="isQueryMultipleStudent">
+      <mu-select @change="checkSelected"
                  v-model="selected"
                  :error-text="errorText">
         <mu-option disabled value="" label="請選擇帳號"></mu-option>
@@ -30,6 +27,11 @@
         上一步
       </mu-button>
       <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
+    </div>
+
+    <!--錯誤顯示-->
+    <div v-if="errorMsg">
+      <h2> 錯誤顯示： {{ errorMsg }}</h2>
     </div>
   </div>
 </template>
@@ -50,34 +52,65 @@ export default {
     return {
       isShowNextToConfirmBtn: false,
       isQueryMultipleStudent: false,
-      isStudentCardNotExists: false,
       students: [],
       selected: '',
-      errorText: ''
+      // select選單下的錯誤提示
+      errorText: '',
+      // 帳號不存在或重複綁定的錯誤提示
+      errorMsg: '',
+      isNextButtonInitial: false
     }
   },
   methods: {
-    givenStudentCard(studentCard) {
-      this.isShowNextToConfirmBtn = !!studentCard;
+    givenStudentCard(resultObj) {
+      // 隱藏錯誤訊息
+      this.errorMsg = ''
+      // 選擇用學號綁定 清空手機號碼
       this.student.mobile = ''
-      this.student.studentCard = studentCard
       // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
       this.isQueryMultipleStudent = false
+
+      switch (resultObj.status) {
+        case 'StudentCardNotExist':
+          this.setErrorMsg('該學號不存在')
+          break
+        case 'BoundSameStudentTwice':
+          this.setErrorMsg('已經綁定過該學號')
+          break
+        case 'invalid':
+          this.setErrorMsg('學號輸入錯誤')
+          break
+        case 'Pass':
+          this.isShowNextToConfirmBtn = true
+          this.student.studentCard = resultObj.studentCard
+      }
     },
 
-    givenMobile(mobile) {
-      // 若手機不符合格式，移除下一步的Button
-      this.isShowNextToConfirmBtn = !!mobile
+    givenMobile(resultObj) {
+      // 隱藏錯誤訊息
+      this.errorMsg = ''
       // 輸入手機號碼時，學號選單不應該存在
       this.isQueryMultipleStudent = false
-      // 在輸入手機號碼時，隱藏學號找不到的訊息
-      this.isStudentCardNotExists = false
       this.student.studentCard = ''
-      this.student.mobile = mobile
+
+      switch (resultObj.status) {
+        case 'StudentCardNotExist':
+          this.setErrorMsg('查無該手機號碼')
+          break
+        case 'invalid':
+          this.setErrorMsg('手機號碼輸入錯誤')
+          break
+        case 'Pass':
+          this.isQueryMultipleStudent = true
+          //顯示在select選單中的資料
+          this.students = resultObj.students
+          // 存該手機號碼
+          this.student.mobile = resultObj.mobile
+          break
+      }
     },
 
     goToPreviousStep() {
-      this.isShowNextToInputBtn = false
       this.handlePrevious()
       this.student.role = ''
       this.student.studentCard = ''
@@ -85,50 +118,42 @@ export default {
     },
 
     nextStep() {
-      this.checkStudentsCardWithMobile()
-
       // 有選擇學號後 進行下一步，例如手機查詢到多位學生，確保select選單有選擇帳號
       if (this.student.studentCard) {
         this.handleNext()
       }
     },
 
-    checkStudentsCardWithMobile() {
-      // 還沒選擇學號 且 有輸入手機號碼，用手機號碼查詢學生是否有多位的情況
-      if (!this.student.studentCard && this.student.mobile) {
-        this.$axios(
-            {
-              method: 'get',
-              url: `/linebot/lineBinding/students-by-mobile?mobile=${this.student.mobile}`,
-            }
-        ).then(
-            response => {
-              if (response.data.content) {
-                this.students = response.data.content
-                if (this.students.length > 1) {
-                  // 跳出select 選單
-                  this.isQueryMultipleStudent = true
-                  // reset select選單為 default
-                  this.selected = ''
-                  this.errorText = '請選擇欲綁定的一位學生帳號'
-                  this.isStudentCardNotExists = false
-                }
-              } else {
-                this.isStudentCardNotExists = true
-              }
-            }
-        ).catch(error => {
-          console.error(error)
-          this.isStudentCardNotExists = true
-        })
+    checkSelected() {
+      // select只要觸發change 代表有選到學號，才判斷該學號是否有重複綁定
+      if (this.isBoundSameStudentTwice()) {
+        this.setErrorMsg('該學號已經綁定過囉')
+      } else {
+        this.errorMsg = ''
+        // 在select選單中 選擇了學號
+        this.student.studentCard = this.selected
+        this.isShowNextToConfirmBtn = true
       }
     },
 
-    checkSelected() {
-      // 選擇學號，只有一開始會有default 未選擇的情況，因此才不用if else
-      // select只要觸發change 代表有選到學號，即可將errorText 清空
-      this.student.studentCard = this.selected
-      this.errorText = ''
+    isBoundSameStudentTwice() {
+      // LineBinding created時 就會先取得該line id 下的所有學號
+      if (this.student.studentCards.length > 0) {
+        for (let i = 0; i < this.student.studentCards.length; i++) {
+          /*
+           * 綁定同學號兩次
+           */
+          if (this.student.studentCards[i] === this.selected) {
+            return true
+          }
+        }
+      }
+      return false
+    },
+
+    setErrorMsg(text) {
+      this.errorMsg = text
+      this.isShowNextToConfirmBtn = false
     },
 
     ...mapActions('step', {
@@ -158,7 +183,6 @@ export default {
 .title {
   color: #01579b;
 }
-
 
 
 </style>
