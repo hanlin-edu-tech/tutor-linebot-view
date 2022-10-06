@@ -1,13 +1,7 @@
 <template>
   <article id="line-binding-confirm" class="font-secondary-info">
     <mu-container>
-      <mu-row v-if="isStudentCardNotExist">
-        <StudentCardNotExist></StudentCardNotExist>
-      </mu-row>
-      <mu-row v-else-if="isBoundSameStudentTwice()">
-        <BoundSameStudentTwice :line-user-id="lineUserId"></BoundSameStudentTwice>
-      </mu-row>
-      <mu-row v-else>
+      <mu-row>
         <div>
           <div id="title-area">
             <p class="title">資料確認!</p>
@@ -62,37 +56,7 @@ export default {
     }
   },
 
-  async created() {
-    // 檢查該學號是否存在
-    try {
-      const response = await this.$axios({
-        method: 'get',
-        url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}`
-      })
-
-      this.isStudentCardNotExist = response.data.message.indexOf('failure') > 0
-    } catch (error) {
-      console.error(error)
-      this.isStudentCardNotExist = true
-    }
-  },
-
   methods: {
-    isBoundSameStudentTwice() {
-      // LineBinding created時 就會先取得該line id 下的所有學號
-      if (this.student.studentCards.length > 0) {
-        for (let i = 0; i < this.student.studentCards.length; i++) {
-          /*
-           * 綁定同學號兩次
-           */
-          if (this.student.studentCards[i] === this.student.studentCard) {
-            return true
-          }
-        }
-      }
-      return false
-    },
-
     retrieveEmail() {
       this.$axios(
           {
