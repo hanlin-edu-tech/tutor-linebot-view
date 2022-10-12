@@ -85,7 +85,8 @@
 
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
-                  :coupon="clickedCoupon">
+                  :coupon="clickedCoupon"
+                  :student-enter-year="enterYear">
     </CouponDetail>
 
     <div class="app-center button-div" v-if="!isClickCouponDetail">
@@ -110,7 +111,8 @@ export default {
       couponCount: 0,
       isClickCouponDetail: false,
       courseImages: [],
-      clickedCoupon: {}
+      clickedCoupon: {},
+      enterYear: 0
     }
   },
 
@@ -146,6 +148,12 @@ export default {
         this.courseImages.push(image)
       }
 
+      // 撈學生年級
+      const studentResponse = await this.$axios({
+        method: 'get',
+        url: `/linebot/lineBinding/user?studentCard=${studentCard}`
+      })
+      this.enterYear = studentResponse.data.content.enterYear
     } catch (error) {
       console.error(error)
     }

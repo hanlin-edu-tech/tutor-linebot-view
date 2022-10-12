@@ -32,7 +32,7 @@
       <!-- 狀態 -->
       <li>
         <span>狀態:</span>
-        <p>{{ coupon.diffDay > 10 ? '可使用' : '即將失效'  }}</p>
+        <p>{{ computeRemainingDate > 10 ? '可使用' : '即將失效'  }}</p>
       </li>
       <!-- 剩餘日期 -->
       <li>
@@ -47,12 +47,14 @@
     </ul>
 
     <!-- 推薦課程輪播 -->
-    <span class="carouselarea"> 推薦課程: </span>
-    <mu-carousel class="big-carousel" hide-indicators interval="9999999">
-      <mu-carousel-item v-for="image in courseImages">
-        <img :src="image" @click="goCoursePage">
-      </mu-carousel-item>
-    </mu-carousel>
+    <div v-if="sortedCouponArray.length > 0">
+      <span class="carouselarea"> 推薦課程: </span>
+      <mu-carousel class="big-carousel" hide-indicators interval="9999999">
+        <mu-carousel-item v-for="coupon in sortedCouponArray">
+          <img v-if="coupon.imageUrl" :src="coupon.imageUrl" @click="goCoursePage(coupon.id)">
+        </mu-carousel-item>
+      </mu-carousel>
+    </div>
 
     <!-- 複製提示 -->
     <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
@@ -65,8 +67,6 @@
 
 <script>
 import dayjs from "dayjs"
-import courseImage1 from "../../asset/course1.png"
-import courseImage2 from "../../asset/course2.png"
 
 export default {
   name: "CouponDetail",
@@ -74,15 +74,59 @@ export default {
     coupon: {
       type: Object,
       required: true
+    },
+    studentEnterYear: {
+      required: true
     }
   },
 
   data() {
     return {
       isCopyToClipboard: false,
-      courseImages: [courseImage1, courseImage2],
+      sortedCouponArray: [],
       imgHeight: 0,
+      host: window.location.host
     };
+  },
+
+  created() {
+    const day = new Date()
+    const year = day.getFullYear()
+    // 小一入學年
+    const elementarySchoolYear =  year - 1911
+    // 國一入學年
+    const juniorHighSchoolYear =  elementarySchoolYear - 6
+    // 高一入學年
+    const seniorHighSchoolYear =  juniorHighSchoolYear - 3
+
+    const seniorHighSchoolGraduate = seniorHighSchoolYear - 3
+
+    let sorted = []
+    switch (true) {
+      //小學
+      case (this.studentEnterYear <= elementarySchoolYear && this.studentEnterYear > juniorHighSchoolYear):
+        sorted = this.coupon.applicableProductSets.filter(item =>
+            item.enterYear <= elementarySchoolYear && item.enterYear > juniorHighSchoolYear)
+        break
+      //國中
+      case (this.studentEnterYear <= juniorHighSchoolYear && this.studentEnterYear > seniorHighSchoolYear):
+        sorted = this.coupon.applicableProductSets.filter(item =>
+            item.enterYear <= juniorHighSchoolYear && item.enterYear > seniorHighSchoolYear)
+        break
+      //高中
+      case (this.studentEnterYear <= seniorHighSchoolYear && this.studentEnterYear > seniorHighSchoolGraduate):
+        sorted = this.coupon.applicableProductSets.filter(item =>
+            item.enterYear <= seniorHighSchoolYear && item.enterYear > seniorHighSchoolGraduate)
+        break
+      //其他 值為 -1
+      default:
+        sorted = this.coupon.applicableProductSets
+        break
+    }
+
+    sorted.forEach(item => {
+      this.sortedCouponArray.push(item)
+    })
   },
 
   methods: {
@@ -124,8 +168,8 @@ export default {
     },
 
     // 待確定還會再更改
-    goCoursePage() {
-      window.open('https://' + this.host + '/app/online-showcase/product-list.html#JS&all&all&all', '_blank')
+    goCoursePage(id) {
+      window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}`, '_blank')
     }
     
   },

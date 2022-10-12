@@ -120,7 +120,8 @@
     </div>
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
-                  :coupon="clickedCoupon">
+                  :coupon="clickedCoupon"
+                  :student-enter-year="enterYear">
     </CouponDetail>
   </div>
 </template>
@@ -143,7 +144,8 @@ export default {
       greatThanEqualZeroDay: {}, // 大於等於0天的coupon
       invalidCoupon: [], // 過期失效的coupon
       currentStudent: {}, // 當前使用的學生
-      couponsCount: 0 // coupon array長度
+      couponsCount: 0, // coupon array長度
+      enterYear: 0 // 年級
     }
   },
 
@@ -160,6 +162,13 @@ export default {
       if (typeof this.coupons === 'object') {
         this.couponsCount = Object.keys(this.coupons).length
       }
+
+      // 撈學生年級
+      const studentResponse = await this.$axios({
+        method: 'get',
+        url: `/linebot/lineBinding/user?studentCard=${currentStudentCard}`
+      })
+      this.enterYear = studentResponse.data.content.enterYear
     } catch (error) {
       console.error(error)
     }
