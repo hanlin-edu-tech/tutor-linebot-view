@@ -20,7 +20,7 @@
               </div>
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                帳號：{{ retrieveEmail() }}<span class="font-important-info"> {{ student.email }} </span>
+                帳號：<span class="font-important-info"> {{ student.email }} </span>
               </div>
             </mu-col>
           </mu-row>
@@ -38,12 +38,9 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
-import BoundSameStudentTwice from "@/components/line-binding/failure-situation/BoundSameStudentTwice";
-import StudentCardNotExist from "@/components/line-binding/failure-situation/StudentCardNotExist";
 
 export default {
   name: 'LineBindingConfirm',
-  components: {StudentCardNotExist, BoundSameStudentTwice},
   props: {
     lineUserId: String
   },
@@ -56,39 +53,67 @@ export default {
     }
   },
 
+  async created() {
+    try {
+      // 若沒手機號碼，需在call 一次request 才會取得
+      while (!this.student.mobile) {
+        const response = await this.$axios({
+          method: 'get',
+          url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
+        })
+
+        const data = response.data
+        if (data.message.indexOf('success') > 0) {
+          const student = data.content
+          this.student.name = student.name
+          this.student.email = student.email
+          this.student.mobile = student.mobile
+          this.isCompleted = true
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
   methods: {
-    retrieveEmail() {
-      this.$axios(
-          {
-            method: 'get',
-            url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
-          }
-      ).then(
-          response => {
-            const jsonData = response.data
-
-            if (jsonData.message.indexOf('success') > 0) {
-              const specificUser = jsonData.content
-              this.student.email = specificUser.email
-              this.student.studentCard = specificUser.studentCard
-              this.student.mobile = specificUser.mobile
-              this.student.name = specificUser.name
-              this.isCompleted = true
-            }
-          }
-      ).catch(error => {
-        console.error(error)
-      })
-    },
-
     goToPreviousStep() {
       this.student.studentCard = ''
       this.student.mobile = ''
       this.handlePrevious()
     },
 
-    bindingCompleted() {
-      // step +1 改變LineBinding的步驟
+    async bindingCompleted() {
+      const bindingStudentObj = {
+        studentCard: this.student.studentCard,
+        email: this.student.email,
+        name: this.student.name,
+        mobile: this.student.mobile,
+      }
+
+      bindingStudentObj.authentications = [
+        {
+          lineUserId: this.lineUserId,
+          role: this.student.role
+        }
+      ]
+
+      try {
+        const response = await this.$axios(
+            {
+              method: 'post',
+              url: `/linebot/lineBinding`,
+              data: bindingStudentObj
+            }
+        )
+        const message = response.data.message
+        const status = message.indexOf('success') > 0 ? 'success' : 'failure'
+        this.$emit('binding-result', status)
+
+      } catch (error) {
+        console.error(error)
+      }
+      // step +1 改變LineBinding的步驟到第四步讓stepper消失
       this.handleNext()
     },
 

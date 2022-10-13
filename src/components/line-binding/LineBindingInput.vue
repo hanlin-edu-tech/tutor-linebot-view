@@ -61,9 +61,10 @@
 </template>
 
 <script>
+// 如何獲得學號modal中的圖片
 import carouselImage1 from '../../asset/memberLogin.png'
 import carouselImage2 from '../../asset/notice.png'
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 
 export default {
   name: 'LineBindingInput',
@@ -106,10 +107,10 @@ export default {
 
       const result = studentCardRegex.test(this.studentCard)
       if (result) {
-        const isBoundSameStudentTwice = this.isBoundSameStudentTwice()
+        this.student.studentCard = this.studentCard
         const isStudentCardExist = await this.isStudentCardExist()
 
-        if (isBoundSameStudentTwice) {
+        if (this.isBoundSameStudentTwice) {
           resultObj.status = 'BoundSameStudentTwice'
         } else if (!isStudentCardExist) {
           resultObj.status = 'StudentCardNotExist'
@@ -180,19 +181,6 @@ export default {
       return false
     },
 
-    isBoundSameStudentTwice() {
-      // LineBinding created時 就會先取得該line id 下的所有學號
-      if (this.student.studentCards.length > 0) {
-        for (let i = 0; i < this.student.studentCards.length; i++) {
-          // 綁定同學號兩次
-          if (this.student.studentCards[i] === this.studentCard) {
-            return true
-          }
-        }
-      }
-      return false
-    },
-
     // 點擊如何獲得學號
     openDialog() {
       this.active = 0
@@ -231,7 +219,7 @@ export default {
 
   computed: {
     ...mapState('binding', ['student']),
-
+    ...mapGetters('binding', ['isBoundSameStudentTwice']),
     popupheight() {
       return {
         '--height': this.imgHeight + 'px'

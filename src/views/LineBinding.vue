@@ -14,18 +14,13 @@
       <LineBindingConfirm
           v-if="bindingStep === 2"
           :line-user-id="lineUserId"
-          @binding-completed="isBindingCompleted = true"></LineBindingConfirm>
-
-      <LineBindingResult
-          v-if="bindingStep === 3"
-          @binding-result="setBindingResult"
-          :line-user-id="lineUserId"></LineBindingResult>
+          @binding-completed="isBindingCompleted = true"
+          @binding-result="setBindingResult"></LineBindingConfirm>
 
       <LineBindingSuccess v-if="bindingResult === 'success'"></LineBindingSuccess>
 
       <LineBindingFailure v-if="bindingResult === 'failure'"></LineBindingFailure>
     </template>
-
   </section>
 </template>
 
@@ -63,18 +58,14 @@ export default {
   async created() {
     try {
       // await 後端回傳data，不然這裡取不到資料
-      const response = await this.$axios({
-        method: 'get',
-        url: `/linebot/profile/${this.lineUserId}`,
-      })
-      const jsonData = response.data
-      const lineBindingStudentCards = jsonData.content
+      await this.$store.dispatch('commonData/initStudentsWithLineUser', this.lineUserId)
 
-      if (lineBindingStudentCards.length > 0) {
+      if (this.students.length > 0) {
+        const students = this.students
         const studentCards = []
-        lineBindingStudentCards.forEach(lineBindingStudentCard => {
-          studentCards.push(lineBindingStudentCard.studentCard)
-          lineBindingStudentCard.authentications.forEach(authentication => {
+        students.forEach(student => {
+          studentCards.push(student.studentCard)
+          student.authentications.forEach(authentication => {
             if (authentication.role === 'parent') {
               this.student.role = 'parent'
             } else {
@@ -86,9 +77,9 @@ export default {
         this.isAlreadyBinding = true
         this.handleNext()
         // 當綁定過身份後 導到profile，若在profile那點擊帳號綁定，則不跳轉
-        if (!this.continueBinding) {
-          await this.$router.replace(`/profile/${this.lineUserId}/${lineBindingStudentCards[0].studentCard}`)
-        }
+        // if (!this.continueBinding) {
+        //   await this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCards[0]}`)
+        // }
       }
     } catch (error) {
       console.error(error)
@@ -114,7 +105,8 @@ export default {
   computed: {
     bindingStep: () => store.state.step.bindingStep,
     student: () => store.state.binding.student,
-    continueBinding: () => store.state.binding.continueBinding
+    continueBinding: () => store.state.binding.continueBinding,
+    students: () => store.state.commonData.students
   },
 }
 </script>

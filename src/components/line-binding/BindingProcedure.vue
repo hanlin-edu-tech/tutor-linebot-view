@@ -37,7 +37,7 @@
 
 <script>
 import LineBindingInput from '@/components/line-binding/LineBindingInput'
-import {mapActions, mapState} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex";
 
 export default {
   name: "BindingProcedure",
@@ -54,8 +54,7 @@ export default {
       students: [],
       selected: '',
       // 帳號不存在或重複綁定的錯誤提示
-      errorMsg: '',
-      isNextButtonInitial: false
+      errorMsg: ''
     }
   },
   methods: {
@@ -122,30 +121,15 @@ export default {
     },
 
     checkSelected() {
+      // 在select選單中 選擇了學號
+      this.student.studentCard = this.selected
       // select只要觸發change 代表有選到學號，才判斷該學號是否有重複綁定
-      if (this.isBoundSameStudentTwice()) {
+      if (this.isBoundSameStudentTwice) {
         this.setErrorMsg('該學號已經綁定過囉')
       } else {
         this.errorMsg = ''
-        // 在select選單中 選擇了學號
-        this.student.studentCard = this.selected
         this.isShowNextToConfirmBtn = true
       }
-    },
-
-    isBoundSameStudentTwice() {
-      // LineBinding created時 就會先取得該line id 下的所有學號
-      if (this.student.studentCards.length > 0) {
-        for (let i = 0; i < this.student.studentCards.length; i++) {
-          /*
-           * 綁定同學號兩次
-           */
-          if (this.student.studentCards[i] === this.selected) {
-            return true
-          }
-        }
-      }
-      return false
     },
 
     setErrorMsg(text) {
@@ -160,7 +144,10 @@ export default {
 
   },
 
-  computed: mapState('binding', ['student'])
+  computed: {
+    ...mapState('binding', ['student']),
+    ...mapGetters('binding', ['isBoundSameStudentTwice'])
+  }
 }
 </script>
 
