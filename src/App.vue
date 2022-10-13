@@ -11,7 +11,7 @@
     <main>
       <div class="wrap">
         <mu-container class="layout-main">
-          <router-view v-if="isAlive"></router-view>
+          <router-view></router-view>
         </mu-container>
       </div>
     </main>
@@ -19,51 +19,9 @@
 </template>
 
 <script>
-  import store from "@/store/store";
 
   export default {
-    name: 'app',
-    data () {
-      return {
-        isAlive: true,
-        isOpen: false,
-      }
-    },
-
-    methods: {
-      reload () {
-        const vueModel = this
-        vueModel.isAlive = false
-        vueModel.$nextTick(() => (vueModel.isAlive = true))
-      },
-
-      closeDrawer () {
-        const vueModel = this
-        vueModel.isOpen = false
-      },
-
-      binding () {
-        const vueModel = this
-        const uId = vueModel.$route.params['specificLineUser']
-        vueModel.closeDrawer()
-        vueModel.$router.replace(`/lineBinding/${uId}`)
-      },
-
-      queryProfiles (menuFunction) {
-        const vueModel = this
-        const uId = vueModel.$route.params['specificLineUser']
-        vueModel.closeDrawer()
-        if (menuFunction) {
-          vueModel.$router.push(`/profile/${uId}?menuFunction=${menuFunction}`)
-        } else {
-          vueModel.$router.push(`/profile/${uId}`)
-        }
-      }
-    },
-
-    computed: {
-      student: () => store.state.binding.student
-    }
+    name: 'app'
   }
 </script>
 
