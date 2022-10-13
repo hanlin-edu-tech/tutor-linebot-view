@@ -28,7 +28,6 @@
 import ChooseRole from '@/components/line-binding/ChooseRole'
 import BindingProcedure from "@/components/line-binding/BindingProcedure"
 import LineBindingConfirm from "@/components/line-binding/LineBindingConfirm"
-import LineBindingResult from "@/components/line-binding/LineBindingResult"
 import store from '@/store/store'
 import {mapActions} from 'vuex'
 import LineBindingSuccess from "@/components/line-binding/result/LineBindingSuccess";
@@ -41,8 +40,7 @@ export default {
     LineBindingSuccess,
     ChooseRole,
     BindingProcedure,
-    LineBindingConfirm,
-    LineBindingResult
+    LineBindingConfirm
   },
   data() {
     return {
