@@ -37,7 +37,7 @@
 
 <script>
 import LineBindingInput from '@/components/line-binding/LineBindingInput'
-import {mapActions, mapGetters, mapState} from "vuex";
+import {mapActions, mapGetters, mapState} from "vuex"
 
 export default {
   name: "BindingProcedure",

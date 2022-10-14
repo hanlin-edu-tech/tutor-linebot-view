@@ -38,9 +38,12 @@
 
 <script>
 import {mapActions, mapState} from 'vuex'
+import studentService from "@/service/student-service"
 
 export default {
   name: 'LineBindingConfirm',
+  mixins: [studentService],
+
   props: {
     lineUserId: String
   },
@@ -57,22 +60,14 @@ export default {
     try {
       // 若沒手機號碼，需在call 一次request 才會取得
       while (!this.student.mobile) {
-        const response = await this.$axios({
-          method: 'get',
-          url: `/linebot/lineBinding/user?studentCard=${this.student.studentCard}&mobile=${this.student.mobile}`,
-        })
-
-        const data = response.data
-        if (data.message.indexOf('success') > 0) {
-          const student = data.content
+          const student = await this.searchStudentWithStudentCardAndMobile(this.student.studentCard, this.student.mobile)
           this.student.name = student.name
           this.student.email = student.email
           this.student.mobile = student.mobile
           this.isCompleted = true
-        }
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   },
 
@@ -99,20 +94,12 @@ export default {
       ]
 
       try {
-        const response = await this.$axios(
-            {
-              method: 'post',
-              url: `/linebot/lineBinding`,
-              data: bindingStudentObj
-            }
-        )
-        const message = response.data.message
-        const status = message.indexOf('success') > 0 ? 'success' : 'failure'
+        const status = await this.isBindingStudentResult(bindingStudentObj)
         this.$emit('binding-result', status)
-
       } catch (error) {
         console.error(error)
       }
+
       // step +1 改變LineBinding的步驟到第四步讓stepper消失
       this.handleNext()
     },

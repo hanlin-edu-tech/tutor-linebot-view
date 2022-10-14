@@ -20,7 +20,8 @@
       <!-- popup -->
       <mu-dialog :open="isDialogOpen">
         <!-- muse-ui輪播(學號取得教學)-->
-        <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage" :style="popupheight">
+        <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage"
+                     :style="popupheight">
           <mu-carousel-item class="carousel_img"
                             ref="imageHeight"
                             v-for="image in carouselImages">
@@ -64,10 +65,13 @@
 // 如何獲得學號modal中的圖片
 import carouselImage1 from '../../asset/memberLogin.png'
 import carouselImage2 from '../../asset/notice.png'
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapState} from "vuex"
+import studentService from "@/service/student-service"
 
 export default {
   name: 'LineBindingInput',
+  mixins: [studentService],
+
   data() {
     return {
       host: window.location.hostname,
@@ -130,7 +134,8 @@ export default {
       const resultObj = {}
 
       if (result) {
-        const students = await this.getStudentsCardWithMobile()
+        const students = await this.getStudentsWithMobile()
+
         if (students.length > 1) {
           resultObj.students = students
           resultObj.status = 'Pass'
@@ -146,37 +151,19 @@ export default {
       }
     },
 
-    async getStudentsCardWithMobile() {
-      let students = []
-      try {
-        const response = await this.$axios(
-            {
-              method: 'get',
-              url: `/linebot/lineBinding/students-by-mobile?mobile=${this.mobile}`,
-            }
-        )
-        // 捷徑運算 若content不存在 則不執行 .length 造成錯誤
-        if (response.data.content && response.data.content.length > 0) {
-          students = response.data.content
-        }
-      } catch (error) {
-        console.error(error)
-      }
+    async getStudentsWithMobile() {
+      const students = await this.searchStudentsWithMobile(this.mobile)
       return students
     },
 
     async isStudentCardExist() {
       // 檢查該學號是否存在
       try {
-        const response = await this.$axios({
-          method: 'get',
-          url: `/linebot/lineBinding/user?studentCard=${this.studentCard}`
-        })
-
-        return response.data.message.indexOf('failure') < 0
+        await this.searchStudentWithStudentCard(this.studentCard)
       } catch (error) {
         console.error(error)
         this.isStudentCardNotExist = true
+        return true //可以 測試一下學號是否存在的行為
       }
       return false
     },
@@ -237,19 +224,23 @@ export default {
     font-weight: 500;
     color: #A8A8A8;
   }
-  .mu-input{
+
+  .mu-input {
     padding: 2px 0px;
     min-height: unset;
     border-bottom: 1px #DBDBDB solid;
     margin-bottom: 12px;
   }
+
   .mu-input.has-label {
     padding: 36px 0px 12px;
   }
-  .mu-input.full-width.has-label{
-    border:unset;
+
+  .mu-input.full-width.has-label {
+    border: unset;
   }
-  .mu-select{
+
+  .mu-select {
     background-color: #fff;
     border-radius: 5px;
   }
@@ -259,13 +250,16 @@ export default {
     font-size: 16px;
     color: #01579b;
   }
-  .mu-select-action{
-    color: #01579b!important;
+
+  .mu-select-action {
+    color: #01579b !important;
   }
-  .mu-input-line{
+
+  .mu-input-line {
     display: none;
   }
-  .mu-input-focus-line.focus{
+
+  .mu-input-focus-line.focus {
     display: none;
   }
 
@@ -317,6 +311,7 @@ export default {
     font-size: 18px;
   }
 }
+
 //------------------------------------------------------------------//
 // Dialog的 下一步Button
 .next-step-in-dialog {
@@ -328,220 +323,252 @@ div[class*="mu-dialog"] img {
   height: 270px;
 }
 
-.mu-popover{
+.mu-popover {
   border-radius: 5px;
   margin-top: 40px;
 }
-  .mu-list {
-    padding: 0;
-    border-radius: 5px;
-  }
-    .mu-option{
-    }
-    .mu-item-title{
-      font-size: 16px!important;
-    }
+
+.mu-list {
+  padding: 0;
+  border-radius: 5px;
+}
+
+.mu-option {
+}
+
+.mu-item-title {
+  font-size: 16px !important;
+}
 
 // 填寫區塊
-.write_area{
+.write_area {
   margin: 12px 0px;
 }
+
 // 小標
-.subtitle{
+.subtitle {
   font-size: 15px;
   font-weight: 500;
   color: #A8A8A8;
 }
-.mu-text-field-input{
+
+.mu-text-field-input {
   font-size: 16px;
 }
+
 input::placeholder {
   transform: scale(0.8);
   transform-origin: center left;
   color: #DBDBDB;
 }
+
 .mu-input__focus {
-    // color: #fafafa;
+  // color: #fafafa;
 }
 
-  //輪播區塊
-  .mu-dialog{
-    width: 90%!important;
-    max-width:600px;
-    border-radius: 5px;
-  }
-    .mu-dialog-body{
-      padding: 20px 18px;
-    }
-      .mu-carousel{
-        position: relative;
-        width: 100%;
-        height: 300px;
-        overflow: hidden;
-      }
-      .mu-carousel.student-id{
-        height: unset;
-      }
-        // 輪播點-位置
-        .mu-carousel-indicators{
-          width: unset;
-          height: unset;
-          margin: 0;
-          position: absolute;
-          left: 50%;
-          right: unset;
-          top: unset;
-          bottom: calc(8px + 56px);
-          display: flex;
-          justify-content: center;
-          transform:translateX(-50%)
-        }
-          // 輪播點-大小
-          .mu-icon-button{
-            width: 10px;
-            height: 10px;
-            padding: 0px;
-            margin: 0px 10px;
-          }
-          // 輪播點-顏色
-          .mu-button-wrapper .mu-carousel-indicator-icon {
-            background-color: #DBDBDB;
-          }
-          // 輪播點-顏色active
-          .mu-carousel-indicator-button__active .mu-carousel-indicator-icon{
-            background-color: #FD9841;
-          }
+//輪播區塊
+.mu-dialog {
+  width: 90% !important;
+  max-width: 600px;
+  border-radius: 5px;
+}
 
-      // 輪播圖
-      .mu-carousel-item.carousel_img{
-        position: absolute;
-      }
-      .carousel_img{
-        width: unset;
-        height: unset;
-        overflow: unset;
-      }
-        .carousel_img_in{
-          display: block;
-          padding-top:60%;
-          position: relative;
-        }
-        .carousel_img_in > img{
-          width: 100%!important;
-          height: 100%!important;
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          object-fit: cover;
-        }
-          // 按鈕
-          .button-in-dialog{
-            width: 100%;
-            margin: unset;
-            margin-top: calc(var(--height) + 20px);
-            display: flex;
-            justify-content: space-between;
-          }
-            .button-in-dialog > button.mu-raised-button{
-              margin: unset;
-              box-shadow: unset;
-              border-radius: 2px;
-              font-weight: 500;
-              width: calc(50% - 5px);
-            }
-            .button-in-dialog > button:first-of-type{
-              background-color: #0D6CBE!important;
-            }
-              .button-in-dialog > button:first-of-type:active{
-                background-color: #065DA7!important;
-              }
-            .button-in-dialog > button:last-of-type{
-              background-color: #FD9841!important;
-            }
-              .button-in-dialog > button:last-of-type:active{
-                background-color: #F28121!important;
-              }
+.mu-dialog-body {
+  padding: 20px 18px;
+}
+
+.mu-carousel {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+}
+
+.mu-carousel.student-id {
+  height: unset;
+}
+
+// 輪播點-位置
+.mu-carousel-indicators {
+  width: unset;
+  height: unset;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  right: unset;
+  top: unset;
+  bottom: calc(8px + 56px);
+  display: flex;
+  justify-content: center;
+  transform: translateX(-50%)
+}
+
+// 輪播點-大小
+.mu-icon-button {
+  width: 10px;
+  height: 10px;
+  padding: 0px;
+  margin: 0px 10px;
+}
+
+// 輪播點-顏色
+.mu-button-wrapper .mu-carousel-indicator-icon {
+  background-color: #DBDBDB;
+}
+
+// 輪播點-顏色active
+.mu-carousel-indicator-button__active .mu-carousel-indicator-icon {
+  background-color: #FD9841;
+}
+
+// 輪播圖
+.mu-carousel-item.carousel_img {
+  position: absolute;
+}
+
+.carousel_img {
+  width: unset;
+  height: unset;
+  overflow: unset;
+}
+
+.carousel_img_in {
+  display: block;
+  padding-top: 60%;
+  position: relative;
+}
+
+.carousel_img_in > img {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  object-fit: cover;
+}
+
+// 按鈕
+.button-in-dialog {
+  width: 100%;
+  margin: unset;
+  margin-top: calc(var(--height) + 20px);
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-in-dialog > button.mu-raised-button {
+  margin: unset;
+  box-shadow: unset;
+  border-radius: 2px;
+  font-weight: 500;
+  width: calc(50% - 5px);
+}
+
+.button-in-dialog > button:first-of-type {
+  background-color: #0D6CBE !important;
+}
+
+.button-in-dialog > button:first-of-type:active {
+  background-color: #065DA7 !important;
+}
+
+.button-in-dialog > button:last-of-type {
+  background-color: #FD9841 !important;
+}
+
+.button-in-dialog > button:last-of-type:active {
+  background-color: #F28121 !important;
+}
 
 // 大尺寸輪播圖樣式(附加.big-carousel)
-.mu-carousel.big-carousel{
+.mu-carousel.big-carousel {
   overflow: unset;
   margin-top: 15px;
   border-radius: 10px;
   height: unset;
   padding-top: 55%;
   // 修正位置-上方
-  .mu-carousel-button.mu-icon-button{
+  .mu-carousel-button.mu-icon-button {
     transform: translateY(-50%);
     width: 60px;
     height: 60px;
     font-size: 60px;
   }
+
   // 修正位置-左方
-  .mu-carousel-button.mu-icon-button.mu-carousel-button__left{
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__left {
     left: 0px;
-    transform: translate(-50%,0%);
+    transform: translate(-50%, 0%);
   }
-    .mu-carousel-button__left::after{
-      content:"";
-      display: block;
-      width: 20px;
-      height: 40px;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%,-50%);
-      background-image: url(../../asset/icon/arrow_shadow.svg);
-      background-size: cover;
-      opacity: 0.25;
-      filter: blur(4px);
-      z-index: -1;
-    }
+
+  .mu-carousel-button__left::after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 40px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-image: url(../../asset/icon/arrow_shadow.svg);
+    background-size: cover;
+    opacity: 0.25;
+    filter: blur(4px);
+    z-index: -1;
+  }
+
   // 修正位置-右方
-  .mu-carousel-button.mu-icon-button.mu-carousel-button__right{
+  .mu-carousel-button.mu-icon-button.mu-carousel-button__right {
     right: 0px;
-    transform: translate(50%,0%);
+    transform: translate(50%, 0%);
   }
-    .mu-carousel-button__right::after{
-      content:"";
-      display: block;
-      width: 20px;
-      height: 40px;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%,-50%) rotate(180deg);
-      background-image: url(../../asset/icon/arrow_shadow.svg);
-      background-size: cover;
-      opacity: 0.25;
-      filter: blur(4px);
-      z-index: -1;
-    }
+
+  .mu-carousel-button__right::after {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 40px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(180deg);
+    background-image: url(../../asset/icon/arrow_shadow.svg);
+    background-size: cover;
+    opacity: 0.25;
+    filter: blur(4px);
+    z-index: -1;
+  }
+
   // 輪播箭頭樣式
-  .mu-button-wrapper{
+  .mu-button-wrapper {
     position: relative;
   }
-  .mu-ripple-wrapper{
+
+  .mu-ripple-wrapper {
     box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 1);
   }
 }
+
 // 新增輪播樣式
-.mu-carousel-item{
-  img{
+.mu-carousel-item {
+  img {
     width: 100%;
     height: auto;
   }
 }
+
 // 大尺寸輪播(附加.big-carousel)
-.mu-carousel.big-carousel .mu-carousel-item{
+.mu-carousel.big-carousel .mu-carousel-item {
   border-radius: 10px;
   display: block;
   text-decoration: none;
   // padding-top: 45%;
   position: absolute;
   top: 0;
-  img{
+
+  img {
     width: 100%;
     height: 100%;
     object-fit: cover;

@@ -29,9 +29,9 @@ import ChooseRole from '@/components/line-binding/ChooseRole'
 import BindingProcedure from "@/components/line-binding/BindingProcedure"
 import LineBindingConfirm from "@/components/line-binding/LineBindingConfirm"
 import store from '@/store/store'
-import {mapActions} from 'vuex'
-import LineBindingSuccess from "@/components/line-binding/result/LineBindingSuccess";
-import LineBindingFailure from "@/components/line-binding/result/LineBindingFailure";
+import {mapActions, mapState} from 'vuex'
+import LineBindingSuccess from "@/components/line-binding/result/LineBindingSuccess"
+import LineBindingFailure from "@/components/line-binding/result/LineBindingFailure"
 
 export default {
   name: 'LineBinding',
@@ -56,7 +56,7 @@ export default {
   async created() {
     try {
       // await 後端回傳data，不然這裡取不到資料
-      await this.$store.dispatch('commonData/initStudentsWithLineUser', this.lineUserId)
+      await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
 
       if (this.students.length > 0) {
         const students = this.students
@@ -75,9 +75,9 @@ export default {
         this.isAlreadyBinding = true
         this.handleNext()
         // 當綁定過身份後 導到profile，若在profile那點擊帳號綁定，則不跳轉
-        // if (!this.continueBinding) {
-        //   await this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCards[0]}`)
-        // }
+        if (!this.continueBinding) {
+          await this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCards[0]}`)
+        }
       }
     } catch (error) {
       console.error(error)
@@ -101,11 +101,10 @@ export default {
   },
 
   computed: {
-    bindingStep: () => store.state.step.bindingStep,
-    student: () => store.state.binding.student,
-    continueBinding: () => store.state.binding.continueBinding,
-    students: () => store.state.commonData.students
-  },
+    ...mapState('step', ['bindingStep']),
+    ...mapState('binding', ['student', 'continueBinding']),
+    ...mapState('common', ['students'])
+  }
 }
 </script>
 

@@ -98,12 +98,16 @@
 
 <script>
 import {mapState} from 'vuex'
-import dayjs from 'dayjs'
 import 'dayjs/locale/zh-tw'
-import CouponDetail from "@/components/profile/CouponDetail"
+import CouponDetail from "@/components/coupon/CouponDetail"
+import studentService from "@/service/student-service"
+import couponService from "@/service/coupon-service"
+import utilService from "@/service/util-service"
 
 export default {
   name: 'LineBindingSuccess',
+  mixins: [studentService, couponService, utilService],
+
   data() {
     return {
       lineUserId: this.$route.params['specificLineUser'],
@@ -121,16 +125,12 @@ export default {
   },
 
   async created() {
-    const studentCard = this.lineBindingStudentCard.studentCard
-
+    const studentCard = this.student.studentCard
     try {
       // 處理優惠券
-      const response = await this.$axios({
-        method: 'get',
-        url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
-      })
-      const coupons = response.data
+      const coupons = await this.searchLineCouponListWithStudentCard(studentCard)
       this.couponCount = Object.keys(coupons).length
+
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
         if (!this.isDeadLine(coupon.date.disable)) {
@@ -138,66 +138,24 @@ export default {
         }
       }
 
-      // 撈輪播圖圖片
-      const res = await this.$axios({
-        method: 'get',
-        url: `/ads/indexBanners?category=line-popular-activity`
-      })
+      const images = await this.getPopularActivityImages()
 
-      for (let image of res.data) {
+      for (let image of images) {
         this.courseImages.push(image)
       }
 
       // 撈學生年級
-      const studentResponse = await this.$axios({
-        method: 'get',
-        url: `/linebot/lineBinding/user?studentCard=${studentCard}`
-      })
-      this.enterYear = studentResponse.data.content.enterYear
+      const student = await this.searchStudentWithStudentCard(studentCard)
+      this.enterYear = student.enterYear
     } catch (error) {
       console.error(error)
     }
   },
 
   methods: {
-    formatDiscount(discount) {
-      if (Number.isInteger(discount)) {
-        return discount + '<span>元</span>'
-      }
-
-      const len = discount.toString().split('.')[1].length
-
-      switch (len) {
-        case 1:
-          discount *= 10
-          break
-        case 2:
-          discount *= 100
-          break
-        case 3:
-          discount *= 1000
-          break
-      }
-      return discount + '<span>折</span>'
-    },
-
-    formatDate(day) {
-      if (day) {
-        return dayjs(day).format('YYYY/MM/DD')
-      } else {
-        return '無期限'
-      }
-    },
 
     queryProfiles() {
-      this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
-    },
-
-    isDeadLine(dateDisable) {
-      if (dateDisable) {
-        return dayjs(dateDisable).diff(dayjs(), 'day') < 0
-      }
-      return false
+      this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCard}`)
     },
 
     goPage(url) {
@@ -211,7 +169,7 @@ export default {
     }
   },
 
-  computed: mapState('binding', ['lineBindingStudentCard'])
+  computed: mapState('binding', ['student'])
 }
 </script>
 

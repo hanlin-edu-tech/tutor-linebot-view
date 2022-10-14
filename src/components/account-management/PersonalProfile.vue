@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapState} from "vuex"
 
 export default {
   name: "PersonalProfile",
@@ -112,6 +112,7 @@ export default {
     getCurrentStudentCard() {
       return this.$route.params.studentCard
     },
+
     findCurrentStudent() {
       this.students.find(student => {
         if (student.studentCard === this.getCurrentStudentCard) {
@@ -120,7 +121,7 @@ export default {
       })
     },
 
-    ...mapState('profile', ['students'])
+    ...mapState('common', ['students'])
   },
 }
 </script>
