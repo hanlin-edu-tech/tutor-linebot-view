@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import CouponDetail from "@/components/profile/CouponDetail";
+import CouponDetail from "@/components/coupon/CouponDetail";
 import dayjs from "dayjs";
 
 export default {
