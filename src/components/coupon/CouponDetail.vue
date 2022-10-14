@@ -32,12 +32,12 @@
       <!-- 狀態 -->
       <li>
         <span>狀態:</span>
-        <p>{{ computeRemainingDate > 10 ? '可使用' : '即將失效'  }}</p>
+        <p>{{ computeRemainingDate(coupon.date.disable) > 10 ? '可使用' : '即將失效' }}</p>
       </li>
       <!-- 剩餘日期 -->
       <li>
         <span>剩餘日期:</span>
-        <p>{{ computeRemainingDate }}天</p>
+        <p>{{ computeRemainingDate(coupon.date.disable) }}天</p>
       </li>
       <!-- 適用產品 -->
       <li>
@@ -67,9 +67,12 @@
 
 <script>
 import dayjs from "dayjs"
+import couponService from "@/service/coupon-service";
 
 export default {
   name: "CouponDetail",
+  mixins: [couponService],
+
   props: {
     coupon: {
       type: Object,
@@ -90,43 +93,8 @@ export default {
   },
 
   created() {
-    const day = new Date()
-    const year = day.getFullYear()
-    // 小一入學年
-    const elementarySchoolYear =  year - 1911
-    // 國一入學年
-    const juniorHighSchoolYear =  elementarySchoolYear - 6
-    // 高一入學年
-    const seniorHighSchoolYear =  juniorHighSchoolYear - 3
-
-    const seniorHighSchoolGraduate = seniorHighSchoolYear - 3
-
-    let sorted = []
-    switch (true) {
-      //小學
-      case (this.studentEnterYear <= elementarySchoolYear && this.studentEnterYear > juniorHighSchoolYear):
-        sorted = this.coupon.applicableProductSets.filter(item =>
-            item.enterYear <= elementarySchoolYear && item.enterYear > juniorHighSchoolYear)
-        break
-      //國中
-      case (this.studentEnterYear <= juniorHighSchoolYear && this.studentEnterYear > seniorHighSchoolYear):
-        sorted = this.coupon.applicableProductSets.filter(item =>
-            item.enterYear <= juniorHighSchoolYear && item.enterYear > seniorHighSchoolYear)
-        break
-      //高中
-      case (this.studentEnterYear <= seniorHighSchoolYear && this.studentEnterYear > seniorHighSchoolGraduate):
-        sorted = this.coupon.applicableProductSets.filter(item =>
-            item.enterYear <= seniorHighSchoolYear && item.enterYear > seniorHighSchoolGraduate)
-        break
-      //其他 值為 -1
-      default:
-        sorted = this.coupon.applicableProductSets
-        break
-    }
-
-    sorted.forEach(item => {
-      this.sortedCouponArray.push(item)
-    })
+    const grade = this.mappingToGrade(this.studentEnterYear)
+    this.recommendCourseWithGrade(grade)
   },
 
   methods: {
@@ -138,203 +106,252 @@ export default {
       }.bind(this), 1000)
     },
 
-    formatDiscount(discount) {
-      if (Number.isInteger(discount)) {
-        return discount + '<span>元</span>'
+    mappingToGrade(enterYearString) {
+      // 先將入學年 轉換為 較符合現實年級，較好做邏輯的計算
+      const enterYear = parseInt(enterYearString)
+      if (enterYear === -1) {
+        return enterYear
       }
 
-      const len = discount.toString().split('.')[1].length
+      const day = new Date()
+      const year = day.getFullYear()
+      const elementarySchoolFirstGrade = year - 1911
 
-      switch (len) {
-        case 1:
-          discount *= 10
-          break
-        case 2:
-          discount *= 100
-          break
-        case 3:
-          discount *= 1000
-          break
-      }
-      return discount + '<span>折</span>'
+      const gradeList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+      return gradeList[elementarySchoolFirstGrade - enterYear]
     },
 
-    formatDate(day) {
-      if (day) {
-        return dayjs(day).format('YYYY/MM/DD')
-      } else {
-        return '無期限'
+    recommendCourseWithGrade(grade) {
+      // 優惠券顯示規則是 小學生 就撈小學 不用細分年級，國中高中以此類推
+      // 但要額外處理 小六 國三 高三這種 即將畢業的年級，例如小六 超過 6月 就升為國一 因此要額外處理
+
+
+      // 轉換適用產品中的年級
+      const products = this.coupon.applicableProductSets.map(
+          item => ({id: item.id, imageUrl: item.imageUrl,  enterYear: this.mappingToGrade(item.enterYear)})
+      )
+
+      const day = new Date()
+      const graduatePadding = day.getMonth() > 6 ? 1 : 0
+      const padding = day.getMonth() > 6 ? 3 : 0
+
+      let sorted = []
+
+      // 小一 ~ 小五 只撈國小課程 國一 ~ 國二 只撈國中課程 高一 ~ 高三 只撈高中課程(目前只有到高中課程，也沒大學課程，因此統一撈高中課程)
+      if (products.length > 0) {
+        switch (true) {
+          case (grade >= 1 && grade <= 5):
+            sorted = products.filter(item => (item.enterYear >= 1) && (item.enterYear <= 5))
+            break
+          case (grade === 6):
+            sorted = products.filter(item => (item.enterYear >= grade + graduatePadding) && (item.enterYear <= grade + padding))
+            break
+          case (grade >= 7 && grade <= 8):
+            sorted = products.filter(item => (item.enterYear >= 7) && (item.enterYear <= 9))
+            break
+          case (grade === 9):
+            sorted = products.filter(item => (item.enterYear >= grade + graduatePadding) && (item.enterYear <= grade + padding))
+            break
+          case (grade >= 10 && grade <= 12):
+            sorted = products.filter(item => (item.enterYear >= 10) && (item.enterYear <= 12))
+            break
+        }
       }
+
+      // 隨機取五樣
+      if (sorted.length >= 5) {
+        for (let i = 0; i < sorted.length; i++) {
+          const random = Math.floor(Math.random() * 5)
+          const randomItem = sorted[random]
+          this.sortedCouponArray.push(randomItem)
+        }
+      } else {
+        this.sortedCouponArray = sorted
+      }
+
     },
 
     // 待確定還會再更改
     goCoursePage(id) {
       window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}`, '_blank')
     }
-    
-  },
 
-  computed: {
-    computeRemainingDate() {
-      const now = dayjs().locale('zh-tw')
-      if (this.coupon.date.disable) {
-        return dayjs(this.coupon.date.disable).diff(now, 'day')
-      }
-    },
-  },
+  }
+
 }
 </script>
 
 <style lang="less" scoped>
 // 優惠券內頁
-.coupon-in-page{
+.coupon-in-page {
   position: relative;
   height: 100vh;
   max-width: 600px;
   margin: auto;
 }
+
 // 標題區
-.titarea{
+.titarea {
   position: relative;
   margin: 16px 0px;
 }
-  .titarea > i{
-    position: absolute;
-    color: var(--deepGreyColor);
-    left: 0;
-    top: 50%;
-    font-size: 20px!important;
-    width: 24px!important;
-    height: 24px!important;
-    border: 2px var(--deepGreyColor) solid;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(-50%);
-  }
-  .titarea h1{
-    margin: auto;
-    text-align: center;
-    padding: 0px 32px;
-    font-size: 20px;
-    color: var(--blueColor);
-  }
+
+.titarea > i {
+  position: absolute;
+  color: var(--deepGreyColor);
+  left: 0;
+  top: 50%;
+  font-size: 20px !important;
+  width: 24px !important;
+  height: 24px !important;
+  border: 2px var(--deepGreyColor) solid;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+}
+
+.titarea h1 {
+  margin: auto;
+  text-align: center;
+  padding: 0px 32px;
+  font-size: 20px;
+  color: var(--blueColor);
+}
 
 // 優惠碼
-.couponarea{
+.couponarea {
   position: relative;
 }
-  .couponarea > span{
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--deepGreyColor);
-  }
-  .coupon_code{
-    margin: 12px 0px;
-    display: flex;
-    justify-content: space-between;
-  }
-    .coupon_code > p{
-      margin: 0;
-      width: calc(100% - 40px);
-      height: 36px;
-      background-color: var(--whiteColor);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .coupon_code > img{
-      width: 36px;
-      height: 36px;
-      padding: 6px;
-      background-color: var(--deepGreyColor);
-      border-radius: 4px;
-    }
-    // 折扣碼
-    .coupon_code > p span{
-      color: var(--orangeColor);
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .coupon_code > p i{
-      width: 36px;
-      height: 36px;
-      color: var(--deepWhiteColor);
-      font-size: 24px;
-      background-color: var(--deepGreyColor);
-    }
-    // 複製提示
-    .notice-ui{
-      min-width: 182px;
-      position: absolute;
-      top: calc(85% - 80px);
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #fff;
-      border-radius: 50px;
-      opacity: 0.8;
-    }
-    // 沒有navbar
-    .notice-ui.noNavbar{
-      top: 85%;
-    }
-      span.notice{
-        display: block;
-        padding: 8px 16px;
-        color: #333;
-      }
+
+.couponarea > span {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--deepGreyColor);
+}
+
+.coupon_code {
+  margin: 12px 0px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.coupon_code > p {
+  margin: 0;
+  width: calc(100% - 40px);
+  height: 36px;
+  background-color: var(--whiteColor);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coupon_code > img {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  background-color: var(--deepGreyColor);
+  border-radius: 4px;
+}
+
+// 折扣碼
+.coupon_code > p span {
+  color: var(--orangeColor);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.coupon_code > p i {
+  width: 36px;
+  height: 36px;
+  color: var(--deepWhiteColor);
+  font-size: 24px;
+  background-color: var(--deepGreyColor);
+}
+
+// 複製提示
+.notice-ui {
+  min-width: 182px;
+  position: absolute;
+  top: calc(85% - 80px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border-radius: 50px;
+  opacity: 0.8;
+}
+
+// 沒有navbar
+.notice-ui.noNavbar {
+  top: 85%;
+}
+
+span.notice {
+  display: block;
+  padding: 8px 16px;
+  color: #333;
+}
+
 // 資訊欄
-ul.discount_detail{
+ul.discount_detail {
   list-style: none;
   padding: 0;
   margin: 6px 0px 32px;
 }
-  ul.discount_detail > li{
-    display: flex;
-    padding: 12px 0px;
-    color: var(--deepGreyColor);
-    font-size: 14px;
-    padding-left: 20px;
-    position: relative;
-  }
-  // 藍點
-  ul.discount_detail > li::before{
-    content: "";
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: var(--blueColor);
-    border-radius: 50%;
-  }
-  // 延伸線
-  ul.discount_detail > li::after{
-    content: "";
-    width: 1px;
-    height: 16px;
-    position: absolute;
-    left: 4px;
-    bottom: 0;
-    transform: translateY(50%);
-    background-color: var(--greyColor);
-  }
-  ul.discount_detail > li:last-of-type::after{
-    content: unset;
-  }
-    ul.discount_detail > li span{
-      min-width: 32px;
-    }
-    ul.discount_detail > li p{
-      margin: 0;
-      font-weight: bold;
-      margin-left: 8px;
-    }
+
+ul.discount_detail > li {
+  display: flex;
+  padding: 12px 0px;
+  color: var(--deepGreyColor);
+  font-size: 14px;
+  padding-left: 20px;
+  position: relative;
+}
+
+// 藍點
+ul.discount_detail > li::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--blueColor);
+  border-radius: 50%;
+}
+
+// 延伸線
+ul.discount_detail > li::after {
+  content: "";
+  width: 1px;
+  height: 16px;
+  position: absolute;
+  left: 4px;
+  bottom: 0;
+  transform: translateY(50%);
+  background-color: var(--greyColor);
+}
+
+ul.discount_detail > li:last-of-type::after {
+  content: unset;
+}
+
+ul.discount_detail > li span {
+  min-width: 32px;
+}
+
+ul.discount_detail > li p {
+  margin: 0;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
 // 推薦課程輪播標題
-span.carouselarea{
+span.carouselarea {
   font-size: 16px;
   font-weight: 500;
   color: var(--deepGreyColor);
