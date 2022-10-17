@@ -90,11 +90,11 @@ export default {
       this.student.studentCard = ''
 
       switch (resultObj.status) {
-        case 'StudentCardNotExist':
+        case 'StudentCardNotExistWithMobile':
           this.setErrorMsg('查無該手機號碼')
           break
         case 'invalid':
-          this.setErrorMsg('手機號碼輸入錯誤')
+          this.setErrorMsg('手機號碼格式錯誤')
           break
         case 'Pass':
           this.isQueryMultipleStudent = true
