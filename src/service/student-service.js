@@ -9,10 +9,9 @@ export default {
                     url: `/linebot/lineBinding/user?studentCard=${studentCard}`
                 })
                 if (response.data.message.indexOf('failure') > 0) {
-                    throw new Error('failure')
+                    return 'student not found'
                 } else {
                     const student = response.data.content
-                    
                     return student
                 }
             } catch (error) {
