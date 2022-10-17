@@ -136,12 +136,12 @@ export default {
       if (result) {
         const students = await this.getStudentsWithMobile()
 
-        if (students.length > 1) {
+        if (students && students.length > 1) {
           resultObj.students = students
           resultObj.status = 'Pass'
           resultObj.mobile = this.mobile
         } else {
-          resultObj.status = 'StudentCardNotExist'
+          resultObj.status = 'StudentCardNotExistWithMobile'
         }
         this.$emit('given-mobile', resultObj)
       } else {
@@ -158,14 +158,8 @@ export default {
 
     async isStudentCardExist() {
       // 檢查該學號是否存在
-      try {
-        await this.searchStudentWithStudentCard(this.studentCard)
-      } catch (error) {
-        console.error(error)
-        this.isStudentCardNotExist = true
-        return true //可以 測試一下學號是否存在的行為
-      }
-      return false
+      const result = await this.searchStudentWithStudentCard(this.studentCard)
+      return result !== 'student not found';
     },
 
     // 點擊如何獲得學號
