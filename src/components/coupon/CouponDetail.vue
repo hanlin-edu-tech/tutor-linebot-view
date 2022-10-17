@@ -47,13 +47,16 @@
     </ul>
 
     <!-- 推薦課程輪播 -->
+    <span class="carouselarea"> 推薦課程: </span>
     <div v-if="sortedCouponArray.length > 0">
-      <span class="carouselarea"> 推薦課程: </span>
       <mu-carousel class="big-carousel" hide-indicators interval="9999999">
         <mu-carousel-item v-for="coupon in sortedCouponArray">
           <img v-if="coupon.imageUrl" :src="coupon.imageUrl" @click="goCoursePage(coupon.id)">
         </mu-carousel-item>
       </mu-carousel>
+    </div>
+    <div v-else>
+      該年級目前無推薦課程
     </div>
 
     <!-- 複製提示 -->
