@@ -159,11 +159,10 @@ export default {
       this.couponsCount = Object.keys(this.coupons).length
     }
     // 撈學生年級
-    this.enterYear = await this.searchStudentWithStudentCard(currentStudentCard).enterYear
-
+    const student = await this.searchStudentWithStudentCard(currentStudentCard)
+    this.enterYear = student.enterYear
 
     const greatThanEqualZeroDayArray = []
-    const now = dayjs()
     // 先分兩類 有效跟過期
     for (let coupon of this.coupons) {
       const isGreatThanEqualZeroDay = this.computeRemainingDate(coupon.date.disable) >= 0
