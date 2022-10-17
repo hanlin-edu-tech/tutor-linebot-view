@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import binding from './modules/binding'
 import step from './modules/step'
 import unifyDesc from './modules/unify-desc'
-import profile from "@/store/modules/profile";
+import common from "@/store/modules/common"
 
 Vue.use(Vuex)
 const store = new Vuex.Store({
@@ -11,7 +11,7 @@ const store = new Vuex.Store({
     binding,
     step,
     unifyDesc,
-    profile
+    common
   }
 })
 

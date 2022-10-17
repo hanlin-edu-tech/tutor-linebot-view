@@ -6,3 +6,4 @@ dist/
 .editorconfig
 package-lock.json
 tutor.json
+tutor-test.json

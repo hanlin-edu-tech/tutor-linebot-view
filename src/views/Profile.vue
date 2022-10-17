@@ -37,14 +37,16 @@
 </template>
 
 <script>
-import AccountBinding from "@/views/account-management/AccountBinding"
-import Coupons from "./account-management/Coupons"
-import PersonalProfile from "@/views/account-management/PersonalProfile"
-import {mapActions, mapState} from "vuex";
-import dayjs from "dayjs";
+import AccountBinding from "@/components/account-management/AccountBinding"
+import Coupons from "@/components/account-management/Coupons"
+import PersonalProfile from "@/components/account-management/PersonalProfile"
+import {mapState} from "vuex"
+import dayjs from "dayjs"
+import couponService from "@/service/coupon-service"
 
 export default {
   name: 'Profile',
+  mixins: [couponService],
   components: {Coupons, AccountBinding, PersonalProfile},
 
   data() {
@@ -58,16 +60,16 @@ export default {
 
   async created() {
     try {
-      const response = await this.$axios({
-        method: 'get',
-        url: `/linebot/profile/${this.lineUserId}`
-      })
+      await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
+      for (let i = 0; i < this.students.length; i++) {
+        const studentCard = this.students[i].studentCard
+        const coupons = await this.searchCouponListWithStudentCard(studentCard)
+        await this.$set(this.students[i], 'coupons', coupons)
+      }
 
-      const students = response.data.content
-      if (students.length > 0) {
-        this.assignStudents(students)
+      if (this.students.length > 0) {
         // 按照 createTime 排序，確保取的是一開始綁定的身份
-        const sortedStudents = students
+        const sortedStudents = this.students
             .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime),'second'))
         this.isParent = sortedStudents[0].authentications[0].role.toLowerCase() === 'parent'
       } else {
@@ -78,12 +80,8 @@ export default {
     }
   },
 
-  methods: {
-    ...mapActions('profile', ['assignStudents'])
-  },
-
   computed: {
-    ...mapState('profile', ['students'])
+    ...mapState('common', ['students'])
   }
 
 }

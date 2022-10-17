@@ -32,7 +32,7 @@
                     <div class="coupon-card-left">
                       <div class="coupon-discount-block">
                         <div class="coupon-discount-block-in">
-                          <mu-paper class="coupon-discount"> {{ coupon.discount }} </mu-paper>
+                          <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
                         </div>
                       </div>
                     </div>
@@ -44,7 +44,10 @@
                           <div class="coupon_tit">
                             <p> 新手綁定優惠方案 </p>
                             <!-- 日期 -->
-                            日期:{{ coupon.date.disable }}
+                            <div class="coupon_date">
+                              <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                              <p>~</p>{{ formatDate(coupon.date.disable) }}
+                            </div>
                           </div>
                           <!-- 折扣碼區塊 -->
                           <div class="coupon_code">
@@ -82,7 +85,8 @@
 
     <CouponDetail v-if="isClickCouponDetail"
                   @go-back="isClickCouponDetail = false"
-                  :coupon="clickedCoupon">
+                  :coupon="clickedCoupon"
+                  :student-enter-year="enterYear">
     </CouponDetail>
 
     <div class="app-center button-div" v-if="!isClickCouponDetail">
@@ -94,12 +98,15 @@
 
 <script>
 import {mapState} from 'vuex'
-import dayjs from 'dayjs'
-import 'dayjs/locale/zh-tw'
-import CouponDetail from "@/components/profile/CouponDetail"
+import CouponDetail from "@/components/coupon/CouponDetail"
+import studentService from "@/service/student-service"
+import couponService from "@/service/coupon-service"
+import utilService from "@/service/util-service"
 
 export default {
   name: 'LineBindingSuccess',
+  mixins: [studentService, couponService, utilService],
+
   data() {
     return {
       lineUserId: this.$route.params['specificLineUser'],
@@ -107,7 +114,8 @@ export default {
       couponCount: 0,
       isClickCouponDetail: false,
       courseImages: [],
-      clickedCoupon: {}
+      clickedCoupon: {},
+      enterYear: 0
     }
   },
 
@@ -116,67 +124,37 @@ export default {
   },
 
   async created() {
-    const studentCard = this.lineBindingStudentCard.studentCard
-
+    const studentCard = this.student.studentCard
     try {
       // 處理優惠券
-      const response = await this.$axios({
-        method: 'get',
-        url: `/shop/coupon/list?studentCard=${studentCard}&from=line@`
-      })
-      const coupons = response.data
+      const coupons = await this.searchLineCouponListWithStudentCard(studentCard)
       this.couponCount = Object.keys(coupons).length
+
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
-        if (coupon && coupon.code && !this.isDeadLine(coupon.date.disable)) {
-          const discountRegularExp = /^\d\.\d{2}/
-          const illustrate = {
-            'rules': coupon.description.rules,
-            'applicable': coupon.description.applicable === '' ? '全' : coupon.description.applicable
-          }
-
-          const showCoupon = {
-            id: coupon._id,
-            name: coupon.name,
-            code: coupon.code,
-            discount:
-                discountRegularExp.test(coupon.discount.toString()) ? coupon.discount * 100 : coupon.discount * 10,
-            date: {
-              disable:
-                coupon.date.disable ? dayjs(coupon.date.disable).locale('zh-tw').format('YYYY/MM/DD') : '無截止效期'
-            },
-            description: illustrate
-          }
-
-          this.coupons.push(showCoupon)
+        if (!this.isDeadLine(coupon.date.disable)) {
+          this.coupons.push(coupon)
         }
       }
 
-      // 撈輪播圖圖片
-      const res = await this.$axios({
-        method: 'get',
-        url: `/ads/indexBanners?category=line-popular-activity`
-      })
+      const images = await this.getPopularActivityImages()
 
-      for (let image of res.data) {
+      for (let image of images) {
         this.courseImages.push(image)
       }
 
+      // 撈學生年級
+      const student = await this.searchStudentWithStudentCard(studentCard)
+      this.enterYear = student.enterYear
     } catch (error) {
       console.error(error)
     }
   },
 
   methods: {
-    queryProfiles() {
-      this.$router.replace(`/profile/${this.lineUserId}/${this.lineBindingStudentCard.studentCard}`)
-    },
 
-    isDeadLine(dateDisable) {
-      if (dateDisable) {
-        return dayjs(dateDisable).diff(dayjs(), 'day') < 0
-      }
-      return false
+    queryProfiles() {
+      this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCard}`)
     },
 
     goPage(url) {
@@ -190,7 +168,7 @@ export default {
     }
   },
 
-  computed: mapState('binding', ['lineBindingStudentCard'])
+  computed: mapState('binding', ['student'])
 }
 </script>
 
@@ -525,6 +503,13 @@ body{
   }
 }
 
+// 優惠日期
+.coupon_date{
+  display: inline-flex;
+  align-items: center;
+}
 
-
+.coupon_date > p{
+  margin: unset;
+}
 </style>
