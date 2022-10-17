@@ -63,17 +63,18 @@ export default {
         },
         
         isDeadLine(end) {
-            const now = dayjs().locale('zh-tw')
+            const now = dayjs()
             if (end) {
-                return dayjs(end).diff(now, 'day') < 0
+                return dayjs(end).isBefore(now)
             }
             return false
         },
     
         computeRemainingDate(end) {
-            const now = dayjs().locale('zh-tw')
-            const date = dayjs(end).locale('zh-tw')
-            return dayjs(date).diff(dayjs(now), 'days')
+            const now = dayjs()
+            const date = dayjs(end)
+            const diff = date.diff(now, 'days')
+            return diff
         }
     }
 }
