@@ -26,15 +26,10 @@ export default {
   
   getters: {
     isBoundSameStudentTwice(state) {
-      // LineBinding created時 就會先取得該line id 下的所有學號
-      if (state.student.studentCards.length > 0) {
-        for (let i = 0; i < state.student.studentCards.length; i++) {
-          // 綁定同學號兩次
-          
-          return state.student.studentCards.indexOf(state.student.studentCard) !== -1
-        }
-      }
-      return false
+        // LineBinding created時 就會先取得該line id 下的所有學號
+        // 綁定同學號兩次
+        console.log('...')
+        return state.student.studentCards.indexOf(state.student.studentCard) !== -1
     }
   }
 }
