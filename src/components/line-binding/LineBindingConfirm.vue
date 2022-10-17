@@ -51,15 +51,14 @@ export default {
   data() {
     return {
       isBoundStudentTwice: false,
-      isCompleted: false,
-      isStudentCardNotExist: false
+      isCompleted: false
     }
   },
 
   async created() {
     try {
       // 若沒手機號碼，需在call 一次request 才會取得
-      while (!this.student.mobile) {
+      while (!this.student.email) {
           const student = await this.searchStudentWithStudentCardAndMobile(this.student.studentCard, this.student.mobile)
           this.student.name = student.name
           this.student.email = student.email
@@ -75,6 +74,7 @@ export default {
     goToPreviousStep() {
       this.student.studentCard = ''
       this.student.mobile = ''
+      this.student.email = ''
       this.handlePrevious()
     },
 
