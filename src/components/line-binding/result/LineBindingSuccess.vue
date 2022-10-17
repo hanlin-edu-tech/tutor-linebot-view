@@ -98,7 +98,6 @@
 
 <script>
 import {mapState} from 'vuex'
-import 'dayjs/locale/zh-tw'
 import CouponDetail from "@/components/coupon/CouponDetail"
 import studentService from "@/service/student-service"
 import couponService from "@/service/coupon-service"
