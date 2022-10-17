@@ -1,5 +1,5 @@
 <template>
-  <div class="coupon_page">
+  <div class="coupon_page" v-if="isInitial">
     <div v-if="!isClickCouponDetail">
       <!-- 標題區 -->
       <div class="account_title">
@@ -19,102 +19,109 @@
         </mu-button>
       </div>
 
-      <!-- 無優惠券 -->
-      <div v-if="couponsCount === 0"> 目前無優惠券</div>
-
       <!-- 可使用coupon -->
-      <div v-else-if="select === 'available'">
+      <div v-if="select === 'available'">
         <!-- 優惠券清單 -->
-        <div class="coupon-list">
-          <div v-for="coupon in greatThanEqualZeroDay" :key="coupon['_id']">
-            <div class="coupon-card"
-                 @click="passIdToCouponDetail(coupon['_id'])">
-              <div class="coupon-card-in">
-                <!-- 左側折數 -->
-                <div class="coupon-card-left">
-                  <div class="coupon-discount-block">
-                    <div class="coupon-discount-block-in">
-                      <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
+        <div v-if="greatThanEqualZeroDay.length > 0">
+          <div class="coupon-list">
+            <div v-for="coupon in greatThanEqualZeroDay" :key="coupon['_id']">
+              <div class="coupon-card"
+                   @click="passIdToCouponDetail(coupon['_id'])">
+                <div class="coupon-card-in">
+                  <!-- 左側折數 -->
+                  <div class="coupon-card-left">
+                    <div class="coupon-discount-block">
+                      <div class="coupon-discount-block-in">
+                        <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- 右側折數 -->
-                <div class="coupon-card-right">
-                  <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
-                    <mu-paper>
-                      <!-- 優惠標題 -->
-                      <div class="coupon_tit">
-                        <p> 新手綁定優惠方案 </p>
-                        <!-- 日期 -->
-                        <div class="coupon_date">
-                          <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                          <p>~</p>{{ formatDate(coupon.date.disable) }}
-                        </div>
-                      </div>
-                      <!-- 折扣碼區塊 -->
-                      <div class="coupon_code">
-                        優惠折扣碼
-                        <div class="coupon-code-in">
-                          <div class="code">
-                            {{ coupon.code }}
+                  <!-- 右側折數 -->
+                  <div class="coupon-card-right">
+                    <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
+                      <mu-paper>
+                        <!-- 優惠標題 -->
+                        <div class="coupon_tit">
+                          <p> 新手綁定優惠方案 </p>
+                          <!-- 日期 -->
+                          <div class="coupon_date">
+                            <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                            <p>~</p>{{ formatDate(coupon.date.disable) }}
                           </div>
-                          <mu-button class="btn" color="orange">查看詳情</mu-button>
                         </div>
-                      </div>
-                    </mu-paper>
+                        <!-- 折扣碼區塊 -->
+                        <div class="coupon_code">
+                          優惠折扣碼
+                          <div class="coupon-code-in">
+                            <div class="code">
+                              {{ coupon.code }}
+                            </div>
+                            <mu-button class="btn" color="orange">查看詳情</mu-button>
+                          </div>
+                        </div>
+                      </mu-paper>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <div v-else>
+          目前無優惠券
+        </div>
       </div>
 
       <!-- 不可使用coupon -->
       <div v-else-if="select === 'invalid'">
         <!-- 優惠券清單 -->
-        <div class="coupon-list">
-          <div v-for="coupon in invalidCoupon" :key="coupon['_id']">
-            <div class="coupon-card disable"
-                 @click="passIdToCouponDetail(coupon['_id'])">
-              <div class="coupon-card-in">
-                <!-- 左側折數 -->
-                <div class="coupon-card-left">
-                  <div class="coupon-discount-block">
-                    <div class="coupon-discount-block-in">
-                      <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
+        <div v-if="invalidCoupon.length > 0">
+          <div class="coupon-list">
+            <div v-for="coupon in invalidCoupon" :key="coupon['_id']">
+              <div class="coupon-card disable"
+                   @click="passIdToCouponDetail(coupon['_id'])">
+                <div class="coupon-card-in">
+                  <!-- 左側折數 -->
+                  <div class="coupon-card-left">
+                    <div class="coupon-discount-block">
+                      <div class="coupon-discount-block-in">
+                        <mu-paper class="coupon-discount" v-html="formatDiscount(coupon.discount)"></mu-paper>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <!-- 右側折數 -->
-                <div class="coupon-card-right">
-                  <div class="coupon-card-block" :class="{'close-deadline': coupon.diffDay <= 10}">
-                    <mu-paper>
-                      <!-- 優惠標題 -->
-                      <div class="coupon_tit">
-                        <p> 新手綁定優惠方案 </p>
-                        <!-- 日期 -->
-                        <div class="coupon_date">
-                          <p>日期:</p>{{ formatDate(coupon.date.enable) }}
-                          <p>~</p>{{ formatDate(coupon.date.disable) }}
-                        </div>
-                      </div>
-                      <!-- 折扣碼區塊 -->
-                      <div class="coupon_code">
-                        優惠折扣碼
-                        <div class="coupon-code-in">
-                          <div class="code">
-                            {{ coupon.code }}
+                  <!-- 右側折數 -->
+                  <div class="coupon-card-right">
+                    <div class="coupon-card-block">
+                      <mu-paper>
+                        <!-- 優惠標題 -->
+                        <div class="coupon_tit">
+                          <p> 新手綁定優惠方案 </p>
+                          <!-- 日期 -->
+                          <div class="coupon_date">
+                            <p>日期:</p>{{ formatDate(coupon.date.enable) }}
+                            <p>~</p>{{ formatDate(coupon.date.disable) }}
                           </div>
-                          <mu-button class="btn" color="orange">查看詳情</mu-button>
                         </div>
-                      </div>
-                    </mu-paper>
+                        <!-- 折扣碼區塊 -->
+                        <div class="coupon_code">
+                          優惠折扣碼
+                          <div class="coupon-code-in">
+                            <div class="code">
+                              {{ coupon.code }}
+                            </div>
+                            <mu-button class="btn" color="orange">查看詳情</mu-button>
+                          </div>
+                        </div>
+                      </mu-paper>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+        <div v-else>
+          目前無優惠券
         </div>
       </div>
     </div>
@@ -141,12 +148,13 @@ export default {
     return {
       select: 'available',
       isClickCouponDetail: false,
+      isInitial: false,
       clickedCoupon: {}, // 點擊該coupon 查看詳細資訊
       coupons: [], // 所有coupon
       greatThanEqualZeroDay: {}, // 大於等於0天的coupon
       invalidCoupon: [], // 過期失效的coupon
       currentStudent: {}, // 當前使用的學生
-      couponsCount: 0, // coupon array長度
+      couponsCount: 0, // coupon 數量
       enterYear: 0 // 年級
     }
   },
@@ -165,8 +173,8 @@ export default {
     const greatThanEqualZeroDayArray = []
     // 先分兩類 有效跟過期
     for (let coupon of this.coupons) {
-      const isGreatThanEqualZeroDay = this.computeRemainingDate(coupon.date.disable) >= 0
-      const lessThanZeroDay = this.computeRemainingDate(coupon.date.disable) < 0
+      const isGreatThanEqualZeroDay = !this.isDeadLine(coupon.date.disable)
+      const lessThanZeroDay = this.isDeadLine(coupon.date.disable)
       if (isGreatThanEqualZeroDay) {
         coupon.diffDay = this.computeRemainingDate(coupon.date.disable)
         greatThanEqualZeroDayArray.push(coupon)
@@ -179,6 +187,7 @@ export default {
       return this.computeRemainingDate(couponA.date.disable) - this.computeRemainingDate(couponB.date.disable)
     })
 
+    this.isInitial = true
   },
 
   methods: {
