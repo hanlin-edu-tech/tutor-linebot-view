@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import dayjs from "dayjs"
 import couponService from "@/service/coupon-service";
 
 export default {
@@ -128,9 +127,9 @@ export default {
 
 
       // 轉換適用產品中的年級
-      const products = this.coupon.applicableProductSets.map(
-          item => ({id: item.id, imageUrl: item.imageUrl,  enterYear: this.mappingToGrade(item.enterYear)})
-      )
+      const products = this.coupon.applicableProductSets
+          .filter(item => item.imageUrl != null)
+          .map(item => ({id: item.id, imageUrl: item.imageUrl, enterYear: this.mappingToGrade(item.enterYear)}))
 
       const day = new Date()
       const graduatePadding = day.getMonth() > 6 ? 1 : 0
