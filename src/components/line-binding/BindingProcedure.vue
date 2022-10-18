@@ -28,10 +28,16 @@
       <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
     </div>
 
-    <!--錯誤顯示-->
-    <div v-if="errorMsg">
-      <h2> 錯誤顯示： {{ errorMsg }}</h2>
+    <!--學號錯誤顯示-->
+    <div v-if="studentCardErrorMsg">
+      <h2> 學號錯誤顯示： {{ studentCardErrorMsg }}</h2>
     </div>
+
+    <!--手機錯誤顯示-->
+    <div v-if="mobileErrorMsg">
+      <h2> 手機錯誤顯示： {{ mobileErrorMsg }}</h2>
+    </div>
+
   </div>
 </template>
 
@@ -54,13 +60,14 @@ export default {
       students: [],
       selected: '',
       // 帳號不存在或重複綁定的錯誤提示
-      errorMsg: ''
+      studentCardErrorMsg: '',
+      mobileErrorMsg: ''
     }
   },
   methods: {
     givenStudentCard(resultObj) {
       // 隱藏錯誤訊息
-      this.errorMsg = ''
+      this.setStudentCardErrorMsg('')
       // 選擇用學號綁定 清空手機號碼
       this.student.mobile = ''
       // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
@@ -68,13 +75,13 @@ export default {
 
       switch (resultObj.status) {
         case 'StudentCardNotExist':
-          this.setErrorMsg('該學號不存在')
+          this.setStudentCardErrorMsg('該學號不存在')
           break
         case 'BoundSameStudentTwice':
-          this.setErrorMsg('已經綁定過該學號')
+          this.setStudentCardErrorMsg('已經綁定過該學號')
           break
         case 'invalid':
-          this.setErrorMsg('學號輸入錯誤')
+          this.setStudentCardErrorMsg('學號輸入錯誤')
           break
         case 'Pass':
           this.isShowNextToConfirmBtn = true
@@ -84,17 +91,18 @@ export default {
 
     givenMobile(resultObj) {
       // 隱藏錯誤訊息
-      this.errorMsg = ''
+      this.setMobileErrorMsg('')
       // 輸入手機號碼時，學號選單不應該存在
       this.isQueryMultipleStudent = false
       this.student.studentCard = ''
+      this.selected = ''
 
       switch (resultObj.status) {
         case 'StudentCardNotExistWithMobile':
-          this.setErrorMsg('查無該手機號碼')
+          this.setMobileErrorMsg('查無該手機號碼')
           break
         case 'invalid':
-          this.setErrorMsg('手機號碼格式錯誤')
+          this.setMobileErrorMsg('手機號碼格式錯誤')
           break
         case 'Pass':
           this.isQueryMultipleStudent = true
@@ -125,15 +133,22 @@ export default {
       this.student.studentCard = this.selected
       // select只要觸發change 代表有選到學號，才判斷該學號是否有重複綁定
       if (this.isBoundSameStudentTwice) {
-        this.setErrorMsg('該學號已經綁定過囉')
+        this.setMobileErrorMsg('該學號已經綁定過囉')
       } else {
-        this.errorMsg = ''
+        this.setMobileErrorMsg('')
         this.isShowNextToConfirmBtn = true
       }
     },
 
-    setErrorMsg(text) {
-      this.errorMsg = text
+    setStudentCardErrorMsg(text) {
+      this.mobileErrorMsg = ''
+      this.studentCardErrorMsg = text
+      this.isShowNextToConfirmBtn = false
+    },
+
+    setMobileErrorMsg(text) {
+      this.studentCardErrorMsg = ''
+      this.mobileErrorMsg = text
       this.isShowNextToConfirmBtn = false
     },
 
