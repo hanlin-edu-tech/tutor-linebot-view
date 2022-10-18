@@ -55,7 +55,7 @@
         </mu-carousel-item>
       </mu-carousel>
     </div>
-    <div v-else>
+    <div class="carousel-notion" v-else>
       該年級目前無推薦課程
     </div>
 
@@ -308,7 +308,7 @@ ul.discount_detail > li {
   display: flex;
   padding: 12px 0px;
   color: var(--deepGreyColor);
-  font-size: 14px;
+  font-size: 16px;
   padding-left: 20px;
   position: relative;
 }
@@ -358,5 +358,10 @@ span.carouselarea {
   font-weight: 500;
   color: var(--deepGreyColor);
 }
-
+.carousel-notion{
+  font-size: 16px;
+  font-weight: 500;
+  margin: 6px 0px;
+  color: var(--deepGreyColor);
+}
 </style>

@@ -78,7 +78,7 @@
           </div>
         </mu-col>
       </mu-row>
-      <mu-row v-else>
+      <mu-row class="no-coupon" v-else>
         <h1> 目前沒有優惠卷 </h1>
       </mu-row>
     </article>
@@ -270,7 +270,7 @@ body{
       .coupon-card-left{
         background-color: var(--blueColor);
         flex:1;
-        min-width: 80px;
+        min-width: 132px;
         max-width: 160px;
         position: relative;
         z-index: 3;
@@ -512,4 +512,11 @@ body{
 .coupon_date > p{
   margin: unset;
 }
+// 沒有優惠券
+.no-coupon{
+  color: var(--deepGreyColor);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
 </style>

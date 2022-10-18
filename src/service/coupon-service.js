@@ -35,7 +35,7 @@ export default {
         
         formatDiscount(discount) {
             if (Number.isInteger(discount)) {
-                return discount + '<span>元</span>'
+                return discount + '<span style="font-size:16px; margin:0 0 8px 0;">元</span>'
             }
     
             const len = discount.toString().split('.')[1].length
@@ -51,7 +51,7 @@ export default {
                     discount *= 1000
                     break
             }
-            return discount + '<span>折</span>'
+            return discount + '<span style="font-size:16px; margin:0 0 8px 0;">折</span>'
         },
         
         formatDate(day) {

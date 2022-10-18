@@ -49,7 +49,7 @@
     </div>
 
     <!-- 手機輸入框 -->
-    <div class="write_area" v-show="choice === 'mobile'">
+    <div class="write_area phone" v-show="choice === 'mobile'">
       <!-- 小標 -->
       <div class="subtitle">
         <span>請輸入手機</span>
@@ -63,8 +63,13 @@
 
 <script>
 // 如何獲得學號modal中的圖片
-import carouselImage1 from '../../asset/memberLogin.png'
-import carouselImage2 from '../../asset/notice.png'
+// import carouselImage1 from '../../asset/memberLogin.png'
+// import caroxuselImage2 from '../../asset/notice.png'
+import stepImage1 from '../../asset/carousel/carousel-step-1.png'
+import stepImage2 from '../../asset/carousel/carousel-step-2.png'
+import stepImage3 from '../../asset/carousel/carousel-step-3.png'
+import stepImage4 from '../../asset/carousel/carousel-step-4.png'
+import stepImage5 from '../../asset/carousel/carousel-step-5.png'
 import {mapGetters, mapState} from "vuex"
 import studentService from "@/service/student-service"
 
@@ -84,7 +89,7 @@ export default {
       mobile: '',
       isDialogOpen: false,
       active: 0,
-      carouselImages: [carouselImage1, carouselImage2],
+      carouselImages: [stepImage1,stepImage2,stepImage3,stepImage4,stepImage5],
       imageHeight: 0
     }
   },
@@ -329,6 +334,10 @@ div[class*="mu-dialog"] img {
 .write_area {
   margin: 12px 0px;
 }
+.write_area.phone{
+  padding: 12px 0px;
+  margin: 0;
+}
 
 // 小標
 .subtitle {
@@ -359,7 +368,7 @@ input::placeholder {
 }
 
 .mu-dialog-body {
-  padding: 20px 18px;
+  padding: 14px 12px;
 }
 
 .mu-carousel {
