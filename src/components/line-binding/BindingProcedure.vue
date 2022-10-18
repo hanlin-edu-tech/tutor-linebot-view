@@ -8,7 +8,8 @@
 
     <p>
       <LineBindingInput @given-student-card="givenStudentCard"
-                        @given-mobile="givenMobile"></LineBindingInput>
+                        @given-mobile="givenMobile"
+                        @check-behavior="checkBehavior"></LineBindingInput>
     </p>
 
     <div v-if="isQueryMultipleStudent">
@@ -66,51 +67,57 @@ export default {
   },
   methods: {
     givenStudentCard(resultObj) {
-      // 隱藏錯誤訊息
-      this.setStudentCardErrorMsg('')
-      // 選擇用學號綁定 清空手機號碼
-      this.student.mobile = ''
-      // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
-      this.isQueryMultipleStudent = false
+      if (resultObj.studentCard === '') {
+        // 隱藏錯誤訊息
+        this.setMobileErrorMsg('')
+      } else {
+        // 選擇用學號綁定 清空手機號碼
+        this.student.mobile = ''
+        // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
+        this.isQueryMultipleStudent = false
 
-      switch (resultObj.status) {
-        case 'StudentCardNotExist':
-          this.setStudentCardErrorMsg('該學號不存在')
-          break
-        case 'BoundSameStudentTwice':
-          this.setStudentCardErrorMsg('已經綁定過該學號')
-          break
-        case 'invalid':
-          this.setStudentCardErrorMsg('學號輸入錯誤')
-          break
-        case 'Pass':
-          this.isShowNextToConfirmBtn = true
-          this.student.studentCard = resultObj.studentCard
+        switch (resultObj.status) {
+          case 'StudentCardNotExist':
+            this.setStudentCardErrorMsg('該學號不存在')
+            break
+          case 'BoundSameStudentTwice':
+            this.setStudentCardErrorMsg('已經綁定過該學號')
+            break
+          case 'invalid':
+            this.setStudentCardErrorMsg('學號輸入錯誤')
+            break
+          case 'Pass':
+            this.isShowNextToConfirmBtn = true
+            this.student.studentCard = resultObj.studentCard
+        }
       }
     },
 
     givenMobile(resultObj) {
-      // 隱藏錯誤訊息
-      this.setMobileErrorMsg('')
-      // 輸入手機號碼時，學號選單不應該存在
-      this.isQueryMultipleStudent = false
-      this.student.studentCard = ''
-      this.selected = ''
+      if (resultObj.mobile === '') {
+        // 隱藏錯誤訊息
+        this.setStudentCardErrorMsg('')
+      } else {
+        // 輸入手機號碼時，學號選單不應該存在
+        this.isQueryMultipleStudent = false
+        this.student.studentCard = ''
+        this.selected = ''
 
-      switch (resultObj.status) {
-        case 'StudentCardNotExistWithMobile':
-          this.setMobileErrorMsg('查無該手機號碼')
-          break
-        case 'invalid':
-          this.setMobileErrorMsg('手機號碼格式錯誤')
-          break
-        case 'Pass':
-          this.isQueryMultipleStudent = true
-          //顯示在select選單中的資料
-          this.students = resultObj.students
-          // 存該手機號碼
-          this.student.mobile = resultObj.mobile
-          break
+        switch (resultObj.status) {
+          case 'StudentCardNotExistWithMobile':
+            this.setMobileErrorMsg('查無該手機號碼')
+            break
+          case 'invalid':
+            this.setMobileErrorMsg('手機號碼格式錯誤')
+            break
+          case 'Pass':
+            this.isQueryMultipleStudent = true
+            //顯示在select選單中的資料
+            this.students = resultObj.students
+            // 存該手機號碼
+            this.student.mobile = resultObj.mobile
+            break
+        }
       }
     },
 
@@ -137,6 +144,14 @@ export default {
       } else {
         this.setMobileErrorMsg('')
         this.isShowNextToConfirmBtn = true
+      }
+    },
+
+    checkBehavior(resultObj) {
+      if (resultObj.status === 'Pass') {
+        this.isShowNextToConfirmBtn = true
+        this.setStudentCardErrorMsg('')
+        this.setMobileErrorMsg('')
       }
     },
 
