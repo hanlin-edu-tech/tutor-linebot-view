@@ -61,7 +61,7 @@
 
     <!-- 複製提示 -->
     <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
-      <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿(示範用) </span>
+      <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿 </span>
     </div>
 
   </div>
@@ -276,9 +276,8 @@ export default {
 
 // 複製提示
 .notice-ui {
-  min-width: 182px;
   position: absolute;
-  top: calc(85% - 80px);
+  top: calc(85% - 110px);
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
