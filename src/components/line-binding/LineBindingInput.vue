@@ -21,16 +21,16 @@
       <mu-dialog :open="isDialogOpen">
         <!-- muse-ui輪播(學號取得教學)-->
         <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage"
-                     :style="popupheight">
+                     :style="popupHeight">
           <mu-carousel-item class="carousel_img"
                             ref="imageHeight"
                             v-for="image in carouselImages">
             <div class="carousel_img_in">
-              <img :src=image>
+              <img :src=image @load="imageLoaded">
             </div>
           </mu-carousel-item>
           <!-- 按鈕區塊 -->
-          <div class="button-in-dialog" :style="popupheight">
+          <div class="button-in-dialog" :style="popupHeight">
             <mu-button @click="closeDialog" color="lightBlue">取消</mu-button>
             <mu-button @click="nextActiveImage"
                        color="orange"
@@ -149,17 +149,14 @@ export default {
       return result !== 'student not found';
     },
 
+    imageLoaded() {
+      this.imageHeight = this.$refs.imageHeight[0].$el.clientHeight
+    },
+
     // 點擊如何獲得學號
     openDialog() {
       this.active = 0
       this.isDialogOpen = true
-
-      this.$nextTick(() => {
-        // 按鈕margin高度運算
-        let height = 0
-        height = this.$refs.imageHeight[0].$el.clientHeight
-        this.imageHeight = height
-      })
     },
 
     // 點擊取消Button
@@ -195,7 +192,7 @@ export default {
   computed: {
     ...mapState('binding', ['student']),
     ...mapGetters('binding', ['isBoundSameStudentTwice']),
-    popupheight() {
+    popupHeight() {
       return {
         '--height': this.imageHeight + 'px'
       }
