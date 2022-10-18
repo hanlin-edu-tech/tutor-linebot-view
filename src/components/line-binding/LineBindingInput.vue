@@ -21,16 +21,16 @@
       <mu-dialog :open="isDialogOpen">
         <!-- muse-ui輪播(學號取得教學)-->
         <mu-carousel class="student-id" hide-controls interval="9999999" :active="active" @change="changeActiveImage"
-                     :style="popupheight">
+                     :style="popupHeight">
           <mu-carousel-item class="carousel_img"
                             ref="imageHeight"
                             v-for="image in carouselImages">
             <div class="carousel_img_in">
-              <img :src=image>
+              <img :src=image @load="imageLoaded">
             </div>
           </mu-carousel-item>
           <!-- 按鈕區塊 -->
-          <div class="button-in-dialog" :style="popupheight">
+          <div class="button-in-dialog" :style="popupHeight">
             <mu-button @click="closeDialog" color="lightBlue">取消</mu-button>
             <mu-button @click="nextActiveImage"
                        color="orange"
@@ -85,23 +85,10 @@ export default {
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      marginHeight: 0,
+      imageHeight: 0
     }
   },
 
-  updated() {
-    this.$nextTick(() => {
-      try {
-        // 按鈕margin高度運算
-        let height = 0
-        height = this.$refs.imageHeight[0].$el.clientHeight
-        this.marginHeight = height
-      } catch (error) {
-        // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
-        // console.error(error)
-      }
-    })
-  },
   methods: {
     async emitGivenStudentCard() {
       const studentCardRegex = /[0-9A-Z]{7}/
@@ -162,6 +149,10 @@ export default {
       return result !== 'student not found';
     },
 
+    imageLoaded() {
+      this.imageHeight = this.$refs.imageHeight[0].$el.clientHeight
+    },
+
     // 點擊如何獲得學號
     openDialog() {
       this.active = 0
@@ -201,9 +192,9 @@ export default {
   computed: {
     ...mapState('binding', ['student']),
     ...mapGetters('binding', ['isBoundSameStudentTwice']),
-    popupheight() {
+    popupHeight() {
       return {
-        '--height': this.imgHeight + 'px'
+        '--height': this.imageHeight + 'px'
       }
     }
   }
