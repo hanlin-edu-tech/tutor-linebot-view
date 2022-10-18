@@ -85,16 +85,21 @@ export default {
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      imageHeight: 0
+      imageHeight: 0,
+      studentResultObj: {
+        status: '',
+        studentCard: ''
+      },
+      mobileResultObj: {
+        status: '',
+        mobile: ''
+      }
     }
   },
 
   methods: {
     async emitGivenStudentCard() {
       const studentCardRegex = /[0-9A-Z]{7}/
-      const resultObj = {
-        status: ''
-      }
 
       const result = studentCardRegex.test(this.studentCard)
       if (result) {
@@ -102,39 +107,40 @@ export default {
         const isStudentCardExist = await this.isStudentCardExist()
 
         if (this.isBoundSameStudentTwice) {
-          resultObj.status = 'BoundSameStudentTwice'
+          this.studentResultObj.status = 'BoundSameStudentTwice'
         } else if (!isStudentCardExist) {
-          resultObj.status = 'StudentCardNotExist'
+          this.studentResultObj.status = 'StudentCardNotExist'
         } else {
-          resultObj.status = 'Pass'
-          resultObj.studentCard = this.studentCard
+          this.studentResultObj.status = 'Pass'
+          this.studentResultObj.studentCard = this.studentCard
         }
       } else {
-        resultObj.status = 'invalid'
+        this.studentResultObj.status = 'invalid'
+        this.studentResultObj.studentCard = this.studentCard
       }
-      this.$emit('given-student-card', resultObj)
+      this.$emit('given-student-card', this.studentResultObj)
     },
 
     async emitGivenMobile() {
       const mobileRegex = /^09[0-9]{8}$/
       const result = mobileRegex.test(this.mobile)
-      const resultObj = {}
 
       if (result) {
         const students = await this.getStudentsWithMobile()
 
         if (students && students.length > 1) {
-          resultObj.students = students
-          resultObj.status = 'Pass'
-          resultObj.mobile = this.mobile
+          this.mobileResultObj.students = students
+          this.mobileResultObj.status = 'Pass'
+          this.mobileResultObj.mobile = this.mobile
         } else {
-          resultObj.status = 'StudentCardNotExistWithMobile'
+          this.mobileResultObj.status = 'StudentCardNotExistWithMobile'
         }
-        this.$emit('given-mobile', resultObj)
+        this.$emit('given-mobile', this.mobileResultObj)
       } else {
         // binding procedure中 下一步button出現後，若重新輸入要再將該button移除
-        resultObj.status = 'invalid'
-        this.$emit('given-mobile', resultObj)
+        this.mobileResultObj.status = 'invalid'
+        this.mobileResultObj.mobile = this.mobile
+        this.$emit('given-mobile', this.mobileResultObj)
       }
     },
 
@@ -182,9 +188,11 @@ export default {
     async changeSelectField() {
       // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
       if (this.choice === 'studentCard') {
-        await this.emitGivenStudentCard(this.studentCard)
+        await this.emitGivenStudentCard()
+        this.$emit('hidden-next-button', this.studentResultObj)
       } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
-        await this.emitGivenMobile(this.mobile)
+        await this.emitGivenMobile()
+        this.$emit('check-behavior', this.mobileResultObj)
       }
     }
   },
