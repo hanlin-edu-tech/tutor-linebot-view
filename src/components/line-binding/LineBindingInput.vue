@@ -85,23 +85,10 @@ export default {
       isDialogOpen: false,
       active: 0,
       carouselImages: [carouselImage1, carouselImage2],
-      marginHeight: 0,
+      imageHeight: 0
     }
   },
 
-  updated() {
-    this.$nextTick(() => {
-      try {
-        // 按鈕margin高度運算
-        let height = 0
-        height = this.$refs.imageHeight[0].$el.clientHeight
-        this.marginHeight = height
-      } catch (error) {
-        // 這裡會有一個例外，當modal點擊取消 關閉時，當下會抓不到$el 屬性 但功能是正常
-        // console.error(error)
-      }
-    })
-  },
   methods: {
     async emitGivenStudentCard() {
       const studentCardRegex = /[0-9A-Z]{7}/
@@ -166,6 +153,13 @@ export default {
     openDialog() {
       this.active = 0
       this.isDialogOpen = true
+
+      this.$nextTick(() => {
+        // 按鈕margin高度運算
+        let height = 0
+        height = this.$refs.imageHeight[0].$el.clientHeight
+        this.imageHeight = height
+      })
     },
 
     // 點擊取消Button
@@ -203,7 +197,7 @@ export default {
     ...mapGetters('binding', ['isBoundSameStudentTwice']),
     popupheight() {
       return {
-        '--height': this.imgHeight + 'px'
+        '--height': this.imageHeight + 'px'
       }
     }
   }
