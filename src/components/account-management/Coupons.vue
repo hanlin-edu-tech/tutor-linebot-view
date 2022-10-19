@@ -120,7 +120,7 @@
             </div>
           </div>
         </div>
-        <div v-else>
+        <div class="no-coupon" v-else>
           目前無優惠券
         </div>
       </div>
