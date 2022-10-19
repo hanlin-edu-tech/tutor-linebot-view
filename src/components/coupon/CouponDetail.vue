@@ -55,13 +55,13 @@
         </mu-carousel-item>
       </mu-carousel>
     </div>
-    <div v-else>
+    <div class="carousel-notion" v-else>
       該年級目前無推薦課程
     </div>
 
     <!-- 複製提示 -->
     <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
-      <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿(示範用) </span>
+      <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿 </span>
     </div>
 
   </div>
@@ -276,9 +276,8 @@ export default {
 
 // 複製提示
 .notice-ui {
-  min-width: 182px;
   position: absolute;
-  top: calc(85% - 80px);
+  top: calc(85% - 110px);
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
@@ -308,7 +307,7 @@ ul.discount_detail > li {
   display: flex;
   padding: 12px 0px;
   color: var(--deepGreyColor);
-  font-size: 14px;
+  font-size: 16px;
   padding-left: 20px;
   position: relative;
 }
@@ -358,5 +357,10 @@ span.carouselarea {
   font-weight: 500;
   color: var(--deepGreyColor);
 }
-
+.carousel-notion{
+  font-size: 16px;
+  font-weight: 500;
+  margin: 6px 0px;
+  color: var(--deepGreyColor);
+}
 </style>

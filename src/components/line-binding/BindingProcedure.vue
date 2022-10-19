@@ -6,37 +6,41 @@
       <span>會員升級綁定</span>
     </div>
 
-    <p>
-      <LineBindingInput @given-student-card="givenStudentCard"
-                        @given-mobile="givenMobile"
-                        @check-behavior="checkBehavior"></LineBindingInput>
-    </p>
+    <div class="input-area">
+      <p style="margin-bottom: 0px;">
+        <LineBindingInput @given-student-card="givenStudentCard"
+                          @given-mobile="givenMobile"
+                          @check-behavior="checkBehavior"></LineBindingInput>
+      </p>
 
-    <div v-if="isQueryMultipleStudent">
-      <mu-select @change="checkSelected"
-                 v-model="selected">
-        <mu-option disabled value="" label="請選擇帳號"></mu-option>
-        <mu-option v-for="student in students"
-                   :key="student.studentCard"
-                   :value="student.studentCard"
-                   :label="student.email"></mu-option>
-      </mu-select>
+      <div v-if="isQueryMultipleStudent">
+        <mu-select @change="checkSelected"
+                   v-model="selected">
+          <mu-option disabled value="" label="請選擇帳號"></mu-option>
+          <mu-option v-for="student in students"
+                     :key="student.studentCard"
+                     :value="student.studentCard"
+                     :label="student.email"></mu-option>
+        </mu-select>
+      </div>
+
+      <!--學號錯誤顯示-->
+      <div class="error-bar student-id" v-if="studentCardErrorMsg">
+        <span> *{{ studentCardErrorMsg }}</span>
+      </div>
+
+      <!--手機錯誤顯示-->
+      <div class="error-bar phone" v-if="mobileErrorMsg">
+        <span> *{{ mobileErrorMsg }}</span>
+      </div>
     </div>
+
+    <!-- 按鈕區塊 -->
     <div class="button-div">
       <mu-button @click="goToPreviousStep" class="color-primary btn_style back" v-if="!isAlreadyBinding">
         上一步
       </mu-button>
       <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
-    </div>
-
-    <!--學號錯誤顯示-->
-    <div v-if="studentCardErrorMsg">
-      <h2> 學號錯誤顯示： {{ studentCardErrorMsg }}</h2>
-    </div>
-
-    <!--手機錯誤顯示-->
-    <div v-if="mobileErrorMsg">
-      <h2> 手機錯誤顯示： {{ mobileErrorMsg }}</h2>
     </div>
 
   </div>
@@ -67,6 +71,7 @@ export default {
   },
   methods: {
     givenStudentCard(resultObj) {
+      // select選單change觸發，根據原本在手機的輸入內容，若空白則清除手機輸入時的錯誤訊息
       if (resultObj.studentCard === '') {
         // 隱藏錯誤訊息
         this.setMobileErrorMsg('')
@@ -94,6 +99,7 @@ export default {
     },
 
     givenMobile(resultObj) {
+      // select選單change觸發，根據原本在學號的輸入內容，若空白則清除學號輸入時的錯誤訊息
       if (resultObj.mobile === '') {
         // 隱藏錯誤訊息
         this.setStudentCardErrorMsg('')
@@ -112,6 +118,8 @@ export default {
             break
           case 'Pass':
             this.isQueryMultipleStudent = true
+            // 符合，也要清掉原本的錯誤訊息
+            this.setMobileErrorMsg('')
             //顯示在select選單中的資料
             this.students = resultObj.students
             // 存該手機號碼
@@ -198,5 +206,22 @@ export default {
   color: #01579b;
 }
 
+.input-area {
+  position: relative;
+}
 
+.error-bar {
+  font-size: 12px;
+  position: absolute;
+  bottom: 0px;
+  color: #D20000;
+}
+
+.error-bar.student-id {
+  bottom: 8px;
+}
+
+.error-bar.phone {
+  bottom: -1px;
+}
 </style>

@@ -67,7 +67,7 @@
             </div>
           </div>
         </div>
-        <div v-else>
+        <div class="no-coupon" v-else>
           目前無優惠券
         </div>
       </div>
@@ -302,7 +302,7 @@ export default {
 .coupon-card-left {
   background-color: #0D6CBE;
   flex: 1;
-  min-width: 80px;
+  min-width: 132px;
   max-width: 160px;
   position: relative;
   z-index: 3;
