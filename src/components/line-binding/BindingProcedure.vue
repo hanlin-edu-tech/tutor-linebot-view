@@ -92,6 +92,8 @@ export default {
             this.setStudentCardErrorMsg('學號輸入錯誤')
             break
           case 'Pass':
+            // 符合，也要清掉原本的錯誤訊息
+            this.setStudentCardErrorMsg('')
             this.isShowNextToConfirmBtn = true
             this.student.studentCard = resultObj.studentCard
         }
@@ -156,6 +158,7 @@ export default {
     },
 
     checkBehavior(resultObj) {
+      this.isQueryMultipleStudent = false
       if (resultObj.status === 'Pass') {
         this.isShowNextToConfirmBtn = true
         this.setStudentCardErrorMsg('')
