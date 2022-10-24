@@ -6,11 +6,12 @@
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
     <!-- navbar -->
-    <div class="navbar">
+    <div class="navbar" v-if="isInitial">
       <div class="navbar_in">
-        <div class="item">
+        <!-- 身分為學生時加disable樣式 -->
+        <div class="item" :class="{disable: isStudent}">
           <mu-button class="item_button"
-            @click="currentTab = 'accountBinding'"
+            @click="isStudent ? null : currentTab = 'accountBinding'"
             :class="{selected: currentTab === 'accountBinding'}">
             帳號綁定
           </mu-button>
@@ -31,8 +32,6 @@
         </div>
       </div>
     </div>
-
-
   </section>
 </template>
 
@@ -54,7 +53,9 @@ export default {
       currentTab: 'coupons',
       lineUserId: this.$route.params.specificLineUser,
       currentStudentCard: this.$route.params.studentCard,
-      isParent: false
+      isStudent: false,
+      // 讓身份是學生時，帳號綁定上的css做出的遮罩效果，在畫面一宣染就遮住的同步動作
+      isInitial: false
     }
   },
 
@@ -71,10 +72,11 @@ export default {
         // 按照 createTime 排序，確保取的是一開始綁定的身份
         const sortedStudents = this.students
             .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime),'second'))
-        this.isParent = sortedStudents[0].authentications[0].role.toLowerCase() === 'parent'
+        this.isStudent = sortedStudents[0].authentications[0].role.toLowerCase() !== 'parent'
       } else {
         await this.$router.replace(`/lineBinding/${this.lineUserId}`)
       }
+      this.isInitial = true
     } catch (error) {
       console.error(error)
     }
@@ -175,6 +177,18 @@ export default {
   .navbar{
     margin-left: -7.5%;
   }
+}
+// 身份為學生時
+.item.disable > button{
+  pointer-events: none;
+  background-color: #DBDBDB!important;
+  color: #a8a8a8!important;
+}
+.item.disable .item_button::before{
+  background-image: url(../asset/icon/link_default.svg)!important;
+}
+.item.disable > button:active{
+  box-shadow: none!important;
 }
 
 </style>
