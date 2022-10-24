@@ -1,5 +1,5 @@
 <template>
-  <article id="line-binding-confirm" class="font-secondary-info">
+  <article id="line-binding-confirm" class="font-secondary-info" v-if="isInitial">
     <mu-container>
       <mu-row>
         <div>
@@ -51,11 +51,13 @@ export default {
   data() {
     return {
       isBoundStudentTwice: false,
-      isCompleted: false
+      isCompleted: false,
+      isInitial: false
     }
   },
 
   async created() {
+    this.student.email = ''
     try {
       // 若沒手機號碼，需在call 一次request 才會取得
       while (!this.student.email) {
@@ -65,6 +67,7 @@ export default {
           this.student.mobile = student.mobile
           this.isCompleted = true
       }
+      this.isInitial = true
     } catch (error) {
       console.error(error)
     }
