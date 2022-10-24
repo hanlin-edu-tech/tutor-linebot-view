@@ -190,10 +190,10 @@ export default {
       // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
       if (this.choice === 'studentCard') {
         await this.emitGivenStudentCard()
-        this.$emit('check-behavior', this.studentResultObj)
+        this.$emit('check-student-card-behavior', this.studentResultObj)
       } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
         await this.emitGivenMobile()
-        this.$emit('check-behavior', this.mobileResultObj)
+        this.$emit('check-mobile-behavior', this.mobileResultObj)
       }
     }
   },

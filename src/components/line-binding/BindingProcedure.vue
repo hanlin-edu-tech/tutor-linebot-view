@@ -10,7 +10,8 @@
       <p style="margin-bottom: 0px;">
         <LineBindingInput @given-student-card="givenStudentCard"
                           @given-mobile="givenMobile"
-                          @check-behavior="checkBehavior"></LineBindingInput>
+                          @check-student-card-behavior="checkStudentCardBehavior"
+                          @check-mobile-behavior="checkMobileBehavior"></LineBindingInput>
       </p>
 
       <div v-if="isQueryMultipleStudent">
@@ -119,9 +120,9 @@ export default {
             this.setMobileErrorMsg('手機號碼格式錯誤')
             break
           case 'Pass':
-            this.isQueryMultipleStudent = true
             // 符合，也要清掉原本的錯誤訊息
             this.setMobileErrorMsg('')
+            this.isQueryMultipleStudent = true
             //顯示在select選單中的資料
             this.students = resultObj.students
             // 存該手機號碼
@@ -157,12 +158,19 @@ export default {
       }
     },
 
-    checkBehavior(resultObj) {
+    checkStudentCardBehavior(resultObj) {
       this.isQueryMultipleStudent = false
       if (resultObj.status === 'Pass') {
-        this.isShowNextToConfirmBtn = true
-        this.setStudentCardErrorMsg('')
         this.setMobileErrorMsg('')
+        this.isShowNextToConfirmBtn = true
+      }
+    },
+
+    checkMobileBehavior(resultObj) {
+      this.isQueryMultipleStudent = false
+      if (resultObj.status === 'Pass') {
+        this.setStudentCardErrorMsg('')
+        this.isQueryMultipleStudent = true
       }
     },
 
