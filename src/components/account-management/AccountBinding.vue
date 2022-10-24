@@ -43,7 +43,6 @@
     <!-- 按鈕區塊 -->
     <div class="button-div">
       <mu-button @click="goToLineBindingPage"
-                 v-if=""
                  class="btn_style next">
         綁定更多帳號
       </mu-button>
