@@ -174,12 +174,13 @@ export default {
     // 先分兩類 有效跟過期
     for (let coupon of this.coupons) {
       const isGreatThanEqualZeroDay = !this.isDeadLine(coupon.date.disable)
+      const hasTimes = coupon.times > 0
       const lessThanZeroDay = this.isDeadLine(coupon.date.disable)
-      if (isGreatThanEqualZeroDay) {
+      // 使用次數大於0 以及 大於0天的情況放在該array
+      if (isGreatThanEqualZeroDay && hasTimes) {
         coupon.diffDay = this.computeRemainingDate(coupon.date.disable)
         greatThanEqualZeroDayArray.push(coupon)
-      }
-      if (lessThanZeroDay) {
+      } else { //剩餘放在已失效 包括 使用完 次數為0
         this.invalidCoupon.push(coupon)
       }
     }

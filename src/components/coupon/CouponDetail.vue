@@ -48,10 +48,10 @@
 
     <!-- 推薦課程輪播 -->
     <span class="carouselarea"> 推薦課程: </span>
-    <div v-if="sortedCouponArray.length > 0">
+    <div v-if="coupon.applicableProductSets.length > 0">
       <mu-carousel class="big-carousel" hide-indicators interval="9999999">
-        <mu-carousel-item v-for="coupon in sortedCouponArray">
-          <img v-if="coupon.imageUrl" :src="coupon.imageUrl" @click="goCoursePage(coupon.id)">
+        <mu-carousel-item v-for="data in coupon.applicableProductSets">
+          <img v-if="data.imageUrl" :src="data.imageUrl" @click="goCoursePage(data.id)">
         </mu-carousel-item>
       </mu-carousel>
     </div>
@@ -79,24 +79,15 @@ export default {
     coupon: {
       type: Object,
       required: true
-    },
-    studentEnterYear: {
-      required: true
     }
   },
 
   data() {
     return {
       isCopyToClipboard: false,
-      sortedCouponArray: [],
       imgHeight: 0,
       host: window.location.host
     };
-  },
-
-  created() {
-    const grade = this.mappingToGrade(this.studentEnterYear)
-    this.recommendCourseWithGrade(grade)
   },
 
   methods: {
@@ -106,72 +97,6 @@ export default {
       setTimeout(function () {
         this.isCopyToClipboard = false
       }.bind(this), 1000)
-    },
-
-    mappingToGrade(enterYearString) {
-      // 先將入學年 轉換為 較符合現實年級，較好做邏輯的計算
-      const enterYear = parseInt(enterYearString)
-      if (enterYear === -1) {
-        return enterYear
-      }
-
-      const day = new Date()
-      const year = day.getFullYear()
-      const elementarySchoolFirstGrade = year - 1911
-
-      const gradeList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
-      return gradeList[elementarySchoolFirstGrade - enterYear]
-    },
-
-    recommendCourseWithGrade(grade) {
-      // 優惠券顯示規則是 小學生 就撈小學 不用細分年級，國中高中以此類推
-      // 但要額外處理 小六 國三 高三這種 即將畢業的年級，例如小六 超過 6月 就升為國一 因此要額外處理
-
-
-      // 轉換適用產品中的年級
-      const products = this.coupon.applicableProductSets
-          .filter(item => item.imageUrl != null)
-          .map(item => ({id: item.id, imageUrl: item.imageUrl, enterYear: this.mappingToGrade(item.enterYear)}))
-
-      const day = new Date()
-      const graduatePadding = day.getMonth() > 6 ? 1 : 0
-      const padding = day.getMonth() > 6 ? 3 : 0
-
-      let sorted = []
-
-      // 小一 ~ 小五 只撈國小課程 國一 ~ 國二 只撈國中課程 高一 ~ 高三 只撈高中課程(目前只有到高中課程，也沒大學課程，因此統一撈高中課程)
-      if (products.length > 0) {
-        switch (true) {
-          case (grade >= 1 && grade <= 5):
-            sorted = products.filter(item => (item.enterYear >= 1) && (item.enterYear <= 5))
-            break
-          case (grade === 6):
-            sorted = products.filter(item => (item.enterYear >= grade + graduatePadding) && (item.enterYear <= grade + padding))
-            break
-          case (grade >= 7 && grade <= 8):
-            sorted = products.filter(item => (item.enterYear >= 7) && (item.enterYear <= 9))
-            break
-          case (grade === 9):
-            sorted = products.filter(item => (item.enterYear >= grade + graduatePadding) && (item.enterYear <= grade + padding))
-            break
-          case (grade >= 10 && grade <= 12):
-            sorted = products.filter(item => (item.enterYear >= 10) && (item.enterYear <= 12))
-            break
-        }
-      }
-
-      // 隨機取五樣
-      if (sorted.length >= 5) {
-        for (let i = 0; i < sorted.length; i++) {
-          const random = Math.floor(Math.random() * 5)
-          const randomItem = sorted[random]
-          this.sortedCouponArray.push(randomItem)
-        }
-      } else {
-        this.sortedCouponArray = sorted
-      }
-
     },
 
     // 待確定還會再更改
