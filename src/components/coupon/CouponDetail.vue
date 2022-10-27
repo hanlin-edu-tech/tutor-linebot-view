@@ -42,8 +42,15 @@
       <!-- 適用產品 -->
       <li>
         <span>適用產品:</span>
-        <p>{{ coupon.description.applicable }}</p>
       </li>
+      <div v-if="coupon.applicableProductName.length > 0">
+        <span v-for="(name, index) in coupon.applicableProductName" :key="name">
+          {{ name }} <br v-if="(index + 1) % 3 === 0">
+        </span>
+      </div>
+      <div v-else>
+        <span>該優惠券無適用產品</span>
+      </div>
     </ul>
 
     <!-- 推薦課程輪播 -->
@@ -58,6 +65,17 @@
     <div class="carousel-notion" v-else>
       該年級目前無推薦課程
     </div>
+
+    <!-- 使用說明 -->
+    <ul class="discount_detail">
+      <li>
+        <span>使用規則:</span>
+      </li>
+      <div v-if="coupon.description.rules">
+        <p v-html="coupon.description.rules"></p>
+      </div>
+      <div v-else> 無使用規則 </div>
+    </ul>
 
     <!-- 複製提示 -->
     <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
