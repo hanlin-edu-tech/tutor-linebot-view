@@ -135,9 +135,9 @@
 
 <script>
 import CouponDetail from "@/components/coupon/CouponDetail"
-import dayjs from "dayjs"
 import couponService from "@/service/coupon-service"
 import studentService from "@/service/student-service"
+import {mapState} from "vuex";
 
 export default {
   name: "Coupons",
@@ -161,7 +161,7 @@ export default {
 
   async created() {
     const currentStudentCard = this.getCurrentStudentCard
-    this.coupons = await this.searchCouponListWithStudentCard(currentStudentCard)
+    this.coupons = this.students.filter(student => student.studentCard === currentStudentCard)[0].coupons
     // 沒有if判斷 console會報錯
     if (typeof this.coupons === 'object') {
       this.couponsCount = Object.keys(this.coupons).length
@@ -203,7 +203,8 @@ export default {
   computed: {
     getCurrentStudentCard() {
       return this.$route.params.studentCard
-    }
+    },
+    ...mapState('common', ['students'])
   }
 }
 </script>

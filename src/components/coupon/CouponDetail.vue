@@ -44,7 +44,7 @@
         <span>適用產品:</span>
       </li>
       <div v-if="coupon.applicableProductName.length > 0">
-        <span v-for="(name, index) in coupon.applicableProductName" :key="name">
+        <span v-for="(name, index) in coupon.applicableProductName">
           {{ name }} <br v-if="(index + 1) % 3 === 0">
         </span>
       </div>
@@ -117,7 +117,6 @@ export default {
       }.bind(this), 1000)
     },
 
-    // 待確定還會再更改
     goCoursePage(id) {
       window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}`, '_blank')
     }
