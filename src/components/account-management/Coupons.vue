@@ -135,9 +135,9 @@
 
 <script>
 import CouponDetail from "@/components/coupon/CouponDetail"
-import dayjs from "dayjs"
 import couponService from "@/service/coupon-service"
 import studentService from "@/service/student-service"
+import {mapState} from "vuex";
 
 export default {
   name: "Coupons",
@@ -161,7 +161,12 @@ export default {
 
   async created() {
     const currentStudentCard = this.getCurrentStudentCard
-    this.coupons = await this.searchCouponListWithStudentCard(currentStudentCard)
+    const filterCoupons = this.students.filter(student => student.studentCard === currentStudentCard)
+
+    if (filterCoupons.length > 0) {
+      this.coupons = filterCoupons[0].coupons
+    }
+
     // 沒有if判斷 console會報錯
     if (typeof this.coupons === 'object') {
       this.couponsCount = Object.keys(this.coupons).length
@@ -175,7 +180,6 @@ export default {
     for (let coupon of this.coupons) {
       const isGreatThanEqualZeroDay = !this.isDeadLine(coupon.date.disable)
       const hasTimes = coupon.times > 0
-      const lessThanZeroDay = this.isDeadLine(coupon.date.disable)
       // 使用次數大於0 以及 大於0天的情況放在該array
       if (isGreatThanEqualZeroDay && hasTimes) {
         coupon.diffDay = this.computeRemainingDate(coupon.date.disable)
@@ -203,7 +207,8 @@ export default {
   computed: {
     getCurrentStudentCard() {
       return this.$route.params.studentCard
-    }
+    },
+    ...mapState('common', ['students'])
   }
 }
 </script>

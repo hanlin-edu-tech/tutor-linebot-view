@@ -1,12 +1,12 @@
 <template>
-  <section id="profile">
+  <section id="profile" v-if="isInitial">
 
     <AccountBinding v-if="currentTab === 'accountBinding'"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
     <!-- navbar -->
-    <div class="navbar" v-if="isInitial">
+    <div class="navbar">
       <div class="navbar_in">
         <!-- 身分為學生時加disable樣式 -->
         <div class="item" :class="{disable: isStudent}">

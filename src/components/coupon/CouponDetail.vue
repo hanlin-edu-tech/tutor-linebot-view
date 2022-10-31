@@ -117,9 +117,8 @@ export default {
       }.bind(this), 1000)
     },
 
-    // 待確定還會再更改
     goCoursePage(id) {
-      window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}`, '_blank')
+      window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}&openExternalBrowser=1`, '_blank')
     }
 
   }
