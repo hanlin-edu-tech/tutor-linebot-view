@@ -43,9 +43,8 @@
       <li>
         <span>適用產品:</span>
       </li>
-      <div v-if="coupon.applicableProductName.length > 0">
-        <span v-for="(name, index) in coupon.applicableProductName" :key="name">
-          {{ name }} <br v-if="(index + 1) % 3 === 0">
+      <div class="product-list" v-if="coupon.applicableProductName.length > 0">
+        <span v-for="name in coupon.applicableProductName" :key="name">{{ name }} 
         </span>
       </div>
       <div v-else>
@@ -62,6 +61,7 @@
         </mu-carousel-item>
       </mu-carousel>
     </div>
+
     <div class="carousel-notion" v-else>
       該年級目前無推薦課程
     </div>
@@ -71,7 +71,7 @@
       <li>
         <span>使用規則:</span>
       </li>
-      <div v-if="coupon.description.rules">
+      <div class="detail-rules" v-if="coupon.description.rules">
         <p v-html="coupon.description.rules"></p>
       </div>
       <div v-else> 無使用規則 </div>
@@ -131,7 +131,7 @@ export default {
 // 優惠券內頁
 .coupon-in-page {
   position: relative;
-  height: 100vh;
+  height: 100%;
   max-width: 600px;
   margin: auto;
 }
@@ -285,7 +285,10 @@ ul.discount_detail > li:last-of-type::after {
 }
 
 ul.discount_detail > li span {
-  min-width: 32px;
+  min-width: 40px;
+}
+ul.discount_detail > li:nth-of-type(4) span,ul.discount_detail:nth-of-type(5) > li span{
+  min-width: 72px;
 }
 
 ul.discount_detail > li p {
@@ -293,6 +296,28 @@ ul.discount_detail > li p {
   font-weight: bold;
   margin-left: 8px;
 }
+.product-list{
+  margin-left: 16px;
+  display: flex;
+  flex-direction: column;
+}
+  .product-list > span{
+    color: var(--deepGreyColor);
+    font-size: 16px;
+    font-weight: 700;
+  } 
+
+
+// 使用規則樣式
+.detail-rules{
+  margin-left: 16px;
+}
+  .detail-rules > p{
+    color: var(--deepGreyColor);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+  }
 
 // 推薦課程輪播標題
 span.carouselarea {

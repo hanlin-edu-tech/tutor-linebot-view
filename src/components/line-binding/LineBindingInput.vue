@@ -283,7 +283,9 @@ export default {
     text-decoration: underline;
     font-size: 14px;
     font-weight: 500;
-    text-align: right;
+    max-width: 100px;
+    margin-left: auto;
+    // text-align: right;
     // margin-left: 990px;
   }
 
