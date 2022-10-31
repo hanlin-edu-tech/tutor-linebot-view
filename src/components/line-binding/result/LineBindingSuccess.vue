@@ -516,7 +516,7 @@ body{
 .no-coupon{
   color: var(--deepGreyColor);
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 </style>
