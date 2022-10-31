@@ -118,7 +118,7 @@ export default {
     },
 
     goCoursePage(id) {
-      window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}`, '_blank')
+      window.open(`https://${this.host}/app/online-showcase/product-info.html?id=${id}&openExternalBrowser=1`, '_blank')
     }
 
   }
