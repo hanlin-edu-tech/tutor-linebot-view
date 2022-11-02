@@ -43,9 +43,8 @@
       <li>
         <span>適用產品:</span>
       </li>
-      <div class="product-list" v-if="coupon.applicableProductName.length > 0">
-        <span v-for="name in coupon.applicableProductName" :key="name">{{ name }} 
-        </span>
+      <div class="product-list" v-if="coupon.description.applicable">
+        <span v-html="coupon.description.applicable"></span>
       </div>
       <div v-else>
         <span>該優惠券無適用產品</span>
