@@ -7,7 +7,7 @@
     </div>
     <!-- 優惠碼 -->
     <div class="couponarea">
-      <span> 優惠卷: </span>
+      <span> 優惠券: </span>
       <div class="coupon_code" @click="copyToClipboard">
         <p>
           <!-- 折扣碼:  -->

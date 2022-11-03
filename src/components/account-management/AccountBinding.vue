@@ -30,7 +30,7 @@
               </div>
             </div>
             <!-- 優惠券數量 -->
-            <div class="item_count">
+            <div class="item_count" Style="display:none;">
               <span>
                 {{ calculateCouponsCount(student) }}
               </span>
