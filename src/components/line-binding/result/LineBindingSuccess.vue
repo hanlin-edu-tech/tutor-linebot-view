@@ -79,7 +79,7 @@
         </mu-col>
       </mu-row>
       <mu-row class="no-coupon" v-else>
-        <h1> 目前沒有優惠卷 </h1>
+        <h1> 目前沒有優惠券 </h1>
       </mu-row>
     </article>
 

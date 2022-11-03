@@ -20,7 +20,7 @@
           <mu-button class="item_button"
             @click="currentTab = 'coupons'"
             :class="{selected: currentTab === 'coupons'}">
-            優惠卷
+            優惠券
           </mu-button>
         </div>
         <div class="item">

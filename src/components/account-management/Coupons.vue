@@ -3,7 +3,7 @@
     <div v-if="!isClickCouponDetail">
       <!-- 標題區 -->
       <div class="account_title">
-        <h1> 優惠卷專區 </h1>
+        <h1> 優惠券專區 </h1>
       </div>
 
       <!-- 頁籤 -->
