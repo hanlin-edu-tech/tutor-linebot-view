@@ -12,9 +12,9 @@
         <!-- 帳號 -->
         <div class="account_item"
              v-for="student in students"
-             :class="{'login-student': getCurrentStudentCard === student.studentCard}">
-          <router-link
-              :to="`/profile/${lineUserId}/${student.studentCard}`">
+             :class="{'login-student': getCurrentStudentCard === student.studentCard}"
+             @click="$emit('reset-to-coupons')">
+          <router-link :to="`/profile/${lineUserId}/${student.studentCard}`">
             <!-- 圖片 -->
             <div class="item_img">
               <img :src="student.defPic">
@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* 帳號綁定頁面 */
+/* 帳號一覽頁面 */
 .account_page {
 
 }

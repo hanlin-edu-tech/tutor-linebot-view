@@ -42,7 +42,7 @@
                         <mu-paper>
                           <!-- 優惠標題 -->
                           <div class="coupon_tit">
-                            <p> 新手綁定優惠方案 </p>
+                            <p> {{ coupon.name }} </p>
                             <!-- 日期 -->
                             <div class="coupon_date">
                               <p>日期:</p>{{ formatDate(coupon.date.enable) }}
@@ -127,12 +127,12 @@ export default {
     const studentCard = this.student.studentCard
     try {
       // 處理優惠券
-      const coupons = await this.searchLineCouponListWithStudentCard(studentCard)
+      const coupons = await this.searchCouponListWithStudentCard(studentCard)
       this.couponCount = Object.keys(coupons).length
 
       for (let i = 0; i < this.couponCount; i++) {
         const coupon = coupons[i]
-        if (!this.isDeadLine(coupon.date.disable)) {
+        if (!this.isDeadLine(coupon.date.disable) && coupon.times > 0) {
           this.coupons.push(coupon)
         }
       }

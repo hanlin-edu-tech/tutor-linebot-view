@@ -161,11 +161,8 @@ export default {
 
   async created() {
     const currentStudentCard = this.getCurrentStudentCard
-    const filterCoupons = this.students.filter(student => student.studentCard === currentStudentCard)
-
-    if (filterCoupons.length > 0) {
-      this.coupons = filterCoupons[0].coupons
-    }
+    const coupons = await this.searchCouponListWithStudentCard(currentStudentCard)
+    this.coupons = coupons
 
     // 沒有if判斷 console會報錯
     if (typeof this.coupons === 'object') {

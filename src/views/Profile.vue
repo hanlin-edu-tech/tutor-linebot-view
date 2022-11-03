@@ -1,7 +1,7 @@
 <template>
   <section id="profile" v-if="isInitial">
 
-    <AccountBinding v-if="currentTab === 'accountBinding'"></AccountBinding>
+    <AccountBinding v-if="currentTab === 'accountBinding'" @reset-to-coupons="currentTab = 'coupons'"></AccountBinding>
     <Coupons v-if="currentTab === 'coupons'"></Coupons>
     <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
 
@@ -13,7 +13,7 @@
           <mu-button class="item_button"
             @click="isStudent ? null : currentTab = 'accountBinding'"
             :class="{selected: currentTab === 'accountBinding'}">
-            帳號綁定
+            帳號一覽
           </mu-button>
         </div>
         <div class="item">
@@ -54,7 +54,7 @@ export default {
       lineUserId: this.$route.params.specificLineUser,
       currentStudentCard: this.$route.params.studentCard,
       isStudent: false,
-      // 讓身份是學生時，帳號綁定上的css做出的遮罩效果，在畫面一宣染就遮住的同步動作
+      // 讓身份是學生時，帳號一覽上的css做出的遮罩效果，在畫面一宣染就遮住的同步動作
       isInitial: false
     }
   },
@@ -62,19 +62,34 @@ export default {
   async created() {
     try {
       await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
-      for (let i = 0; i < this.students.length; i++) {
-        const studentCard = this.students[i].studentCard
-        const coupons = await this.searchCouponListWithStudentCard(studentCard)
-        await this.$set(this.students[i], 'coupons', coupons)
+      let currentStudentExists = false
+
+      for (let student of this.students) {
+        if (student.studentCard === this.currentStudentCard) {
+          currentStudentExists = true
+          break
+        }
       }
 
-      if (this.students.length > 0) {
-        // 按照 createTime 排序，確保取的是一開始綁定的身份
-        const sortedStudents = this.students
-            .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime),'second'))
-        this.isStudent = sortedStudents[0].authentications[0].role.toLowerCase() !== 'parent'
+      if (currentStudentExists) {
+        for (let i = 0; i < this.students.length; i++) {
+          const studentCard = this.students[i].studentCard
+          const coupons = await this.searchCouponListWithStudentCard(studentCard)
+          await this.$set(this.students[i], 'coupons', coupons)
+        }
+
+        if (this.students.length > 0) {
+          // 按照 createTime 排序，確保取的是一開始綁定的身份
+          const sortedStudents = this.students
+              .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime), 'second'))
+          this.isStudent = sortedStudents[0].authentications[0].role.toLowerCase() !== 'parent'
+        } else {
+          await this.$router.replace(`/lineBinding/${this.lineUserId}`)
+        }
+
       } else {
-        await this.$router.replace(`/lineBinding/${this.lineUserId}`)
+        alert('學生卡號不在學生清單中，請選擇欲查詢的帳號')
+        this.currentTab = 'accountBinding'
       }
       this.isInitial = true
     } catch (error) {
