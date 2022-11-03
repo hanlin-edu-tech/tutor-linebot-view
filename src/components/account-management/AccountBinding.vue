@@ -1,5 +1,5 @@
 <template>
-  <!-- 帳號綁定頁面 -->
+  <!-- 帳號一覽頁面 -->
   <div class="account_page">
     <!-- 標題區 -->
     <div class="account_title">
@@ -12,9 +12,9 @@
         <!-- 帳號 -->
         <div class="account_item"
              v-for="student in students"
-             :class="{'login-student': getCurrentStudentCard === student.studentCard}">
-          <router-link
-              :to="`/profile/${lineUserId}/${student.studentCard}`">
+             :class="{'login-student': getCurrentStudentCard === student.studentCard}"
+             @click="$emit('reset-to-coupons')">
+          <router-link :to="`/profile/${lineUserId}/${student.studentCard}`">
             <!-- 圖片 -->
             <div class="item_img">
               <img :src="student.defPic">
@@ -28,12 +28,6 @@
               <div class="content_item">
                 <span>學號:</span>{{ student.studentCard }}
               </div>
-            </div>
-            <!-- 優惠券數量 -->
-            <div class="item_count">
-              <span>
-                {{ calculateCouponsCount(student) }}
-              </span>
             </div>
           </router-link>
         </div>
@@ -66,10 +60,6 @@ export default {
   },
 
   methods: {
-    calculateCouponsCount(student) {
-      return student.coupons.filter(coupon => !this.isDeadLine(coupon.date.disable)).length
-    },
-
     goToLineBindingPage() {
       // 0 的原因是 line binding的create階段 若有綁定過會進行下一步的動作，因此回到0 即可
       this.resetStepAction()
@@ -93,7 +83,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* 帳號綁定頁面 */
+/* 帳號一覽頁面 */
 .account_page {
 
 }
