@@ -1,5 +1,5 @@
 <template>
-  <!-- 帳號一覽頁面 -->
+  <!-- 帳號綁定頁面 -->
   <div class="account_page">
     <!-- 標題區 -->
     <div class="account_title">
@@ -28,6 +28,12 @@
               <div class="content_item">
                 <span>學號:</span>{{ student.studentCard }}
               </div>
+            </div>
+            <!-- 優惠券數量 -->
+            <div class="item_count" Style="display:none;">
+              <span>
+                {{ calculateCouponsCount(student) }}
+              </span>
             </div>
           </router-link>
         </div>
@@ -60,6 +66,10 @@ export default {
   },
 
   methods: {
+    calculateCouponsCount(student) {
+      return student.coupons.filter(coupon => !this.isDeadLine(coupon.date.disable)).length
+    },
+
     goToLineBindingPage() {
       // 0 的原因是 line binding的create階段 若有綁定過會進行下一步的動作，因此回到0 即可
       this.resetStepAction()
