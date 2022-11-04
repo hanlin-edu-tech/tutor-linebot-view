@@ -74,7 +74,7 @@ export default {
         this.student.studentCards = studentCards
         this.isAlreadyBinding = true
         this.handleNext()
-        // 當綁定過身份後 導到profile，若在profile那點擊帳號一覽，則不跳轉
+        // 當綁定過身份後 導到profile，若在profile那點擊帳號管理，則不跳轉
         if (!this.continueBinding) {
           await this.$router.replace(`/profile/${this.lineUserId}/${this.student.studentCards[0]}`)
         }

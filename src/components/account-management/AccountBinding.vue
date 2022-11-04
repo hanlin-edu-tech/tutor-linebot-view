@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/* 帳號一覽頁面 */
+/* 帳號管理頁面 */
 .account_page {
 
 }

@@ -13,7 +13,7 @@
           <mu-button class="item_button"
                      @click="isStudent ? null : currentTab = 'accountBinding'"
                      :class="{selected: currentTab === 'accountBinding'}">
-            帳號一覽
+            帳號管理
           </mu-button>
         </div>
         <div class="item">
@@ -54,7 +54,7 @@ export default {
       lineUserId: this.$route.params.specificLineUser,
       currentStudentCard: this.$route.params.studentCard,
       isStudent: false,
-      // 讓身份是學生時，帳號一覽上的css做出的遮罩效果，在畫面一宣染就遮住的同步動作
+      // 讓身份是學生時，帳號管理上的css做出的遮罩效果，在畫面一宣染就遮住的同步動作
       isInitial: false
     }
   },
