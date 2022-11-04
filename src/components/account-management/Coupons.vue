@@ -95,7 +95,7 @@
                       <mu-paper>
                         <!-- 優惠標題 -->
                         <div class="coupon_tit">
-                          <p> 新手綁定優惠方案 </p>
+                          <p> {{ coupon.name}} </p>
                           <!-- 日期 -->
                           <div class="coupon_date">
                             <p>日期:</p>{{ formatDate(coupon.date.enable) }}
