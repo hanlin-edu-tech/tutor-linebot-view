@@ -1,5 +1,5 @@
 <template>
-  <div class="success-page">
+  <div class="success-page" v-if="isInitial">
     <article id="line-binding-success" v-if="!isClickCouponDetail">
       <mu-row>
         <mu-col span="11">
@@ -115,7 +115,8 @@ export default {
       isClickCouponDetail: false,
       courseImages: [],
       clickedCoupon: {},
-      enterYear: 0
+      enterYear: 0,
+      isInitial: false
     }
   },
 
@@ -127,7 +128,8 @@ export default {
     const studentCard = this.student.studentCard
     try {
       // 處理優惠券
-      const coupons = await this.searchCouponListWithStudentCard(studentCard)
+      const result = await this.searchCouponListWithStudentCard(studentCard)
+      const coupons = result.filter(coupon => coupon.times > 0)
       this.couponCount = Object.keys(coupons).length
 
       for (let i = 0; i < this.couponCount; i++) {
@@ -149,6 +151,7 @@ export default {
     } catch (error) {
       console.error(error)
     }
+    this.isInitial = true
   },
 
   methods: {
