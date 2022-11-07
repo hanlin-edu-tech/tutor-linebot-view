@@ -77,8 +77,10 @@
     </ul>
 
     <!-- 複製提示 -->
-    <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
-      <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿 </span>
+    <div class="notice-area">
+      <div class="notice-ui"><!-- 沒有navbar時加.noNavbar -->
+        <span class="notice" v-if="isCopyToClipboard"> 已複製到剪貼簿 </span>
+      </div>
     </div>
 
   </div>
@@ -216,19 +218,25 @@ export default {
 }
 
 // 複製提示
+.notice-area{
+  width: 100%;
+  height: calc(100vh - 164px);
+  position: fixed;
+  left: 0;
+  top: 66px;
+  pointer-events: none;
+}
 .notice-ui {
   position: absolute;
-  top: calc(85% - 110px);
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   background-color: #fff;
   border-radius: 50px;
   opacity: 0.8;
 }
-
 // 沒有navbar
-.notice-ui.noNavbar {
-  top: 85%;
+.notice-ui.noNavbar { 
 }
 
 span.notice {
