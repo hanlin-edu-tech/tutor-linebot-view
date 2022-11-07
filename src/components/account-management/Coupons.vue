@@ -95,7 +95,7 @@
                       <mu-paper>
                         <!-- 優惠標題 -->
                         <div class="coupon_tit">
-                          <p> 新手綁定優惠方案 </p>
+                          <p> {{ coupon.name}} </p>
                           <!-- 日期 -->
                           <div class="coupon_date">
                             <p>日期:</p>{{ formatDate(coupon.date.enable) }}
@@ -161,8 +161,11 @@ export default {
 
   async created() {
     const currentStudentCard = this.getCurrentStudentCard
-    const coupons = await this.searchCouponListWithStudentCard(currentStudentCard)
-    this.coupons = coupons
+    const filterCoupons = this.students.filter(student => student.studentCard === currentStudentCard)
+
+    if (filterCoupons.length > 0) {
+      this.coupons = filterCoupons[0].coupons
+    }
 
     // 沒有if判斷 console會報錯
     if (typeof this.coupons === 'object') {
