@@ -14,7 +14,7 @@
              v-for="student in students"
              :class="{'login-student': getCurrentStudentCard === student.studentCard}"
              @click="$emit('reset-to-coupons')">
-          <router-link :to="`/profile/${lineUserId}/${student.studentCard}`">
+          <router-link :to="`/profile/${lineUserId}/${student.studentCard}`" @click.native="resetToCoupons()">
             <!-- 圖片 -->
             <div class="item_img">
               <img :src="student.defPic">
@@ -22,7 +22,6 @@
             <!-- 內容 -->
             <div class="item_content">
               <div class="content_item">
-                <!-- <span>Email:</span> -->
                 {{ student.email }}
               </div>
               <div class="content_item">
@@ -66,6 +65,10 @@ export default {
   },
 
   methods: {
+    resetToCoupons() {
+      this.$emit('reset-to-coupons')
+    },
+
     calculateCouponsCount(student) {
       return student.coupons.filter(coupon => !this.isDeadLine(coupon.date.disable)).length
     },

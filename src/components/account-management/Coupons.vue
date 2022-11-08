@@ -1,5 +1,6 @@
 <template>
   <div class="coupon_page" v-if="isInitial">
+    {{ checkSelectedStatus }}
     <div v-if="!isClickCouponDetail">
       <!-- 標題區 -->
       <div class="account_title">
@@ -95,7 +96,7 @@
                       <mu-paper>
                         <!-- 優惠標題 -->
                         <div class="coupon_tit">
-                          <p> {{ coupon.name}} </p>
+                          <p> {{ coupon.name }} </p>
                           <!-- 日期 -->
                           <div class="coupon_date">
                             <p>日期:</p>{{ formatDate(coupon.date.enable) }}
@@ -205,10 +206,19 @@ export default {
   },
 
   computed: {
+    checkSelectedStatus() {
+      const currentStudentCard = this.getCurrentStudentCard
+      const filterCoupons = this.students.filter(student => student.studentCard === currentStudentCard)
+      if (filterCoupons.length <= 0) {
+        alert(this.errorMessage)
+        this.$emit('reset-to-account-binding')
+      }
+    },
     getCurrentStudentCard() {
       return this.$route.params.studentCard
     },
-    ...mapState('common', ['students'])
+    ...mapState('common', ['students']),
+    ...mapState('accountManagement', ['errorMessage'])
   }
 }
 </script>
@@ -512,81 +522,83 @@ export default {
   box-shadow: unset;
   border-radius: unset;
 }
+
 // 沒有優惠券
-.no-coupon{
+.no-coupon {
   color: var(--deepGreyColor);
   font-weight: 600;
   font-size: 1.25rem;
 }
+
 @media screen and(max-width: 425px) {
-    .coupon-list {
-      margin: -20px 0px;
-    }
-
-    .coupon-card {
-      margin: 32px 0px;
-    }
-
-    .coupon-card-in {
-      flex-direction: column;
-      position: relative;
-    }
-
-    .coupon-card-in::after {
-      // border: 1px #333 solid;
-      // content: "";
-      // width: 100%;
-      // height: 80px;
-      // position: absolute;
-      // top: 0;
-      // right: 0;
-      // box-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.1);
-    }
-
-    // 左側折數
-    .coupon-card-left {
-      max-width: unset;
-      z-index: 3;
-    }
-
-    .coupon-card-left::before, .coupon-card-left::after {
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
-      top: unset;
-      bottom: 0;
-      transform: translate(0%, 50%);
-    }
-
-    .coupon-card-left::before {
-      border-left: 8px solid #fafafa;
-      left: 0;
-      right: unset;
-    }
-
-    .coupon-card-left::after {
-      border-right: 8px solid #fafafa;
-      right: 0;
-      left: unset;
-    }
-
-    // 右側內容
-    .coupon-card-right {
-    }
-
-    .coupon-card-right::after {
-      // content: unset;
-      width: 100%;
-      height: calc(100% - 15px);
-      bottom: 0;
-      top: unset;
-    }
-
-    .close-deadline::after {
-      width: 84px;
-      height: 28px;
-      top: 16px;
-      right: -6px;
-      border-radius: 5px 0px 0px 5px;
-    }
+  .coupon-list {
+    margin: -20px 0px;
   }
+
+  .coupon-card {
+    margin: 32px 0px;
+  }
+
+  .coupon-card-in {
+    flex-direction: column;
+    position: relative;
+  }
+
+  .coupon-card-in::after {
+    // border: 1px #333 solid;
+    // content: "";
+    // width: 100%;
+    // height: 80px;
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    // box-shadow: 4px 4px 2px 0px rgba(0, 0, 0, 0.1);
+  }
+
+  // 左側折數
+  .coupon-card-left {
+    max-width: unset;
+    z-index: 3;
+  }
+
+  .coupon-card-left::before, .coupon-card-left::after {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    top: unset;
+    bottom: 0;
+    transform: translate(0%, 50%);
+  }
+
+  .coupon-card-left::before {
+    border-left: 8px solid #fafafa;
+    left: 0;
+    right: unset;
+  }
+
+  .coupon-card-left::after {
+    border-right: 8px solid #fafafa;
+    right: 0;
+    left: unset;
+  }
+
+  // 右側內容
+  .coupon-card-right {
+  }
+
+  .coupon-card-right::after {
+    // content: unset;
+    width: 100%;
+    height: calc(100% - 15px);
+    bottom: 0;
+    top: unset;
+  }
+
+  .close-deadline::after {
+    width: 84px;
+    height: 28px;
+    top: 16px;
+    right: -6px;
+    border-radius: 5px 0px 0px 5px;
+  }
+}
 </style>
