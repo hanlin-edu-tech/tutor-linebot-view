@@ -2,8 +2,8 @@
   <section id="profile" v-if="isInitial">
 
     <AccountBinding v-if="currentTab === 'accountBinding'" @reset-to-coupons="currentTab = 'coupons'"></AccountBinding>
-    <Coupons v-if="currentTab === 'coupons'"></Coupons>
-    <PersonalProfile v-if="currentTab === 'personalProfile'"></PersonalProfile>
+    <Coupons v-if="currentTab === 'coupons'" @reset-to-account-binding="resetToAccountBinding()"></Coupons>
+    <PersonalProfile v-if="currentTab === 'personalProfile'" @reset-to-account-binding="resetToAccountBinding()"></PersonalProfile>
 
     <!-- navbar -->
     <div class="navbar">
@@ -87,14 +87,20 @@ export default {
         }
       }
 
+
       if (!currentStudentExists) {
-        alert('學生卡號不在學生清單中，請選擇欲查詢的帳號')
         this.currentTab = 'accountBinding'
       }
 
       this.isInitial = true
     } catch (error) {
       console.error(error)
+    }
+  },
+
+  methods: {
+    resetToAccountBinding () {
+      this.currentTab = 'accountBinding'
     }
   },
 

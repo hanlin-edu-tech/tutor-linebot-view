@@ -3,6 +3,7 @@
   <div class="persnal_page">
     <div class="persnal_page_in">
       {{ findCurrentStudent }}
+      {{ checkSelectedStatus }}
       <!-- 個人形象區 -->
       <div class="personal_visual">
         <div class="wrap">
@@ -109,6 +110,20 @@ export default {
   },
 
   computed: {
+    checkSelectedStatus() {
+      let notExists = true
+      this.students.find(student => {
+        if (student.studentCard === this.getCurrentStudentCard) {
+          notExists = false
+        }
+      })
+
+      if (notExists) {
+        alert(this.errorMessage)
+        this.$emit('reset-to-account-binding')
+      }
+    },
+
     getCurrentStudentCard() {
       return this.$route.params.studentCard
     },
@@ -121,7 +136,8 @@ export default {
       })
     },
 
-    ...mapState('common', ['students'])
+    ...mapState('common', ['students']),
+    ...mapState('accountManagement', ['errorMessage'])
   },
 }
 </script>
