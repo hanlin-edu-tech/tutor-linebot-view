@@ -3,7 +3,7 @@
     <!-- 標題區 -->
     <div class="titarea">
       <mu-icon value="arrow_back" size="36" @click="$emit('go-back')"></mu-icon>
-      <h1> 新手綁定優惠方案 </h1>
+      <h1> {{ coupon.name }} </h1>
     </div>
     <!-- 優惠碼 -->
     <div class="couponarea">
