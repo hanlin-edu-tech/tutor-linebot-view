@@ -128,7 +128,7 @@ export default {
     const studentCard = this.student.studentCard
     try {
       // 處理優惠券
-      const result = await this.searchCouponListWithStudentCard(studentCard)
+      const result = await this.searchLineCouponListWithStudentCard(studentCard)
       const coupons = result.filter(coupon => coupon.times > 0)
       this.couponCount = Object.keys(coupons).length
 
