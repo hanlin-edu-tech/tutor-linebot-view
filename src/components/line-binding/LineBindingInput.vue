@@ -130,7 +130,7 @@ export default {
       if (result) {
         const students = await this.getStudentsWithMobile()
 
-        if (students && students.length > 1) {
+        if (students && students.length > 0) {
           this.mobileResultObj.students = students
           this.mobileResultObj.status = 'Pass'
           this.mobileResultObj.mobile = this.mobile
