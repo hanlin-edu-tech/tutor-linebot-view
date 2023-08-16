@@ -11,7 +11,7 @@ export default new Router({
       component: () => import('@/views/Refresh.vue')
     },
     {
-      path: '/lineBinding/:specificLineUser',
+      path: '/lineBinding/:specificLineUser/:destinationId?',
       name: 'LineBinding',
       component: () => import('@/views/LineBinding.vue')
     },
