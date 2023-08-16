@@ -45,7 +45,8 @@ export default {
   mixins: [studentService],
 
   props: {
-    lineUserId: String
+    lineUserId: String,
+    destinationId: String
   },
 
   data() {
@@ -92,6 +93,7 @@ export default {
       bindingStudentObj.authentications = [
         {
           lineUserId: this.lineUserId,
+          destinationId: this.destinationId,
           role: this.student.role
         }
       ]
