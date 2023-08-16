@@ -42,10 +42,11 @@ import PersonalProfile from "@/components/account-management/PersonalProfile"
 import {mapState} from "vuex"
 import dayjs from "dayjs"
 import couponService from "@/service/coupon-service"
+import utilService from "@/service/util-service";
 
 export default {
   name: 'Profile',
-  mixins: [couponService],
+  mixins: [couponService, utilService],
   components: {Coupons, AccountBinding, PersonalProfile},
 
   data() {
@@ -62,6 +63,8 @@ export default {
   async created() {
     try {
       await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
+      const destinationId = await this.getDestinationId(this.lineUserId);
+      await this.$store.dispatch('binding/assignDestinationIdAction', destinationId)
       let currentStudentExists = false
 
 
@@ -77,7 +80,7 @@ export default {
             .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime), 'second'))
         this.isStudent = sortedStudents[0].authentications[0].role.toLowerCase() !== 'parent'
       } else {
-        await this.$router.replace(`/lineBinding/${this.lineUserId}`)
+        await this.$router.replace(`/lineBinding/${this.lineUserId}/${destinationId}`)
       }
 
       for (let student of this.students) {
