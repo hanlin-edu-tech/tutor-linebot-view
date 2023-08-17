@@ -15,20 +15,6 @@ export default {
             } catch (error) {
                 console.error(error)
             }
-        },
-
-        async getDestinationId(lineUserId) {
-            try {
-                const response = await axios({
-                    method: 'get',
-                    url: `/linebot/lineBinding/destinationId/${lineUserId}`
-                });
-                const destinationId = response.data;
-
-                return destinationId;
-            } catch (error) {
-                console.error(error);
-            }
         }
     }
 }

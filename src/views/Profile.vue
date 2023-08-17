@@ -42,11 +42,10 @@ import PersonalProfile from "@/components/account-management/PersonalProfile"
 import {mapState} from "vuex"
 import dayjs from "dayjs"
 import couponService from "@/service/coupon-service"
-import utilService from "@/service/util-service";
 
 export default {
   name: 'Profile',
-  mixins: [couponService, utilService],
+  mixins: [couponService],
   components: {Coupons, AccountBinding, PersonalProfile},
 
   data() {
@@ -63,10 +62,18 @@ export default {
   async created() {
     try {
       await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
-      const destinationId = await this.getDestinationId(this.lineUserId);
-      await this.$store.dispatch('binding/assignDestinationIdAction', destinationId)
       let currentStudentExists = false
 
+      let destinationId = "";
+      for (const student of this.students) {
+          const authentications = student.authentications.find(auth => auth.destinationId)
+          if (authentications) {
+              destinationId = authentications.destinationId;
+              break;
+          }
+      }
+
+      await this.$store.dispatch('binding/assignDestinationIdAction', destinationId)
 
       for (let i = 0; i < this.students.length; i++) {
         const studentCard = this.students[i].studentCard
