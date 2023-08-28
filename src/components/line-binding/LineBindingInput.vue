@@ -6,9 +6,8 @@
       <div class="subtitle">
         <span>請輸入學號</span>
       </div>
-      <mu-text-field v-model="studentCard" type="text" placeholder="點擊以輸入學號" action-icon="edit"
+      <mu-text-field v-model="studentCard" type="text" placeholder="點擊以輸入學號" @input="convertToUppercase"
                      @keyup="emitGivenStudentCard" full-width max-length="7"></mu-text-field>
-      <a :href="'https://'+host+'/app/member-center/login.html'"></a>
 
       <span class="color-primary how-to-get-student-card" @click="openDialog">如何獲得學號？</span>
 
@@ -76,6 +75,9 @@ export default {
   },
 
   methods: {
+      convertToUppercase() {
+          this.studentCard = this.studentCard.toUpperCase();
+      },
     async emitGivenStudentCard() {
       const studentCardRegex = /[0-9A-Z]{7}/
 

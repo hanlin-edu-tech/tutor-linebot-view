@@ -42,6 +42,7 @@
         上一步
       </mu-button>
       <mu-button @click="nextStep" class="btn_style next" v-if="isShowNextToConfirmBtn">下一步</mu-button>
+      <mu-button class="btn_style disabled-next" disabled v-else>下一步</mu-button>
     </div>
 
   </div>
@@ -234,5 +235,9 @@ export default {
 
 .error-bar.phone {
   bottom: -1px;
+}
+
+.disabled-next {
+    background-color: gray;
 }
 </style>
