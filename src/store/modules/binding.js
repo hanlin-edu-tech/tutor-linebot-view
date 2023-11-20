@@ -2,7 +2,6 @@ export default {
   namespaced: true,
   state: {
     continueBinding: false,
-    destinationId: '',
     student: {
       name: '',
       role: '',
@@ -16,18 +15,12 @@ export default {
   actions: {
     assignContinueBindingAction ({commit}, continueBinding) {
       commit('setContinueBinding', continueBinding)
-    },
-    assignDestinationIdAction ({commit}, destinationId) {
-      commit('setDestinationId', destinationId)
     }
   },
 
   mutations: {
     setContinueBinding (state, continueBinding) {
       state.continueBinding = continueBinding
-    },
-    setDestinationId (state, destinationId) {
-      state.destinationId = destinationId
     }
   },
   
