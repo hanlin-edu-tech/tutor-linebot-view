@@ -14,7 +14,6 @@
       <LineBindingConfirm
           v-if="bindingStep === 2"
           :line-user-id="lineUserId"
-          :destination-id="destinationId"
           @binding-completed="isBindingCompleted = true"
           @binding-result="setBindingResult"></LineBindingConfirm>
 
@@ -46,7 +45,6 @@ export default {
   data() {
     return {
       lineUserId: this.$route.params['specificLineUser'],
-      destinationId: this.$route.params['destinationId'],
       isBindingCompleted: false,
       isBindingAgain: false,
       isAlreadyBinding: false,
