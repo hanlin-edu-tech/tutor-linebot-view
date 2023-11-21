@@ -64,16 +64,6 @@ export default {
       await this.$store.dispatch('common/initStudentsWithLineUser', this.lineUserId)
       let currentStudentExists = false
 
-      let destinationId = "";
-      for (const student of this.students) {
-          const authentications = student.authentications.find(auth => auth.destinationId)
-          if (authentications) {
-              destinationId = authentications.destinationId;
-              break;
-          }
-      }
-
-      await this.$store.dispatch('binding/assignDestinationIdAction', destinationId)
 
       for (let i = 0; i < this.students.length; i++) {
         const studentCard = this.students[i].studentCard
@@ -87,7 +77,7 @@ export default {
             .sort((studentA, studentB) => dayjs(studentA.createTime).diff(dayjs(studentB.createTime), 'second'))
         this.isStudent = sortedStudents[0].authentications[0].role.toLowerCase() !== 'parent'
       } else {
-        await this.$router.replace(`/lineBinding/${this.lineUserId}/${destinationId}`)
+        await this.$router.replace(`/lineBinding/${this.lineUserId}`)
       }
 
       for (let student of this.students) {
