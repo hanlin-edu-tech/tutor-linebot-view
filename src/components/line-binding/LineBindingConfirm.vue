@@ -103,8 +103,13 @@ export default {
         console.error(error)
       }
 
-      // step +1 改變LineBinding的步驟到第四步讓stepper消失
-      this.handleNext()
+
+      if (this.$route.query.redirect && this.$route.query.redirect === 'scheduling') {
+          window.location.href = `/app/intelligent-scheduling-system-line/index.html#/account-choice/${this.lineUserId}?redirect=class-schedule-arrangement`
+      } else {
+          // step +1 改變LineBinding的步驟到第四步讓stepper消失
+          this.handleNext()
+      }
     },
 
     queryProfiles() {
