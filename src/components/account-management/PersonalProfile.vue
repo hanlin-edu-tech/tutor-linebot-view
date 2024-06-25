@@ -17,31 +17,6 @@
           <div class="personal_img">
             <img :src="currentStudent.defPic">
           </div>
-          <!-- 點數狀態 -->
-          <div class="personal_point">
-            <!-- e幣 -->
-            <div class="personal_point_in">
-              <!-- 圖片 -->
-              <div class="coin_img">
-                <img src="../../asset/icon/coin.svg" alt="icon">
-              </div>
-              <!-- 數值 -->
-              <div class="point_count">
-                <span>e幣:</span>{{ currentStudent.coins }}
-              </div>
-            </div>
-            <!-- 寶石 -->
-            <div class="personal_point_in">
-              <!-- 圖片 -->
-              <div class="coin_img">
-                <img src="../../asset/icon/diamond.svg" alt="icon">
-              </div>
-              <!-- 數值 -->
-              <div class="point_count">
-                <span>寶石:</span>{{ currentStudent.gems }}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
       <!-- 用戶資料 -->
@@ -188,58 +163,6 @@ export default {
         width: 100%;
         max-width: 100%;
         height: auto;
-      }
-    }
-    // 點數
-    .personal_point{
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translate(-50%,50%);
-      display: flex;
-      width: 75%;
-      max-width: 400px;
-      border-radius: 5px;
-      background-color: #fff;
-      box-shadow: 0 0 5px 0 rgba(0,0,0,0.2);
-      .personal_point_in{
-        width: 50%;
-        padding: 8px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        // 圖
-        .coin_img{
-          width: 20px;
-          height: 20px;
-          margin-right: 4px;
-          img{
-            width: 100%;
-            height: auto;
-          }
-        }
-        // 文
-        .point_count{
-          color: #a8a8a8;
-          span{
-            font-size: 14px;
-            margin-right: 4px;
-          }
-        }
-      }
-      .personal_point_in:first-of-type::after{
-        content: "";
-        display: block;
-        width: 1px;
-        height: 20px;
-        position: absolute;
-        right: 0;
-        background-color: #A8A8A8;
-      }
-      @media (max-width: 425px){
-        width: 70%;
       }
     }
   }
