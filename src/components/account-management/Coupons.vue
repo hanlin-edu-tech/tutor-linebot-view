@@ -182,6 +182,7 @@ export default {
       const isGreatThanEqualZeroDay = !this.isDeadLine(coupon.date.disable)
       const hasTimes = coupon.times > 0
       // 使用次數大於0 以及 大於0天的情況放在該array
+      console.log(coupon.code, isGreatThanEqualZeroDay, hasTimes)
       if (isGreatThanEqualZeroDay && hasTimes) {
         coupon.diffDay = this.computeRemainingDate(coupon.date.disable)
         greatThanEqualZeroDayArray.push(coupon)
