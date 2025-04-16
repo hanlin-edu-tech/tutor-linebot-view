@@ -1,7 +1,12 @@
 <template>
   <article id="line-binding-input">
+    <mu-select label="選擇學號或手機" v-model="choice" full-width @change="changeSelectField">
+      <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
+    </mu-select>
+    <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
+
     <!-- 學號輸入框 -->
-    <div class="write_area">
+    <div class="write_area" v-show="choice === 'studentCard'">
       <!-- 小標 -->
       <div class="subtitle">
         <span>請輸入學號</span>
@@ -41,6 +46,17 @@
         </mu-carousel>
       </mu-dialog>
     </div>
+
+    <!-- 手機輸入框 -->
+    <div class="write_area phone" v-show="choice === 'mobile'">
+      <!-- 小標 -->
+      <div class="subtitle">
+        <span>請輸入手機</span>
+      </div>
+      <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
+                     @keyup="emitGivenMobile" full-width max-length="10">
+      </mu-text-field>
+    </div>
   </article>
 </template>
 
@@ -61,6 +77,11 @@ export default {
   data() {
     return {
       host: window.location.hostname,
+      choice: '',
+      options: {
+        studentCard: '學號',
+        mobile: '手機'
+      },
       studentCard: '',
       mobile: '',
       isDialogOpen: false,
@@ -70,6 +91,10 @@ export default {
       studentResultObj: {
         status: '',
         studentCard: ''
+      },
+      mobileResultObj: {
+        status: '',
+        mobile: ''
       }
     }
   },
@@ -98,6 +123,33 @@ export default {
       }
       this.studentResultObj.studentCard = this.studentCard
       this.$emit('given-student-card', this.studentResultObj)
+    },
+
+    async emitGivenMobile() {
+      const mobileRegex = /^09[0-9]{8}$/
+      const result = mobileRegex.test(this.mobile)
+
+      if (result) {
+        const students = await this.getStudentsWithMobile()
+
+        if (students && students.length > 0) {
+          this.mobileResultObj.students = students
+          this.mobileResultObj.status = 'Pass'
+          this.mobileResultObj.mobile = this.mobile
+        } else {
+          this.mobileResultObj.status = 'StudentCardNotExistWithMobile'
+        }
+      } else {
+        // binding procedure中 下一步button出現後，若重新輸入要再將該button移除
+        this.mobileResultObj.status = 'invalid'
+        this.mobileResultObj.mobile = this.mobile
+      }
+      this.$emit('given-mobile', this.mobileResultObj)
+    },
+
+    async getStudentsWithMobile() {
+      const students = await this.searchStudentsWithMobile(this.mobile)
+      return students
     },
 
     async isStudentCardExist() {
@@ -134,6 +186,17 @@ export default {
     // 當輪播圖片切換，像是點擊圓點時
     changeActiveImage(index) {
       this.active = index
+    },
+
+    async changeSelectField() {
+      // select 選單更換成學號 要清掉 手機號碼查詢到多位學生的select 選單
+      if (this.choice === 'studentCard') {
+        await this.emitGivenStudentCard()
+        this.$emit('check-student-card-behavior', this.studentResultObj)
+      } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
+        await this.emitGivenMobile()
+        this.$emit('check-mobile-behavior', this.mobileResultObj)
+      }
     }
   },
 
