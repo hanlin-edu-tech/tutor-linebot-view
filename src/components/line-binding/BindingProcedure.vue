@@ -2,7 +2,7 @@
   <div>
     <!-- 標題 -->
     <div id="title-area">
-      <p class="title">請輸入綁定相關資訊!</p>
+      <p class="title">請輸入欲綁定的會員帳號或手機號碼!</p>
       <span>會員升級綁定</span>
     </div>
 
@@ -117,10 +117,10 @@ export default {
 
         switch (resultObj.status) {
           case 'StudentCardNotExistWithMobile':
-            this.setMobileErrorMsg('查無該手機號碼')
+            this.setMobileErrorMsg('查無該手機號碼資料')
             break
           case 'invalid':
-            this.setMobileErrorMsg('手機號碼格式錯誤')
+            this.setMobileErrorMsg('手機號碼有誤')
             break
           case 'Pass':
             // 符合，也要清掉原本的錯誤訊息
@@ -148,10 +148,10 @@ export default {
 
         switch (resultObj.status) {
           case 'StudentCardNotExistWithEmail':
-            this.setEmailErrorMsg('該會員帳號不存在')
+            this.setEmailErrorMsg('查無該帳號資料')
             break
           case 'invalid':
-            this.setEmailErrorMsg('會員帳號輸入錯誤')
+            this.setEmailErrorMsg('會員帳號有誤')
             break
           case 'Pass':
             // 符合，也要清掉原本的錯誤訊息

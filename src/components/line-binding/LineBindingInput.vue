@@ -1,9 +1,10 @@
 <template>
   <article id="line-binding-input">
-    <mu-select label="選擇學號、手機或會員帳號" v-model="choice" full-width @change="changeSelectField">
-      <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
-    </mu-select>
-    <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
+
+    <div style="text-align: center;">
+      <mu-button @click="choice = 'email'; changeSelectField();" :color="choice === 'email' ? '#0D6CBE' : 'grey'" class="choiceOptionButton">會員帳號</mu-button>
+      <mu-button @click="choice = 'mobile'; changeSelectField();" :color="choice === 'mobile' ? '#0D6CBE' : 'grey'" class="choiceOptionButton">手機號碼</mu-button>
+    </div>
 
     <!-- 學號輸入框 -->
     <div class="write_area" v-show="choice === 'studentCard'">
@@ -62,8 +63,9 @@
     <div class="write_area phone" v-show="choice === 'mobile'">
       <!-- 小標 -->
       <div class="subtitle">
-        <span>請輸入手機</span>
+        <span>請輸入手機</span><br/>
       </div>
+      <div style="color:#0D6CBE;">提醒您 : 請輸入結帳時填寫的手機號碼資料</div>
       <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
                      @keyup="emitGivenMobile" full-width max-length="10">
       </mu-text-field>
@@ -90,9 +92,8 @@ export default {
       host: window.location.hostname,
       choice: '',
       options: {
-        studentCard: '學號',
-        mobile: '手機',
-        email: '會員帳號'
+        email: '會員帳號',
+        mobile: '手機號碼'
       },
       studentCard: '',
       mobile: '',
@@ -260,6 +261,12 @@ export default {
 
 <style lang="less">
 #line-binding-input {
+  .choiceOptionButton {
+    font-size: 16px;
+    border-radius: 0px;
+    padding: 20px 20px;
+  }
+
   .mu-input-label {
     // font-size: 24px;
     font-size: 1.25rem;
