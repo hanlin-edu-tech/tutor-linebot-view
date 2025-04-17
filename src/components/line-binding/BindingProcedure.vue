@@ -2,7 +2,7 @@
   <div>
     <!-- 標題 -->
     <div id="title-area">
-      <p class="title">請輸入欲綁定的學號!</p>
+      <p class="title">請輸入綁定相關資訊!</p>
       <span>會員升級綁定</span>
     </div>
 
@@ -10,6 +10,7 @@
       <p style="margin-bottom: 0px;">
         <LineBindingInput @given-student-card="givenStudentCard"
                           @given-mobile="givenMobile"
+                          @given-email="givenEmail"
                           @check-student-card-behavior="checkStudentCardBehavior"
                           @check-mobile-behavior="checkMobileBehavior"></LineBindingInput>
       </p>
@@ -107,6 +108,7 @@ export default {
       if (resultObj.mobile === '') {
         // 隱藏錯誤訊息
         this.setStudentCardErrorMsg('')
+        this.setEmailErrorMsg('')
       } else {
         // 輸入手機號碼時，學號選單不應該存在
         this.isQueryMultipleStudent = false
@@ -129,6 +131,34 @@ export default {
             // 存該手機號碼
             this.student.mobile = resultObj.mobile
             break
+        }
+      }
+    },
+
+    givenEmail(resultObj) {
+      // select選單change觸發，根據原本在手機的輸入內容，若空白則清除手機輸入時的錯誤訊息
+      if (resultObj.email === '') {
+        // 隱藏錯誤訊息
+        this.setMobileErrorMsg('')
+      } else {
+        // 選擇用學號綁定 清空手機號碼
+        this.student.mobile = ''
+        // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
+        this.isQueryMultipleStudent = false
+
+        switch (resultObj.status) {
+          case 'StudentCardNotExistWithEmail':
+            this.setEmailErrorMsg('該會員帳號不存在')
+            break
+          case 'invalid':
+            this.setEmailErrorMsg('會員帳號輸入錯誤')
+            break
+          case 'Pass':
+            // 符合，也要清掉原本的錯誤訊息
+            this.setEmailErrorMsg('')
+            this.isShowNextToConfirmBtn = true
+            this.student.studentCard = resultObj.studentCard
+            this.student.email = resultObj.email
         }
       }
     },
@@ -184,6 +214,12 @@ export default {
     setMobileErrorMsg(text) {
       this.studentCardErrorMsg = ''
       this.mobileErrorMsg = text
+      this.isShowNextToConfirmBtn = false
+    },
+
+    setEmailErrorMsg(text) {
+      this.emailErrorMsg = ''
+      this.emailErrorMsg = text
       this.isShowNextToConfirmBtn = false
     },
 

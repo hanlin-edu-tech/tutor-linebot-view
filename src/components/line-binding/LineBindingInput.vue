@@ -1,6 +1,6 @@
 <template>
   <article id="line-binding-input">
-    <mu-select label="選擇學號或手機" v-model="choice" full-width @change="changeSelectField">
+    <mu-select label="選擇學號、手機或會員帳號" v-model="choice" full-width @change="changeSelectField">
       <mu-option v-for="key in Object.keys(options)" :key="key" :label="options[key]" :value="key"></mu-option>
     </mu-select>
     <span class="choice-account font-secondary-info">小提醒：若您尚未領取翰林雲端學院學生證，請登入認證取得學號</span>
@@ -47,6 +47,17 @@
       </mu-dialog>
     </div>
 
+    <!-- 會員帳號輸入框 -->
+    <div class="write_area phone" v-show="choice === 'email'">
+      <!-- 小標 -->
+      <div class="subtitle">
+        <span>請輸入會員帳號</span>
+      </div>
+      <mu-text-field v-model="email" type="text" placeholder="點擊以輸入會員帳號" action-icon="edit"
+                     @keyup="emitGivenEmail" full-width max-length="50">
+      </mu-text-field>
+    </div>
+
     <!-- 手機輸入框 -->
     <div class="write_area phone" v-show="choice === 'mobile'">
       <!-- 小標 -->
@@ -80,10 +91,12 @@ export default {
       choice: '',
       options: {
         studentCard: '學號',
-        mobile: '手機'
+        mobile: '手機',
+        email: '會員帳號'
       },
       studentCard: '',
       mobile: '',
+      email: '',
       isDialogOpen: false,
       active: 0,
       carouselImages: [stepImage1,stepImage2,stepImage3,stepImage4,stepImage5],
@@ -95,6 +108,10 @@ export default {
       mobileResultObj: {
         status: '',
         mobile: ''
+      },
+      emailResultObj: {
+        status: '',
+        email: ''
       }
     }
   },
@@ -125,6 +142,26 @@ export default {
       this.$emit('given-student-card', this.studentResultObj)
     },
 
+    async emitGivenEmail() {
+      const emailRegex = /^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$/
+      const result = emailRegex.test(this.email)
+      if(result) {
+        const student = await this.getStudentWithEmail()
+        if(student){
+          this.emailResultObj.student = student
+          this.emailResultObj.studentCard = student.studentCard
+          this.emailResultObj.status = 'Pass'
+          this.emailResultObj.email = this.email
+        }else{
+          this.emailResultObj.status = 'StudentCardNotExistWithEmail'
+        }
+      } else {
+        this.emailResultObj.status = 'invalid'
+        this.emailResultObj.email = this.email
+      }
+      this.$emit('given-email', this.emailResultObj)
+    },
+
     async emitGivenMobile() {
       const mobileRegex = /^09[0-9]{8}$/
       const result = mobileRegex.test(this.mobile)
@@ -150,6 +187,15 @@ export default {
     async getStudentsWithMobile() {
       const students = await this.searchStudentsWithMobile(this.mobile)
       return students
+    },
+
+    async getStudentWithEmail() {
+      const student = await this.searchStudentWithEmail(this.email)
+      if(student === 'student not found'){
+        return null;
+      }else{
+        return student
+      }
     },
 
     async isStudentCardExist() {

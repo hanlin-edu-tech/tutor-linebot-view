@@ -35,6 +35,23 @@ export default {
                 console.error(error)
             }
         },
+
+        async searchStudentWithEmail(email) {
+            try {
+                const response = await axios({
+                    method: 'get',
+                    url: `/linebot/lineBinding/user?email=${encodeURIComponent(email)}`
+                })
+                if (response.data.message.indexOf('failure') > 0) {
+                    return 'student not found'
+                } else {
+                    const student = response.data.content
+                    return student
+                }
+            } catch (error) {
+                throw new Error(error)
+            }
+        },
         
         async searchStudentWithStudentCardAndMobile(studentCard, mobile) {
             try {
