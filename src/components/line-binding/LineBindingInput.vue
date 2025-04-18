@@ -65,10 +65,10 @@
       <div class="subtitle">
         <span>請輸入手機</span><br/>
       </div>
-      <div style="color:#0D6CBE;">提醒您 : 請輸入結帳時填寫的手機號碼資料</div>
       <mu-text-field v-model="mobile" type="text" placeholder="點擊以輸入手機" action-icon="edit"
                      @keyup="emitGivenMobile" full-width max-length="10">
       </mu-text-field>
+      <div style="color:#0D6CBE;">提醒您 : 請輸入結帳時填寫的手機號碼資料</div>
     </div>
   </article>
 </template>
@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       host: window.location.hostname,
-      choice: '',
+      choice: 'email',
       options: {
         email: '會員帳號',
         mobile: '手機號碼'
@@ -243,6 +243,9 @@ export default {
       } else if (this.choice === 'mobile') { // select 選單更換成手機 傳回手機號碼，如果該組手機號碼又有多位學生，則在觸發select選單
         await this.emitGivenMobile()
         this.$emit('check-mobile-behavior', this.mobileResultObj)
+      } else if (this.choice === 'email') { // select 選單更換成會員帳號 傳回會員帳號
+        await this.emitGivenEmail()
+        this.$emit('check-email-behavior', this.emailResultObj)
       }
     }
   },

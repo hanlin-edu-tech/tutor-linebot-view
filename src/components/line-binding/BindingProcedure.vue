@@ -12,7 +12,8 @@
                           @given-mobile="givenMobile"
                           @given-email="givenEmail"
                           @check-student-card-behavior="checkStudentCardBehavior"
-                          @check-mobile-behavior="checkMobileBehavior"></LineBindingInput>
+                          @check-mobile-behavior="checkMobileBehavior"
+                          @check-email-behavior="checkEmailBehavior"></LineBindingInput>
       </p>
 
       <div v-if="isQueryMultipleStudent">
@@ -34,6 +35,11 @@
       <!--手機錯誤顯示-->
       <div class="error-bar phone" v-if="mobileErrorMsg">
         <span> *{{ mobileErrorMsg }}</span>
+      </div>
+
+      <!--會員帳號錯誤顯示-->
+      <div class="error-bar email" v-if="emailErrorMsg">
+        <span> *{{ emailErrorMsg }}</span>
       </div>
     </div>
 
@@ -69,15 +75,18 @@ export default {
       selected: '',
       // 帳號不存在或重複綁定的錯誤提示
       studentCardErrorMsg: '',
-      mobileErrorMsg: ''
+      mobileErrorMsg: '',
+      emailErrorMsg: ''
     }
   },
   methods: {
     givenStudentCard(resultObj) {
+      // 隱藏錯誤訊息
+      this.setMobileErrorMsg('')
+      this.setEmailErrorMsg('')
       // select選單change觸發，根據原本在手機的輸入內容，若空白則清除手機輸入時的錯誤訊息
       if (resultObj.studentCard === '') {
-        // 隱藏錯誤訊息
-        this.setMobileErrorMsg('')
+
       } else {
         // 選擇用學號綁定 清空手機號碼
         this.student.mobile = ''
@@ -104,11 +113,12 @@ export default {
     },
 
     givenMobile(resultObj) {
+      // 隱藏錯誤訊息
+      this.setStudentCardErrorMsg('')
+      this.setEmailErrorMsg('')
       // select選單change觸發，根據原本在學號的輸入內容，若空白則清除學號輸入時的錯誤訊息
       if (resultObj.mobile === '') {
-        // 隱藏錯誤訊息
-        this.setStudentCardErrorMsg('')
-        this.setEmailErrorMsg('')
+
       } else {
         // 輸入手機號碼時，學號選單不應該存在
         this.isQueryMultipleStudent = false
@@ -136,16 +146,17 @@ export default {
     },
 
     givenEmail(resultObj) {
+      // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
+      this.isQueryMultipleStudent = false
+      this.setMobileErrorMsg('')
+      this.setStudentCardErrorMsg('')
+
       // select選單change觸發，根據原本在手機的輸入內容，若空白則清除手機輸入時的錯誤訊息
       if (resultObj.email === '') {
-        // 隱藏錯誤訊息
-        this.setMobileErrorMsg('')
+
       } else {
         // 選擇用學號綁定 清空手機號碼
         this.student.mobile = ''
-        // 先觸發手機查詢到多位學生後，又切回選擇學號，需把該select 移除
-        this.isQueryMultipleStudent = false
-
         switch (resultObj.status) {
           case 'StudentCardNotExistWithEmail':
             this.setEmailErrorMsg('查無該帳號資料')
@@ -202,6 +213,14 @@ export default {
       if (resultObj.status === 'Pass') {
         this.setStudentCardErrorMsg('')
         this.isQueryMultipleStudent = true
+      }
+    },
+
+    checkEmailBehavior(resultObj) {
+      this.isQueryMultipleStudent = false
+      if (resultObj.status === 'Pass') {
+        this.setEmailErrorMsg('')
+        this.isShowNextToConfirmBtn = true
       }
     },
 
