@@ -14,10 +14,16 @@
           </mu-row>
           <mu-row>
             <mu-col class="personal-list" span="12">
+              <div class="personal-list-in" v-if="student.mobile">
+                <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
+                手機：<span class="font-important-info"> {{ student.mobile }} </span>
+              </div>
+              <!--
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 學號：<span class="font-important-info"> {{ student.studentCard }} </span>
               </div>
+              -->
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 帳號：<span class="font-important-info"> {{ student.email }} </span>
