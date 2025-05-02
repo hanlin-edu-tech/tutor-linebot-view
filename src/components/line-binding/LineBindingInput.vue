@@ -57,6 +57,7 @@
       <mu-text-field v-model="email" type="text" placeholder="點擊以輸入會員帳號" action-icon="edit"
                      @keyup="emitGivenEmail" full-width max-length="50">
       </mu-text-field>
+      <div style="color:#0D6CBE;">提醒您 : 帳號有區分大小寫</div>
     </div>
 
     <!-- 手機輸入框 -->
