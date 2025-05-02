@@ -18,10 +18,12 @@
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 手機：<span class="font-important-info"> {{ student.mobile }} </span>
               </div>
+              <!--
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 姓名：<span class="font-important-info"> {{ student.name }} </span>
               </div>
+              -->
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 帳號：<span class="font-important-info"> {{ student.email }} </span>
