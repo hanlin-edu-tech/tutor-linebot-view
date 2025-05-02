@@ -9,7 +9,7 @@
           </div>
           <mu-row>
             <mu-col class="textarea" span="12">
-              以下為您輸入的資訊所對應之 E-Mail，請再次確認是否正確！
+              以下為您輸入的資訊所對應之帳號，請再次確認是否正確！
             </mu-col>
           </mu-row>
           <mu-row>
@@ -18,12 +18,10 @@
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 手機：<span class="font-important-info"> {{ student.mobile }} </span>
               </div>
-              <!--
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
-                學號：<span class="font-important-info"> {{ student.studentCard }} </span>
+                姓名：<span class="font-important-info"> {{ student.name }} </span>
               </div>
-              -->
               <div class="personal-list-in">
                 <mu-icon class="resize" size="18" value="circle" color="#01579b"></mu-icon>
                 帳號：<span class="font-important-info"> {{ student.email }} </span>
@@ -63,15 +61,16 @@ export default {
   },
 
   async created() {
-    this.student.email = ''
+    let studentLoaded = false;
     try {
       // 若沒手機號碼，需在call 一次request 才會取得
-      while (!this.student.email) {
+      while (!studentLoaded) {
           const student = await this.searchStudentWithStudentCardAndMobile(this.student.studentCard, this.student.mobile)
           this.student.name = student.name
           this.student.email = student.email
           this.student.mobile = student.mobile
           this.isCompleted = true
+          studentLoaded = true
       }
       this.isInitial = true
     } catch (error) {
@@ -84,6 +83,7 @@ export default {
       this.student.studentCard = ''
       this.student.mobile = ''
       this.student.email = ''
+      this.student.name = ''
       this.handlePrevious()
     },
 
