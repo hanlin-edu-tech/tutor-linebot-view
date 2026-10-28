@@ -2,7 +2,7 @@
   "name": "line-bot-tutor-frontend",
   "version": "0.1.0",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=26.12.1"
   },
   "author": "infinityAlive <sonicx7boyboyboy@gmail.com>",
   "repository": {
